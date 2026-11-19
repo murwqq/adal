@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.cache import cache
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 
@@ -35,7 +36,10 @@ def login_view(request):
             else:
                 cache.delete(_fail_key(iin))
                 login(request, user)
-                return redirect(request.GET.get("next") or "dashboard")
+                target = request.GET.get("next", "")
+                if not url_has_allowed_host_and_scheme(target, {request.get_host()}):
+                    target = "dashboard"
+                return redirect(target or "dashboard")
     return render(request, "accounts/login.html", {"form": form})
 
 
