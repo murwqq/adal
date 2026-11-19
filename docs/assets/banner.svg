@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="400" viewBox="0 0 1280 400" role="img" aria-label="Адал — знания видно, списывание тоже">
+  <rect width="1280" height="400" rx="24" fill="#0A4F41"/>
+  <g font-family="Segoe UI, Helvetica Neue, Helvetica, Arial, sans-serif">
+    <g transform="translate(80 92)">
+      <circle cx="9" cy="9" r="7.5" fill="none" stroke="#8CC9B8" stroke-width="2.5"/>
+      <circle cx="33" cy="9" r="9" fill="#FBFBF8"/>
+      <circle cx="57" cy="9" r="7.5" fill="none" stroke="#8CC9B8" stroke-width="2.5"/>
+      <circle cx="81" cy="9" r="7.5" fill="none" stroke="#8CC9B8" stroke-width="2.5"/>
+      <text x="104" y="17" font-size="26" font-weight="700" fill="#FBFBF8">адал</text>
+    </g>
+    <text x="80" y="200" font-size="58" font-weight="700" fill="#FBFBF8" letter-spacing="-1">Знания видно.</text>
+    <text x="80" y="268" font-size="58" font-weight="700" fill="#FBFBF8" letter-spacing="-1">Списывание тоже.</text>
+    <text x="80" y="326" font-size="22" fill="#A9CFC2">Платформа честного тестирования студентов с таймером</text>
+  </g>
+  <g transform="translate(860 70)" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#7FB3A3">
+    <rect x="-28" y="-22" width="372" height="304" rx="18" fill="#FFFFFF" fill-opacity="0.04" stroke="#8CC9B8" stroke-opacity="0.3"/>
+    <text x="10" y="27">1</text><text x="10" y="79">2</text><text x="10" y="131">3</text><text x="10" y="183">4</text><text x="10" y="235">5</text>
+    <g fill="none" stroke="#5F9E8C" stroke-width="2.5">
+      <circle cx="70" cy="22" r="19"/><circle cx="194" cy="22" r="19"/><circle cx="256" cy="22" r="19"/>
+      <circle cx="132" cy="74" r="19"/><circle cx="194" cy="74" r="19"/><circle cx="256" cy="74" r="19"/>
+      <circle cx="70" cy="126" r="19"/><circle cx="132" cy="126" r="19"/><circle cx="194" cy="126" r="19"/>
+      <circle cx="70" cy="178" r="19"/><circle cx="132" cy="178" r="19"/><circle cx="256" cy="178" r="19"/>
+      <circle cx="70" cy="230" r="19"/><circle cx="194" cy="230" r="19"/><circle cx="256" cy="230" r="19"/>
+    </g>
+    <g fill="#FBFBF8">
+      <circle cx="132" cy="22" r="20"/><circle cx="70" cy="74" r="20"/><circle cx="256" cy="126" r="20"/>
+      <circle cx="194" cy="178" r="20"/><circle cx="132" cy="230" r="20"/>
+    </g>
+    <g font-size="14" text-anchor="middle">
+      <text x="70" y="27">А</text><text x="194" y="27">В</text><text x="256" y="27">Г</text>
+      <text x="132" y="79">Б</text><text x="194" y="79">В</text><text x="256" y="79">Г</text>
+      <text x="70" y="131">А</text><text x="132" y="131">Б</text><text x="194" y="131">В</text>
+      <text x="70" y="183">А</text><text x="132" y="183">Б</text><text x="256" y="183">Г</text>
+      <text x="70" y="235">А</text><text x="194" y="235">В</text><text x="256" y="235">Г</text>
+    </g>
+  </g>
+</svg>
