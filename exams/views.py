@@ -2,6 +2,7 @@
 from django.utils.translation import gettext_lazy as _
 import csv
 import json
+import secrets
 from functools import wraps
 
 from django.contrib import messages
@@ -39,10 +40,15 @@ def client_ip(request) -> str | None:
     return request.META.get("REMOTE_ADDR")
 
 
+BROWSER_ID = "browser_id"
+
+
 def session_key(request) -> str:
-    if not request.session.session_key:
-        request.session.save()
-    return request.session.session_key
+    """Постоянный идентификатор браузера в рамках сессии.
+    Не используем сам ключ сессии: при хранении сессии в cookie он меняется."""
+    if BROWSER_ID not in request.session:
+        request.session[BROWSER_ID] = secrets.token_hex(16)
+    return request.session[BROWSER_ID]
 
 
 # ---------- Главная ----------

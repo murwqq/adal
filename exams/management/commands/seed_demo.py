@@ -125,7 +125,7 @@ class Command(BaseCommand):
         open_exam = Exam.objects.create(
             title="Рубежный контроль 1: основы Python", subject=subjects["Программирование на Python"],
             author=teacher, question_count=8, duration_minutes=20, opens_at=now - timedelta(hours=1),
-            closes_at=now + timedelta(days=7), access_code="ADAL24", max_violations=3,
+            closes_at=now + timedelta(days=365), access_code="ADAL24", max_violations=3,
             show_review=True)
         past_exam = Exam.objects.create(
             title="Модуль: дифференцирование и интегралы", subject=subjects["Высшая математика"],

@@ -19,7 +19,5 @@ def test_bank_search_1000_questions_under_one_second(subject, teacher):
     found = list(services.search_questions(Question.objects.all(), text="ПРОИЗВОДНАЯ",
                                            sort="weak")[:20])
     elapsed = time.perf_counter() - start
-    print(f"
-поиск: {elapsed:.3f} с")
     assert len(found) == 20
     assert elapsed < LIMIT_SECONDS, f"{elapsed:.3f} с"

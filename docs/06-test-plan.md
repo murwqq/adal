@@ -56,7 +56,7 @@
 
 ```
 $ python -m pytest -o addopts=""
-83 passed
+84 passed
 ```
 
 | Файл | Тестов | Что проверяет |

@@ -5,11 +5,19 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Секретный ключ берётся из переменной окружения (требование пособия, 5.4).
+# На Vercel приложение работает в демо-режиме (см. docs/08-install.md).
+ON_VERCEL = bool(os.environ.get("VERCEL"))
+
 SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY", "dev-only-insecure-key-change-me-in-production"
 )
-DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
+DEBUG = os.environ.get("DJANGO_DEBUG", "0" if ON_VERCEL else "1") == "1"
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost,testserver").split(",")
+if ON_VERCEL:
+    ALLOWED_HOSTS += [".vercel.app"]
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    # Несколько экземпляров функции не делят файловую систему — сессию храним в cookie.
+    SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -24,6 +32,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -55,7 +64,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": os.environ.get("DJANGO_DB_PATH", BASE_DIR / "db.sqlite3"),
     }
 }
 
@@ -82,7 +91,8 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = Path("/tmp/media") if ON_VERCEL else BASE_DIR / "media"
+WHITENOISE_USE_FINDERS = True  # статика отдаётся прямо из static/ без collectstatic
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
