@@ -11,6 +11,9 @@ ON_VERCEL = bool(os.environ.get("VERCEL"))
 SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY", "dev-only-insecure-key-change-me-in-production"
 )
+if ON_VERCEL and "DJANGO_SECRET_KEY" not in os.environ:
+    # Ключ разработки лежит в открытом репозитории: с ним можно подделать сессию.
+    raise RuntimeError("Задайте переменную окружения DJANGO_SECRET_KEY в настройках Vercel")
 DEBUG = os.environ.get("DJANGO_DEBUG", "0" if ON_VERCEL else "1") == "1"
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost,testserver").split(",")
 if ON_VERCEL:
