@@ -1,17 +1,27 @@
 {% extends "accounts/auth_base.html" %}
 {% block title %}Вход{% endblock %}
 {% block auth %}
-<h2>Вход</h2>
-<p class="lead">Студенты и преподаватели входят по ИИН.</p>
-{% for e in form.non_field_errors %}<div class="note error" role="alert">{{ e }}</div><br>{% endfor %}
+<h2>Вход в Адал</h2>
+{% for e in form.non_field_errors %}<div class="note error" role="alert" style="margin-bottom:20px">{{ e }}</div>{% endfor %}
 <form method="post" novalidate>
   {% csrf_token %}
-  {% include "_field.html" with field=form.iin %}
-  {% include "_field.html" with field=form.password %}
+  <div class="field">
+    <label for="{{ form.iin.id_for_label }}">ИИН</label>
+    {{ form.iin }}
+    {% for e in form.iin.errors %}<p class="error">{{ e }}</p>{% endfor %}
+  </div>
+  <div class="field">
+    <div class="field-row">
+      <label for="{{ form.password.id_for_label }}">Пароль</label>
+      <a href="#forgot" onclick="document.getElementById('forgot').hidden=false;return false">Забыли пароль?</a>
+    </div>
+    {{ form.password }}
+    {% for e in form.password.errors %}<p class="error">{{ e }}</p>{% endfor %}
+    <p class="help" id="forgot" hidden>Пароль сбрасывает офис регистратора — подойдите с удостоверением личности.</p>
+  </div>
   <button class="btn btn-primary btn-lg btn-block" type="submit">Войти</button>
 </form>
 <div class="auth-switch">
-  <p class="muted">Поступаете в университет? <a href="{% url 'accounts:register' %}">Зарегистрируйтесь как абитуриент</a></p>
-  <p class="muted small">Забыли пароль — обратитесь в офис регистратора с удостоверением личности.</p>
+  <p>Поступаете к нам? <a href="{% url 'accounts:register' %}">Создать аккаунт абитуриента</a></p>
 </div>
 {% endblock %}

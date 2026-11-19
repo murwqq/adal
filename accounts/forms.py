@@ -28,7 +28,7 @@ class LoginForm(forms.Form):
 class RegistrationForm(forms.ModelForm):
     """Анкета абитуриента — набор полей повторяет регистрацию в Platonus."""
 
-    citizenship = forms.ChoiceField(label="Страна", choices=[(c, c) for c in COUNTRIES])
+    citizenship = forms.ChoiceField(label="Гражданство", choices=[(c, c) for c in COUNTRIES])
     password1 = forms.CharField(
         label="Пароль", widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
         help_text="Не короче 8 символов, не только цифры.",
@@ -52,7 +52,15 @@ class RegistrationForm(forms.ModelForm):
         ]
         widgets = {
             "iin": forms.TextInput(attrs={"inputmode": "numeric", "pattern": r"\d{12}",
-                                          "maxlength": 12}),
+                                          "maxlength": 12, "autocomplete": "off"}),
+            "interface_language": forms.RadioSelect,
+            "email": forms.EmailInput(attrs={"autocomplete": "email"}),
+        }
+        labels = {
+            "patronymic": "Отчество",
+            "application_type": "Форма поступления",
+            "citizenship": "Гражданство",
+            "doc_type": "Документ",
         }
 
     def __init__(self, *args, expected_captcha=None, **kwargs):

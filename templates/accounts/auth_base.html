@@ -7,16 +7,20 @@
   <a class="wordmark" href="{% url 'accounts:login' %}">
     <span class="mark" aria-hidden="true"><i></i><i class="on"></i><i></i><i></i></span>адал
   </a>
-  <div>
-    <h1>Тест, который проверяет знания, а не находчивость</h1>
-    <p>Платформа тестирования Кызылординского университета имени Коркыт Ата.</p>
+  <div class="auth-pitch">
+    <div class="omr" aria-hidden="true">
+      <div class="omr-row" style="--n:0"><b>1</b><i>А</i><i class="on">Б</i><i>В</i><i>Г</i></div>
+      <div class="omr-row" style="--n:1"><b>2</b><i class="on">А</i><i>Б</i><i>В</i><i>Г</i></div>
+      <div class="omr-row" style="--n:2"><b>3</b><i>А</i><i>Б</i><i>В</i><i class="on">Г</i></div>
+      <div class="omr-row" style="--n:3"><b>4</b><i>А</i><i>Б</i><i class="on">В</i><i>Г</i></div>
+      <div class="omr-row" style="--n:4"><b>5</b><i>А</i><i class="on">Б</i><i>В</i><i>Г</i></div>
+    </div>
+    {% block pitch %}
+    <h1>Знания видно. Списывание тоже.</h1>
+    <p>Онлайн-экзамены Кызылординского университета имени Коркыт Ата.</p>
+    {% endblock %}
   </div>
-  <ul class="promises">
-    <li>Все варианты ответа выглядят одинаково: оформление из Word не подскажет, какой из них верный.</li>
-    <li>Формулы набираются и показываются чётко, а не мутной картинкой.</li>
-    <li>У каждого студента свой порядок вопросов и ответов.</li>
-    <li>Переход в другую вкладку или к ИИ-помощнику фиксируется и виден преподавателю.</li>
-  </ul>
+  <div class="auth-legal">© 2026 Адал. <a href="{% url 'accounts:rules' %}" style="color:inherit">Пользовательское соглашение</a></div>
 </aside>
 <section class="auth-main">
   <div class="auth-box {% block box_class %}{% endblock %}">
