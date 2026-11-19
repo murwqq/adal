@@ -435,3 +435,5 @@ tr.flag-row td { background: #fff8f1; }
   font-size: var(--step--1); }
 
 @media print { .topbar, .footer, .filters, .btn { display: none !important; } body { background: #fff; } }
+td.num { white-space: nowrap; }
+fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
