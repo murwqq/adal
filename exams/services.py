@@ -5,11 +5,15 @@ import secrets
 from dataclasses import dataclass
 from datetime import timedelta
 
+from django.core.files.base import ContentFile
 from django.db import IntegrityError, transaction
 from django.db.models import Count, ExpressionWrapper, F, FloatField, Q, QuerySet
 from django.db.models.functions import Cast
 from django.utils import timezone
 
+from .analysis import analyze_items, lint_question, score_summary
+from .dbfuncs import ULower
+from .importer import clean_text
 from .models import Attempt, AttemptItem, Choice, Exam, Question, Violation
 
 GRACE_SECONDS = 5            # запас на сетевую задержку при последнем ответе
@@ -20,6 +24,82 @@ MIN_CHOICES = 2
 
 class ExamError(Exception):
     """Нарушено правило тестирования. Текст понятен пользователю."""
+
+
+# ---------- Банк вопросов ----------
+
+BLOCKING_PROBLEMS = (
+    "Пустой текст вопроса",
+    "Нужно минимум два варианта ответа",
+    "Должен быть ровно один правильный ответ",
+    "Есть одинаковые варианты ответа",
+)
+
+
+def validate_question(text: str, choices: list[tuple[str, bool]]) -> list[str]:
+    """Возвращает предупреждения; бросает ExamError, если вопрос сохранить нельзя."""
+    choices = [(t.strip(), ok) for t, ok in choices if t.strip()]
+    problems = lint_question(text, choices)
+    blocking = [p for p in problems if p in BLOCKING_PROBLEMS]
+    if blocking:
+        raise ExamError("; ".join(blocking))
+    return problems
+
+
+@transaction.atomic
+def save_question(*, subject, author, text: str, choices: list[tuple[str, bool]],
+                  topic: str = "", difficulty: int = 2, image: bytes | None = None,
+                  question: Question | None = None) -> tuple[Question, list[str]]:
+    """Создаёт или обновляет вопрос вместе с вариантами ответов."""
+    text = clean_text(text)
+    choices = [(clean_text(t), ok) for t, ok in choices if t and t.strip()]
+    warnings = validate_question(text, choices)
+    if question is None:
+        question = Question(author=author)
+    question.subject, question.text = subject, text
+    question.topic, question.difficulty = topic.strip(), difficulty
+    if image:
+        question.image.save(f"q_{secrets.token_hex(6)}.png", ContentFile(image), save=False)
+    question.save()
+    used = question.attempt_items.exists()
+    if used:
+        # Варианты уже попадали студентам — меняем текст, но не ломаем историю ответов.
+        existing = list(question.choices.all())
+        if len(existing) != len(choices):
+            raise ExamError("Вопрос уже был в тестах: число вариантов менять нельзя. "
+                            "Создайте новый вопрос")
+        for choice, (t, ok) in zip(existing, choices):
+            choice.text, choice.is_correct = t, ok
+            choice.save()
+    else:
+        question.choices.all().delete()
+        Choice.objects.bulk_create(Choice(question=question, text=t, is_correct=ok)
+                                   for t, ok in choices)
+    return question, warnings
+
+
+def save_imported(items, *, subject, author, difficulty: int = 2) -> tuple[int, list[str]]:
+    """Сохраняет вопросы из импорта; возвращает число сохранённых и ошибки."""
+    saved, errors = 0, []
+    for number, item in enumerate(items, start=1):
+        try:
+            save_question(subject=subject, author=author, text=item.text,
+                          choices=item.choices, topic=item.topic, difficulty=difficulty,
+                          image=item.image)
+            saved += 1
+        except ExamError as exc:
+            errors.append(f"Вопрос {number}: {exc}")
+    return saved, errors
+
+
+def delete_question(question: Question) -> str:
+    """Неиспользованный вопрос удаляется, использованный — убирается из банка."""
+    if question.attempt_items.exists():
+        question.is_active = False
+        question.save(update_fields=["is_active"])
+        return "Вопрос уже был в тестах, поэтому он скрыт из банка, а статистика сохранена"
+    question.delete()
+    return "Вопрос удалён"
 
 
 # ---------- Доступ к тесту ----------
@@ -46,7 +126,7 @@ def check_access(exam: Exam, student, *, code: str, ip: str | None, now=None) ->
 def question_pool(exam: Exam) -> QuerySet:
     pool = Question.objects.filter(subject=exam.subject, is_active=True)
     if exam.topic:
-        pool = pool.filter(topic__iexact=exam.topic)
+        pool = pool.annotate(topic_l=ULower("topic")).filter(topic_l=exam.topic.strip().lower())
     return pool.annotate(n=Count("choices")).filter(n__gte=MIN_CHOICES)
 
 
@@ -118,8 +198,13 @@ def ensure_active(attempt: Attempt, now=None) -> None:
 
 
 def ensure_same_session(attempt: Attempt, session_key: str) -> None:
-    """Тест идёт только в том браузере, где его начали."""
-    if attempt.session_key and attempt.session_key != session_key:
+    """Тест идёт только в том браузере, где его начали.
+    Если преподаватель разрешил продолжить (ключ сброшен) — браузер закрепляется заново."""
+    if not attempt.session_key:
+        attempt.session_key = session_key
+        attempt.save(update_fields=["session_key"])
+        return
+    if attempt.session_key != session_key:
         register_violation(attempt, Violation.Kind.OTHER_SESSION)
         raise ExamError("Тест уже открыт в другом браузере. Об этом сообщено преподавателю")
 
@@ -181,6 +266,14 @@ def register_violation(attempt: Attempt, kind: str, now=None) -> bool:
     return False
 
 
+def allow_resume(attempt: Attempt) -> None:
+    """Преподаватель разрешает продолжить тест в другом браузере (например, после сбоя ПК)."""
+    if attempt.status != Attempt.Status.ACTIVE:
+        raise ExamError("Попытка уже завершена")
+    attempt.session_key = ""
+    attempt.save(update_fields=["session_key"])
+
+
 def is_stale(attempt: Attempt, now=None) -> bool:
     """Страница теста давно не выходила на связь (закрыли, выключили сеть)."""
     now = now or timezone.now()
@@ -232,12 +325,15 @@ def search_questions(qs: QuerySet, *, text="", subject_id=None, topic="", diffic
             output_field=FloatField()),
     )
     if text:
-        qs = qs.filter(Q(text__icontains=text) | Q(choices__text__icontains=text)
-                       | Q(topic__icontains=text)).distinct()
+        needle = text.lower()
+        in_choices = (Choice.objects.annotate(t=ULower("text")).filter(t__contains=needle)
+                      .values("question_id"))
+        qs = qs.annotate(text_l=ULower("text"), topic_l=ULower("topic")).filter(
+            Q(text_l__contains=needle) | Q(topic_l__contains=needle) | Q(id__in=in_choices))
     if subject_id:
         qs = qs.filter(subject_id=subject_id)
     if topic:
-        qs = qs.filter(topic__iexact=topic)
+        qs = qs.annotate(topic_eq=ULower("topic")).filter(topic_eq=topic.lower())
     if difficulty:
         qs = qs.filter(difficulty=difficulty)
     option = QUESTION_SORTS.get(sort, QUESTION_SORTS["new"])
@@ -247,13 +343,40 @@ def search_questions(qs: QuerySet, *, text="", subject_id=None, topic="", diffic
 def search_results(qs: QuerySet, *, text="", group="", status="", flagged=False,
                    sort="score_desc") -> QuerySet:
     if text:
-        qs = qs.filter(Q(student__last_name__icontains=text) | Q(student__first_name__icontains=text)
+        needle = text.lower()
+        qs = qs.annotate(last_l=ULower("student__last_name"), first_l=ULower("student__first_name"))
+        qs = qs.filter(Q(last_l__contains=needle) | Q(first_l__contains=needle)
                        | Q(student__iin__startswith=text))
     if group:
-        qs = qs.filter(student__group__iexact=group)
+        qs = qs.annotate(group_l=ULower("student__group")).filter(group_l=group.lower())
     if status:
         qs = qs.filter(status=status)
     if flagged:
         qs = qs.filter(violation_count__gt=0)
     option = RESULT_SORTS.get(sort, RESULT_SORTS["score_desc"])
     return qs.order_by(*option.order_by)
+
+
+# ---------- Анализ результатов теста ----------
+
+FINISHED_STATUSES = (Attempt.Status.FINISHED, Attempt.Status.EXPIRED, Attempt.Status.TERMINATED)
+
+
+def exam_report(exam: Exam) -> dict:
+    """Сводка по тесту: распределение баллов и анализ каждого вопроса."""
+    attempts = list(exam.attempts.filter(status__in=FINISHED_STATUSES))
+    items = AttemptItem.objects.filter(attempt__in=attempts).values_list(
+        "attempt_id", "question_id", "selected_id")
+    by_attempt: dict[int, dict[int, int | None]] = {a.id: {} for a in attempts}
+    for attempt_id, qid, cid in items:
+        by_attempt[attempt_id][qid] = cid
+    answers = [(a.percent, by_attempt[a.id]) for a in attempts]
+    qids = {qid for chosen in by_attempt.values() for qid in chosen}
+    questions = {
+        q.id: {"text": q.text,
+               "choices": [(c.id, c.text, c.is_correct) for c in q.choices.all()]}
+        for q in Question.objects.filter(id__in=qids).prefetch_related("choices")
+    }
+    stats = analyze_items(questions, answers)
+    stats.sort(key=lambda s: (len(s.flags) == 0, s.p))
+    return {"summary": score_summary([a.percent for a in attempts]), "items": stats}
