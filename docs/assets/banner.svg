@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="400" viewBox="0 0 1280 400" role="img" aria-label="Адал — знания видно, списывание тоже">
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="400" viewBox="0 0 1280 400" role="img" aria-label="Адал. Знания видно. Списывание тоже.">
   <rect width="1280" height="400" rx="24" fill="#0A4F41"/>
   <g font-family="Segoe UI, Helvetica Neue, Helvetica, Arial, sans-serif">
     <g transform="translate(80 92)">
@@ -10,7 +10,7 @@
     </g>
     <text x="80" y="200" font-size="58" font-weight="700" fill="#FBFBF8" letter-spacing="-1">Знания видно.</text>
     <text x="80" y="268" font-size="58" font-weight="700" fill="#FBFBF8" letter-spacing="-1">Списывание тоже.</text>
-    <text x="80" y="326" font-size="22" fill="#A9CFC2">Платформа честного тестирования студентов с таймером</text>
+    <text x="80" y="326" font-size="22" fill="#A9CFC2">Платформа честного тестирования студентов</text>
   </g>
   <g transform="translate(860 70)" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#7FB3A3">
     <rect x="-28" y="-22" width="372" height="304" rx="18" fill="#FFFFFF" fill-opacity="0.04" stroke="#8CC9B8" stroke-opacity="0.3"/>
