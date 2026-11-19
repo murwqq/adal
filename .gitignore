@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+.coverage
+htmlcov/
+.pytest_cache/
+.env
+.claude/
+
+# Исходные материалы преподавателя — не часть кода
+Python ортасында*.docx
+регистрация платонуса.txt
