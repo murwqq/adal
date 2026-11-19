@@ -1,20 +1,21 @@
 {% extends "base.html" %}
-{% block title %}Главная{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Главная" %}{% endblock %}
 {% block content %}
 <div class="page-head">
   <div>
-    <h1>Здравствуйте, {{ user.first_name }}{% if user.patronymic %} {{ user.patronymic }}{% endif %}</h1>
-    <p class="muted">В банке {{ bank_size }} ваших вопросов.</p>
+    <h1>{% blocktranslate trimmed with first_name=user.first_name %}Здравствуйте, {{ first_name }}{% endblocktranslate %}{% if user.patronymic %} {{ user.patronymic }}{% endif %}</h1>
+    <p class="muted">{% blocktranslate trimmed %}В банке {{ bank_size }} ваших вопросов.{% endblocktranslate %}</p>
   </div>
   <div style="display:flex;gap:10px;flex-wrap:wrap">
-    <a class="btn" href="{% url 'exams:question_import' %}">Загрузить вопросы из Word</a>
-    <a class="btn btn-primary" href="{% url 'exams:exam_new' %}">Создать тест</a>
+    <a class="btn" href="{% url 'exams:question_import' %}">{% translate "Загрузить вопросы из Word" %}</a>
+    <a class="btn btn-primary" href="{% url 'exams:exam_new' %}">{% translate "Создать тест" %}</a>
   </div>
 </div>
 
 <div class="cols">
   <section class="sheet">
-    <div class="sheet-title"><h2>Мои тесты</h2><a href="{% url 'exams:exam_list' %}">Все тесты</a></div>
+    <div class="sheet-title"><h2>{% translate "Мои тесты" %}</h2><a href="{% url 'exams:exam_list' %}">{% translate "Все тесты" %}</a></div>
     {% for exam in exams %}
     <div class="exam-row">
       <div>
@@ -22,38 +23,38 @@
         <div class="facts">
           <span>{{ exam.subject }}</span>
           <span>{{ exam.opens_at|date:"d.m.Y H:i" }} – {{ exam.closes_at|date:"H:i" }}</span>
-          <span>Прошли: {{ exam.n_attempts }}</span>
-          {% if exam.n_active %}<span class="tag warn">Сейчас пишут: {{ exam.n_active }}</span>{% endif %}
+          <span>{% blocktranslate trimmed with n_attempts=exam.n_attempts %}Прошли: {{ n_attempts }}{% endblocktranslate %}</span>
+          {% if exam.n_active %}<span class="tag warn">{% blocktranslate trimmed with n_active=exam.n_active %}Сейчас пишут: {{ n_active }}{% endblocktranslate %}</span>{% endif %}
         </div>
       </div>
-      <a class="btn" href="{% url 'exams:exam_monitor' exam.pk %}">Наблюдать</a>
+      <a class="btn" href="{% url 'exams:exam_monitor' exam.pk %}">{% translate "Наблюдать" %}</a>
     </div>
     {% empty %}
     <div class="empty">
-      <p>Тестов пока нет. Сначала добавьте вопросы в банк, затем соберите из них тест.</p>
-      <a class="btn btn-primary" href="{% url 'exams:exam_new' %}">Создать тест</a>
+      <p>{% translate "Тестов пока нет. Сначала добавьте вопросы в банк, затем соберите из них тест." %}</p>
+      <a class="btn btn-primary" href="{% url 'exams:exam_new' %}">{% translate "Создать тест" %}</a>
     </div>
     {% endfor %}
   </section>
 
   <aside>
     <section class="sheet">
-      <h3>Дисциплины</h3>
+      <h3>{% translate "Дисциплины" %}</h3>
       <table>
         {% for s in subjects %}
         <tr><td><a href="{% url 'exams:question_list' %}?subject={{ s.pk }}">{{ s.name }}</a></td>
             <td class="right num muted">{{ s.n }}</td></tr>
-        {% empty %}<tr><td class="muted">Пока нет ни одной дисциплины</td></tr>{% endfor %}
+        {% empty %}<tr><td class="muted">{% translate "Пока нет ни одной дисциплины" %}</td></tr>{% endfor %}
       </table>
       <form method="post" action="{% url 'exams:subject_create' %}" style="margin-top:16px">
         {% csrf_token %}
-        <label for="id_name">Новая дисциплина</label>
-        <div style="display:flex;gap:8px">{{ subject_form.name }}<button class="btn" type="submit">Добавить</button></div>
+        <label for="id_name">{% translate "Новая дисциплина" %}</label>
+        <div style="display:flex;gap:8px">{{ subject_form.name }}<button class="btn" type="submit">{% translate "Добавить" %}</button></div>
       </form>
     </section>
     <section class="sheet">
-      <h3>Как писать формулы</h3>
-      <p class="small muted">Формулу пишите между знаками доллара: <code>$\frac{a}{b}$</code>, <code>$x^2$</code>, <code>$\sqrt{x}$</code>. Формулы, набранные в редакторе формул Word, при загрузке файла переводятся автоматически.</p>
+      <h3>{% translate "Как писать формулы" %}</h3>
+      <p class="small muted">{% translate "Формулу пишите между знаками доллара:" %} <code>$\frac{a}{b}$</code>, <code>$x^2$</code>, <code>$\sqrt{x}$</code>{% translate ". Формулы, набранные в редакторе формул Word, при загрузке файла переводятся автоматически." %}</p>
     </section>
   </aside>
 </div>

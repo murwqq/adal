@@ -1,29 +1,29 @@
 {% extends "base.html" %}
-{% block title %}Анализ: {{ exam.title }}{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Анализ" %}: {{ exam.title }}{% endblock %}
 {% block math %}{% include "_math.html" %}{% endblock %}
 {% block content %}
 {% include "exams/_exam_head.html" with tab="analysis" %}
 
 <div class="sheet" style="margin-bottom:20px">
-  <p style="margin:0"><b>Как читать.</b> <b>Трудность</b> — доля верных ответов: 0,9 и выше — вопрос слишком лёгкий, 0,2 и ниже — слишком трудный.
-  <b>Различение</b> — насколько чаще сильные студенты отвечают верно, чем слабые: хорошо от 0,3; отрицательное значение почти всегда означает ошибку в ключе.
-  Вопросы с замечаниями показаны первыми.</p>
+  <p style="margin:0"><b>{% translate "Как читать." %}</b> <b>{% translate "Трудность" %}</b> {% translate "— доля верных ответов: 0,9 и выше — вопрос слишком лёгкий, 0,2 и ниже — слишком трудный." %}
+  <b>{% translate "Различение" %}</b> {% translate "— насколько чаще сильные студенты отвечают верно, чем слабые: хорошо от 0,3; отрицательное значение почти всегда означает ошибку в ключе. Вопросы с замечаниями показаны первыми." %}</p>
 </div>
 
 {% for s in items %}
 <section class="sheet">
   <div class="sheet-title">
     <div class="index-pair">
-      <span>Трудность <b class="num">{{ s.p }}</b></span>
-      <span>Различение <b class="num">{% if s.d is None %}—{% else %}{{ s.d }}{% endif %}</b></span>
-      <span>Ответили <b class="num">{{ s.answered }}</b></span>
+      <span>{% translate "Трудность" %} <b class="num">{{ s.p }}</b></span>
+      <span>{% translate "Различение" %} <b class="num">{% if s.d is None %}—{% else %}{{ s.d }}{% endif %}</b></span>
+      <span>{% translate "Ответили" %} <b class="num">{{ s.answered }}</b></span>
     </div>
-    <a class="small" href="{% url 'exams:question_edit' s.question_id %}">Изменить вопрос</a>
+    <a class="small" href="{% url 'exams:question_edit' s.question_id %}">{% translate "Изменить вопрос" %}</a>
   </div>
   <div class="q-text" style="font-family:var(--font-read);font-size:1.15rem;margin-bottom:14px">{{ s.text }}</div>
   {% for c in s.choices %}
   <div class="share {% if c.is_correct %}correct{% endif %}">
-    <span class="label-text">{{ c.text }}{% if c.is_correct %} <span class="tag ok">верный</span>{% endif %}</span>
+    <span class="label-text">{{ c.text }}{% if c.is_correct %} <span class="tag ok">{% translate "верный" %}</span>{% endif %}</span>
     <span class="track"><span class="fill" style="display:block;width:{% widthratio c.share 1 100 %}%"></span></span>
     <span class="num right small">{% widthratio c.share 1 100 %}%</span>
   </div>
@@ -31,6 +31,6 @@
   {% for f in s.flags %}<div class="note warning small" style="margin-top:10px">{{ f }}</div>{% endfor %}
 </section>
 {% empty %}
-<div class="empty"><p>Анализ появится, когда студенты завершат тест.</p></div>
+<div class="empty"><p>{% translate "Анализ появится, когда студенты завершат тест." %}</p></div>
 {% endfor %}
 {% endblock %}

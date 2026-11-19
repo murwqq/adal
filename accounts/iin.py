@@ -3,6 +3,7 @@
 ИИН — 12 цифр: ГГММДД + цифра века/пола + 4 цифры + контрольная цифра.
 Контрольная цифра считается по модулю 11 с двумя наборами весов.
 """
+from django.utils.translation import gettext_lazy as _
 from dataclasses import dataclass
 from datetime import date
 
@@ -34,18 +35,18 @@ def parse_iin(raw: str) -> IINInfo:
     """Проверяет ИИН и возвращает дату рождения и пол. Бросает IINError."""
     value = (raw or "").strip()
     if len(value) != IIN_LENGTH or not value.isdigit():
-        raise IINError("ИИН состоит ровно из 12 цифр")
+        raise IINError(_("ИИН состоит ровно из 12 цифр"))
     digits = [int(c) for c in value]
     if checksum(digits[:11]) != digits[11]:
-        raise IINError("Контрольная цифра ИИН не совпадает — проверьте номер")
+        raise IINError(_("Контрольная цифра ИИН не совпадает — проверьте номер"))
     century_digit = digits[6]
     if century_digit not in CENTURY_BY_DIGIT:
-        raise IINError("Седьмая цифра ИИН должна быть от 1 до 6")
+        raise IINError(_("Седьмая цифра ИИН должна быть от 1 до 6"))
     year = CENTURY_BY_DIGIT[century_digit] + int(value[0:2])
     try:
         born = date(year, int(value[2:4]), int(value[4:6]))
     except ValueError as exc:
-        raise IINError("Первые 6 цифр ИИН — некорректная дата рождения") from exc
+        raise IINError(_("Первые 6 цифр ИИН — некорректная дата рождения")) from exc
     return IINInfo(birth_date=born, is_male=century_digit % 2 == 1)
 
 
@@ -54,7 +55,7 @@ def make_valid_iin(prefix11: str) -> str:
     digits = [int(c) for c in prefix11]
     check = checksum(digits)
     if check is None:
-        raise IINError("Для этого префикса ИИН не существует")
+        raise IINError(_("Для этого префикса ИИН не существует"))
     return prefix11 + str(check)
 
 

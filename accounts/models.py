@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.utils import timezone
@@ -10,7 +11,7 @@ class UserManager(BaseUserManager):
 
     def create_user(self, iin, password=None, **extra):
         if not iin:
-            raise ValueError("Нужен ИИН")
+            raise ValueError(_("Нужен ИИН"))
         user = self.model(iin=iin, **extra)
         user.set_password(password)
         user.save(using=self._db)
@@ -27,52 +28,52 @@ class User(AbstractBaseUser, PermissionsMixin):
     """Пользователь входит по ИИН. Роль определяет, что ему доступно."""
 
     class Role(models.TextChoices):
-        STUDENT = "student", "Студент"
-        TEACHER = "teacher", "Преподаватель"
-        ADMIN = "admin", "Администратор"
+        STUDENT = "student", _("Студент")
+        TEACHER = "teacher", _("Преподаватель")
+        ADMIN = "admin", _("Администратор")
 
     class Degree(models.TextChoices):
-        BACHELOR = "bachelor", "Бакалавриат"
-        MASTER = "master", "Магистратура"
-        DOCTOR = "doctor", "Докторантура"
+        BACHELOR = "bachelor", _("Бакалавриат")
+        MASTER = "master", _("Магистратура")
+        DOCTOR = "doctor", _("Докторантура")
 
     class ApplicationType(models.TextChoices):
-        FIRST = "first", "Первое высшее образование"
-        SHORT = "short", "Сокращённая программа (на базе ТиПО)"
-        SECOND = "second", "Второе высшее образование"
+        FIRST = "first", _("Первое высшее образование")
+        SHORT = "short", _("Сокращённая программа (на базе ТиПО)")
+        SECOND = "second", _("Второе высшее образование")
 
     class DocType(models.TextChoices):
-        ID_CARD = "id_card", "Удостоверение личности РК"
-        PASSPORT = "passport", "Паспорт"
-        RESIDENCE = "residence", "Вид на жительство"
+        ID_CARD = "id_card", _("Удостоверение личности РК")
+        PASSPORT = "passport", _("Паспорт")
+        RESIDENCE = "residence", _("Вид на жительство")
 
     class Language(models.TextChoices):
-        KAZAKH = "kk", "Қазақша"
-        RUSSIAN = "ru", "Русский"
+        KAZAKH = "kk", _("Қазақша")
+        RUSSIAN = "ru", _("Русский")
         ENGLISH = "en", "English"
 
-    iin = models.CharField("ИИН", max_length=12, unique=True)
-    first_name = models.CharField("Имя", max_length=80)
-    last_name = models.CharField("Фамилия", max_length=80)
-    patronymic = models.CharField("Отчество", max_length=80, blank=True)
-    email = models.EmailField("Эл. почта", blank=True)
-    role = models.CharField("Роль", max_length=10, choices=Role.choices, default=Role.STUDENT)
-    group = models.CharField("Группа", max_length=30, blank=True)
+    iin = models.CharField(_("ИИН"), max_length=12, unique=True)
+    first_name = models.CharField(_("Имя"), max_length=80)
+    last_name = models.CharField(_("Фамилия"), max_length=80)
+    patronymic = models.CharField(_("Отчество"), max_length=80, blank=True)
+    email = models.EmailField(_("Эл. почта"), blank=True)
+    role = models.CharField(_("Роль"), max_length=10, choices=Role.choices, default=Role.STUDENT)
+    group = models.CharField(_("Группа"), max_length=30, blank=True)
 
     # Поля анкеты абитуриента (как в Platonus)
     interface_language = models.CharField(
-        "Язык интерфейса", max_length=2, choices=Language.choices, default=Language.RUSSIAN)
-    degree = models.CharField("Академическая степень", max_length=10,
+        _("Язык интерфейса"), max_length=2, choices=Language.choices, default=Language.RUSSIAN)
+    degree = models.CharField(_("Академическая степень"), max_length=10,
                               choices=Degree.choices, default=Degree.BACHELOR)
-    application_type = models.CharField("Заявление", max_length=10,
+    application_type = models.CharField(_("Заявление"), max_length=10,
                                         choices=ApplicationType.choices, default=ApplicationType.FIRST)
-    citizenship = models.CharField("Страна", max_length=60, default="Казахстан")
-    doc_type = models.CharField("Документ", max_length=10, choices=DocType.choices,
+    citizenship = models.CharField(_("Страна"), max_length=60, default="Казахстан")
+    doc_type = models.CharField(_("Документ"), max_length=10, choices=DocType.choices,
                                 default=DocType.ID_CARD)
-    doc_number = models.CharField("Номер документа", max_length=20, blank=True)
-    study_language = models.CharField("Язык обучения", max_length=2,
+    doc_number = models.CharField(_("Номер документа"), max_length=20, blank=True)
+    study_language = models.CharField(_("Язык обучения"), max_length=2,
                                       choices=Language.choices, default=Language.KAZAKH)
-    birth_date = models.DateField("Дата рождения", null=True, blank=True)
+    birth_date = models.DateField(_("Дата рождения"), null=True, blank=True)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -84,8 +85,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["first_name", "last_name"]
 
     class Meta:
-        verbose_name = "пользователь"
-        verbose_name_plural = "пользователи"
+        verbose_name = _("пользователь")
+        verbose_name_plural = _("пользователи")
         ordering = ["last_name", "first_name"]
 
     def __str__(self):

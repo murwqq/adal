@@ -187,3 +187,19 @@ def test_student_cannot_touch_foreign_attempt(client, student, other_student, ex
     client.logout()
     login(client, student)
     assert client.get(reverse("exams:attempt_take", args=[attempt.pk])).status_code == 403
+
+
+# ---------- Языки интерфейса ----------
+
+@pytest.mark.parametrize("lang,expected", [("kk", "Адалға кіру"), ("en", "Sign in to Adal"),
+                                           ("ru", "Вход в Адал")])
+def test_language_switch(client, db, lang, expected):
+    r = client.post(reverse("set_language"), {"language": lang, "next": "/accounts/login/"},
+                    follow=True)
+    assert expected in r.content.decode()
+
+
+def test_errors_are_translated(client, student):
+    client.post(reverse("set_language"), {"language": "en", "next": "/"})
+    r = client.post(reverse("accounts:login"), {"iin": student.iin, "password": "wrong"})
+    assert "Wrong IIN or password" in r.content.decode()

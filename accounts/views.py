@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.core.cache import cache
@@ -27,12 +28,12 @@ def login_view(request):
         iin = form.cleaned_data["iin"].strip()
         failures = cache.get(_fail_key(iin), 0)
         if failures >= MAX_FAILED_LOGINS:
-            form.add_error(None, "Слишком много неудачных попыток. Подождите 10 минут.")
+            form.add_error(None, _("Слишком много неудачных попыток. Подождите 10 минут."))
         else:
             user = authenticate(request, iin=iin, password=form.cleaned_data["password"])
             if user is None:
                 cache.set(_fail_key(iin), failures + 1, LOCKOUT_SECONDS)
-                form.add_error(None, "Неверный ИИН или пароль")
+                form.add_error(None, _("Неверный ИИН или пароль"))
             else:
                 cache.delete(_fail_key(iin))
                 login(request, user)
@@ -61,7 +62,7 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-            messages.success(request, "Регистрация завершена. Добро пожаловать!")
+            messages.success(request, _("Регистрация завершена. Добро пожаловать!"))
             return redirect("dashboard")
     return render(request, "accounts/register.html", {"form": form})
 

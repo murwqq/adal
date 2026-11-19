@@ -1,23 +1,24 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% block title %}{{ exam.title }}{% endblock %}
 {% block content %}
 <div class="sheet" style="max-width:760px">
   <h1>{{ exam.title }}</h1>
-  <p class="muted">{{ exam.subject }}. {{ exam.question_count }} вопросов, {{ exam.duration_minutes }} минут. Открыт до {{ exam.closes_at|date:"d.m.Y H:i" }}.</p>
-  <h3 style="margin-top:24px">Перед началом</h3>
+  <p class="muted">{{ exam.subject }}. {% translate "Вопросов" %}: {{ exam.question_count }}, {% translate "минут" %}: {{ exam.duration_minutes }}. {% translate "Открыт до" %} {{ exam.closes_at|date:"d.m.Y H:i" }}.</p>
+  <h3 style="margin-top:24px">{% translate "Перед началом" %}</h3>
   <ol class="rules">
-    <li>Тест откроется во весь экран. Не выходите из полноэкранного режима, не переключайтесь на другие вкладки и программы, не открывайте ИИ-помощников в браузере.</li>
-    <li>Каждое такое действие фиксируется и видно преподавателю. После {{ exam.max_violations }}-го нарушения тест завершится сам, и баллы посчитаются по уже данным ответам.</li>
-    <li>Таймер идёт на сервере: закрыть страницу, чтобы «остановить время», не получится. Ответ сохраняется сразу, как только вы его выбрали.</li>
-    <li>Начать тест можно только один раз.</li>
+    <li>{% translate "Тест откроется во весь экран. Не выходите из полноэкранного режима, не переключайтесь на другие вкладки и программы, не открывайте ИИ-помощников в браузере." %}</li>
+    <li>{% blocktranslate trimmed with max_violations=exam.max_violations %}Каждое такое действие фиксируется и видно преподавателю. После {{ max_violations }}-го нарушения тест завершится сам, и баллы посчитаются по уже данным ответам.{% endblocktranslate %}</li>
+    <li>{% translate "Таймер идёт на сервере: закрыть страницу, чтобы «остановить время», не получится. Ответ сохраняется сразу, как только вы его выбрали." %}</li>
+    <li>{% translate "Начать тест можно только один раз." %}</li>
   </ol>
   {% for e in form.non_field_errors %}<div class="note error" role="alert">{{ e }}</div><br>{% endfor %}
   <form method="post">
     {% csrf_token %}
-    <label for="{{ form.code.id_for_label }}">Код доступа — его называет преподаватель в аудитории</label>
+    <label for="{{ form.code.id_for_label }}">{% translate "Код доступа — его называет преподаватель в аудитории" %}</label>
     <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
       <input class="code-input" type="text" name="code" id="{{ form.code.id_for_label }}" maxlength="12" autocomplete="off" required autofocus>
-      <button class="btn btn-primary btn-lg" type="submit">Начать тест</button>
+      <button class="btn btn-primary btn-lg" type="submit">{% translate "Начать тест" %}</button>
     </div>
   </form>
 </div>

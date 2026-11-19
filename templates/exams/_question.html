@@ -1,21 +1,21 @@
-<div class="q-number" data-position="{{ item.position }}">Вопрос {{ item.position }} из {{ total }}</div>
-<div class="q-body">{{ item.question.text }}{% if item.question.image %}<img src="{{ item.question.image.url }}" alt="Рисунок к вопросу" draggable="false">{% endif %}</div>
+{% load i18n %}{% get_current_language as LANG %}<div class="q-number" data-position="{{ item.position }}">{% blocktranslate trimmed with position=item.position %}Вопрос {{ position }} из {{ total }}{% endblocktranslate %}</div>
+<div class="q-body">{{ item.question.text }}{% if item.question.image %}<img src="{{ item.question.image.url }}" alt="{% translate 'Рисунок к вопросу' %}" draggable="false">{% endif %}</div>
 <fieldset class="answers">
-  <legend class="visually-hidden">Варианты ответа</legend>
+  <legend class="visually-hidden">{% translate "Варианты ответа" %}</legend>
   {% for c in choices %}
   <label class="answer">
     <input type="radio" name="answer" value="{{ c.id }}" {% if item.selected_id == c.id %}checked{% endif %}>
-    <span class="bubble" aria-hidden="true">{% cycle "А" "Б" "В" "Г" "Д" "Е" %}</span>
+    <span class="bubble" aria-hidden="true">{% if LANG == "en" %}{% cycle "A" "B" "C" "D" "E" "F" %}{% else %}{% cycle "А" "Б" "В" "Г" "Д" "Е" %}{% endif %}</span>
     <span>{{ c.text }}</span>
   </label>
   {% endfor %}
 </fieldset>
-<div class="saved-state" id="saved-state" aria-live="polite">{% if item.selected_id %}Ответ сохранён{% endif %}</div>
+<div class="saved-state" id="saved-state" aria-live="polite">{% if item.selected_id %}{% translate "Ответ сохранён" %}{% endif %}</div>
 <div class="q-nav">
-  <button class="btn" type="button" data-go="{{ item.position|add:-1 }}" {% if item.position == 1 %}disabled{% endif %}>Предыдущий вопрос</button>
+  <button class="btn" type="button" data-go="{{ item.position|add:-1 }}" {% if item.position == 1 %}disabled{% endif %}>{% translate "Предыдущий вопрос" %}</button>
   {% if item.position < total %}
-  <button class="btn btn-primary" type="button" data-go="{{ item.position|add:1 }}">Следующий вопрос</button>
+  <button class="btn btn-primary" type="button" data-go="{{ item.position|add:1 }}">{% translate "Следующий вопрос" %}</button>
   {% else %}
-  <button class="btn btn-primary" type="button" data-finish>Завершить тест</button>
+  <button class="btn btn-primary" type="button" data-finish>{% translate "Завершить тест" %}</button>
   {% endif %}
 </div>

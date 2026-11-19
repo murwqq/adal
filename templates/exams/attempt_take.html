@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static i18n %}
 {% block title %}{{ attempt.exam.title }}{% endblock %}
 {% block math %}{% include "_math.html" %}{% endblock %}
 {% block body_class %}exam-body locked{% endblock %}
@@ -8,10 +8,10 @@
   <div class="exam-bar-in">
     <span class="mark" aria-hidden="true"><i></i><i class="on"></i><i></i><i></i></span>
     <div class="title">{{ attempt.exam.title }}<span>{{ user.short_name }}</span></div>
-    <div class="strikes" id="strikes" title="Нарушения" aria-label="Нарушения">
+    <div class="strikes" id="strikes" title="{% translate 'Нарушения' %}" aria-label="{% translate 'Нарушения' %}">
       {% for i in "x"|rjust:attempt.exam.max_violations %}<i {% if forloop.counter <= attempt.violation_count %}class="on"{% endif %}></i>{% endfor %}
     </div>
-    <div class="timer" id="timer" role="timer" aria-live="off"><span>Осталось</span><b id="timer-value" class="num">--:--</b></div>
+    <div class="timer" id="timer" role="timer" aria-live="off"><span>{% translate "Осталось" %}</span><b id="timer-value" class="num">--:--</b></div>
   </div>
 </header>
 {% endblock %}
@@ -19,14 +19,14 @@
 {% block footer %}{% endblock %}
 {% block content %}
 <aside class="palette-box">
-  <h2>Вопросы</h2>
-  <div class="progress">Отвечено <b id="answered-count" class="num">{{ answered|length }}</b> из {{ total }}</div>
+  <h2>{% translate "Вопросы" %}</h2>
+  <div class="progress">{% translate "Отвечено" %} <b id="answered-count" class="num">{{ answered|length }}</b> {% blocktranslate trimmed %}из {{ total }}{% endblocktranslate %}</div>
   <div class="palette" id="palette">
-    {% for n in positions %}<button type="button" data-go="{{ n }}" class="{% if n in answered %}done{% endif %}{% if n == 1 %} current{% endif %}" aria-label="Вопрос {{ n }}">{{ n }}</button>{% endfor %}
+    {% for n in positions %}<button type="button" data-go="{{ n }}" class="{% if n in answered %}done{% endif %}{% if n == 1 %} current{% endif %}" aria-label="{% translate "Вопрос" %} {{ n }}">{{ n }}</button>{% endfor %}
   </div>
-  <div class="palette-legend"><span>без ответа</span><span class="done">отвечен</span></div>
+  <div class="palette-legend"><span>{% translate "без ответа" %}</span><span class="done">{% translate "отвечен" %}</span></div>
   <div class="finish-box">
-    <button class="btn btn-block" type="button" data-finish>Завершить тест</button>
+    <button class="btn btn-block" type="button" data-finish>{% translate "Завершить тест" %}</button>
   </div>
 </aside>
 
@@ -37,25 +37,25 @@
 
 <div class="guard show" id="guard-start" role="dialog" aria-modal="true" aria-labelledby="gs-title">
   <div class="guard-box">
-    <h2 id="gs-title">Тест откроется во весь экран</h2>
-    <p>Пока идёт тест, не выходите из полноэкранного режима и не переключайтесь на другие окна. Нарушений до автоматического завершения: {{ attempt.exam.max_violations }}.</p>
-    <button class="btn btn-primary btn-lg" type="button" id="btn-enter">Начать</button>
+    <h2 id="gs-title">{% translate "Тест откроется во весь экран" %}</h2>
+    <p>{% blocktranslate trimmed with max_violations=attempt.exam.max_violations %}Пока идёт тест, не выходите из полноэкранного режима и не переключайтесь на другие окна. Нарушений до автоматического завершения: {{ max_violations }}.{% endblocktranslate %}</p>
+    <button class="btn btn-primary btn-lg" type="button" id="btn-enter">{% translate "Начать" %}</button>
   </div>
 </div>
 <div class="guard" id="guard-back" role="alertdialog" aria-modal="true" aria-labelledby="gb-title">
   <div class="guard-box alarm">
-    <h2 id="gb-title">Вы покинули тест</h2>
-    <p id="gb-text">Нарушение записано и видно преподавателю.</p>
-    <button class="btn btn-primary btn-lg" type="button" id="btn-return">Вернуться к тесту</button>
+    <h2 id="gb-title">{% translate "Вы покинули тест" %}</h2>
+    <p id="gb-text">{% translate "Нарушение записано и видно преподавателю." %}</p>
+    <button class="btn btn-primary btn-lg" type="button" id="btn-return">{% translate "Вернуться к тесту" %}</button>
   </div>
 </div>
 <div class="guard" id="guard-finish" role="dialog" aria-modal="true" aria-labelledby="gf-title">
   <div class="guard-box">
-    <h2 id="gf-title">Завершить тест?</h2>
+    <h2 id="gf-title">{% translate "Завершить тест?" %}</h2>
     <p id="gf-text"></p>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <button class="btn btn-primary" type="button" id="btn-finish-yes">Завершить и узнать результат</button>
-      <button class="btn" type="button" id="btn-finish-no">Вернуться к вопросам</button>
+      <button class="btn btn-primary" type="button" id="btn-finish-yes">{% translate "Завершить и узнать результат" %}</button>
+      <button class="btn" type="button" id="btn-finish-no">{% translate "Вернуться к вопросам" %}</button>
     </div>
   </div>
 </div>
@@ -75,7 +75,18 @@
       finish: "{% url 'exams:attempt_finish' attempt.pk %}",
       result: "{% url 'exams:attempt_result' attempt.pk %}"
     },
-    csrf: "{{ csrf_token }}"
+    csrf: "{{ csrf_token }}",
+    t: {
+      recorded: "{% filter escapejs %}{% translate "Нарушение записано и видно преподавателю." %}{% endfilter %}",
+      leftBeforeStop: "{% filter escapejs %}{% translate "До автоматического завершения теста осталось нарушений:" %}{% endfilter %}",
+      saving: "{% filter escapejs %}{% translate "Сохраняем…" %}{% endfilter %}",
+      saved: "{% filter escapejs %}{% translate "Ответ сохранён" %}{% endfilter %}",
+      notSaved: "{% filter escapejs %}{% translate "Ответ не сохранён — выберите ещё раз" %}{% endfilter %}",
+      offline: "{% filter escapejs %}{% translate "Нет связи с сервером — выберите ответ ещё раз" %}{% endfilter %}",
+      unanswered: "{% filter escapejs %}{% translate "Без ответа осталось вопросов:" %}{% endfilter %}",
+      allAnswered: "{% filter escapejs %}{% translate "Вы ответили на все вопросы." %}{% endfilter %}",
+      noChanges: "{% filter escapejs %}{% translate "После завершения изменить ответы нельзя." %}{% endfilter %}"
+    }
   };
 </script>
 <script src="{% static 'js/exam.js' %}"></script>

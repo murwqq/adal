@@ -1,19 +1,20 @@
 {% extends "base.html" %}
-{% block title %}{% if exam %}Настройки теста{% else %}Новый тест{% endif %}{% endblock %}
+{% load i18n %}
+{% block title %}{% if exam %}{% translate "Настройки теста" %}{% else %}{% translate "Новый тест" %}{% endif %}{% endblock %}
 {% block content %}
 <div class="page-head">
   <div>
-    <h1>{% if exam %}Настройки теста{% else %}Новый тест{% endif %}</h1>
-    <p class="muted">Каждый студент получит свой случайный вариант из банка вопросов.</p>
+    <h1>{% if exam %}{% translate "Настройки теста" %}{% else %}{% translate "Новый тест" %}{% endif %}</h1>
+    <p class="muted">{% translate "Каждый студент получит свой случайный вариант из банка вопросов." %}</p>
   </div>
-  <a class="btn btn-quiet" href="{% if exam %}{% url 'exams:exam_results' exam.pk %}{% else %}{% url 'exams:exam_list' %}{% endif %}">Отмена</a>
+  <a class="btn btn-quiet" href="{% if exam %}{% url 'exams:exam_results' exam.pk %}{% else %}{% url 'exams:exam_list' %}{% endif %}">{% translate "Отмена" %}</a>
 </div>
 {% for e in form.non_field_errors %}<div class="note error">{{ e }}</div><br>{% endfor %}
 <form method="post" class="cols">
   {% csrf_token %}
   <div>
     <section class="sheet">
-      <h3>Содержание</h3>
+      <h3>{% translate "Содержание" %}</h3>
       {% include "_field.html" with field=form.title %}
       <div class="grid-2">
         {% include "_field.html" with field=form.subject %}
@@ -25,7 +26,7 @@
       </div>
     </section>
     <section class="sheet">
-      <h3>Когда и кто</h3>
+      <h3>{% translate "Когда и кто" %}</h3>
       <div class="grid-2">
         {% include "_field.html" with field=form.opens_at %}
         {% include "_field.html" with field=form.closes_at %}
@@ -35,13 +36,13 @@
   </div>
   <aside>
     <section class="sheet">
-      <h3>Защита от списывания</h3>
+      <h3>{% translate "Защита от списывания" %}</h3>
       {% include "_field.html" with field=form.access_code %}
       {% include "_field.html" with field=form.max_violations %}
       {% include "_field.html" with field=form.allowed_ip_prefix %}
       {% include "_field.html" with field=form.show_review %}
       {% include "_field.html" with field=form.is_published %}
-      <button class="btn btn-primary btn-block btn-lg" type="submit">Сохранить тест</button>
+      <button class="btn btn-primary btn-block btn-lg" type="submit">{% translate "Сохранить тест" %}</button>
     </section>
   </aside>
 </form>

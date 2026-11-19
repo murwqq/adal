@@ -1,27 +1,28 @@
 {% extends "accounts/auth_base.html" %}
-{% block title %}Вход{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Вход" %}{% endblock %}
 {% block auth %}
-<h2>Вход в Адал</h2>
+<h2>{% translate "Вход в Адал" %}</h2>
 {% for e in form.non_field_errors %}<div class="note error" role="alert" style="margin-bottom:20px">{{ e }}</div>{% endfor %}
 <form method="post" novalidate>
   {% csrf_token %}
   <div class="field">
-    <label for="{{ form.iin.id_for_label }}">ИИН</label>
+    <label for="{{ form.iin.id_for_label }}">{% translate "ИИН" %}</label>
     {{ form.iin }}
     {% for e in form.iin.errors %}<p class="error">{{ e }}</p>{% endfor %}
   </div>
   <div class="field">
     <div class="field-row">
-      <label for="{{ form.password.id_for_label }}">Пароль</label>
-      <a href="#forgot" onclick="document.getElementById('forgot').hidden=false;return false">Забыли пароль?</a>
+      <label for="{{ form.password.id_for_label }}">{% translate "Пароль" %}</label>
+      <a href="#forgot" onclick="document.getElementById('forgot').hidden=false;return false">{% translate "Забыли пароль?" %}</a>
     </div>
     {{ form.password }}
     {% for e in form.password.errors %}<p class="error">{{ e }}</p>{% endfor %}
-    <p class="help" id="forgot" hidden>Пароль сбрасывает офис регистратора — подойдите с удостоверением личности.</p>
+    <p class="help" id="forgot" hidden>{% translate "Пароль сбрасывает офис регистратора — подойдите с удостоверением личности." %}</p>
   </div>
-  <button class="btn btn-primary btn-lg btn-block" type="submit">Войти</button>
+  <button class="btn btn-primary btn-lg btn-block" type="submit">{% translate "Войти" %}</button>
 </form>
 <div class="auth-switch">
-  <p>Поступаете к нам? <a href="{% url 'accounts:register' %}">Создать аккаунт абитуриента</a></p>
+  <p>{% translate "Поступаете к нам?" %} <a href="{% url 'accounts:register' %}">{% translate "Создать аккаунт абитуриента" %}</a></p>
 </div>
 {% endblock %}

@@ -1,4 +1,5 @@
 """Веб-слой: принимает запрос, вызывает services и показывает результат."""
+from django.utils.translation import gettext_lazy as _
 import csv
 import json
 from functools import wraps
@@ -75,9 +76,9 @@ def subject_create(request):
     form = SubjectForm(request.POST)
     if form.is_valid():
         form.save()
-        messages.success(request, f"Дисциплина «{form.instance.name}» добавлена")
+        messages.success(request, _("Дисциплина «%(name)s» добавлена") % {"name": form.instance.name})
     else:
-        messages.error(request, "Такая дисциплина уже есть или название пустое")
+        messages.error(request, _("Такая дисциплина уже есть или название пустое"))
     return redirect("dashboard")
 
 
@@ -114,7 +115,7 @@ def question_edit(request, pk=None):
         d = form.cleaned_data
         image = d["image"].read() if d.get("image") else None
         if image:
-            image, _ = normalize_image(image)
+            image, _image_warnings = normalize_image(image)
         try:
             saved, warnings = services.save_question(
                 subject=d["subject"], author=request.user, text=d["text"],
@@ -125,7 +126,7 @@ def question_edit(request, pk=None):
         else:
             for w in warnings:
                 messages.warning(request, w)
-            messages.success(request, "Вопрос сохранён")
+            messages.success(request, _("Вопрос сохранён"))
             if "add_another" in request.POST:
                 return redirect("exams:question_new")
             return redirect("exams:question_list")
@@ -182,9 +183,8 @@ def exam_edit(request, pk=None):
         exam.save()
         pool = services.question_pool(exam).count()
         if pool < exam.question_count:
-            messages.warning(request, f"В банке только {pool} подходящих вопросов, а в варианте "
-                                      f"{exam.question_count}. Студенты не смогут начать тест")
-        messages.success(request, "Тест сохранён")
+            messages.warning(request, _("В банке только %(pool)s подходящих вопросов, а в варианте %(count)s. Студенты не смогут начать тест") % {"pool": pool, "count": exam.question_count})
+        messages.success(request, _("Тест сохранён"))
         return redirect("exams:exam_results", pk=exam.pk)
     return render(request, "exams/exam_form.html", {"form": form, "exam": exam})
 
@@ -225,7 +225,7 @@ def _results_csv(exam, qs):
     response["Content-Disposition"] = f'attachment; filename="results_{exam.pk}.csv"'
     response.write("﻿")  # чтобы Excel открыл кириллицу
     writer = csv.writer(response, delimiter=";")
-    writer.writerow(["ФИО", "Группа", "Баллы", "Из", "%", "Статус", "Нарушения", "Начал"])
+    writer.writerow([_("ФИО"), _("Группа"), _("Баллы"), _("Из"), "%", _("Статус"), _("Нарушения"), _("Начал")])
     for a in qs:
         writer.writerow([a.student.full_name, a.student.group, a.score, a.max_score, a.percent,
                          a.get_status_display(), a.violation_count,
@@ -290,11 +290,10 @@ def attempt_manage(request, pk):
     try:
         if action == "resume":
             services.allow_resume(attempt)
-            messages.success(request, f"{attempt.student.short_name} может войти заново "
-                                      "и продолжить тест")
+            messages.success(request, _("%(name)s может войти заново и продолжить тест") % {"name": attempt.student.short_name})
         elif action == "stop":
             services.finish_attempt(attempt, status=Attempt.Status.TERMINATED)
-            messages.success(request, f"Попытка {attempt.student.short_name} остановлена")
+            messages.success(request, _("Попытка %(name)s остановлена") % {"name": attempt.student.short_name})
     except ExamError as exc:
         messages.error(request, str(exc))
     return redirect("exams:attempt_detail", pk=pk)
@@ -368,7 +367,7 @@ def attempt_take(request, pk):
                          .values_list("position", flat=True)),
         "positions": range(1, attempt.max_score + 1),
         "seconds_left": services.seconds_left(attempt),
-        "watermark": f"{request.user.short_name} · {request.user.masked_iin}",
+        "watermark": f"{request.user.short_name}, {request.user.masked_iin}",
     })
     return render(request, "exams/attempt_take.html", ctx)
 

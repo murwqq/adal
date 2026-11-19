@@ -1,4 +1,4 @@
-<div class="field">
+{% load i18n %}<div class="field">
   {% if field.field.widget.input_type == "checkbox" %}
   <label class="check">{{ field }} <span>{{ field.label }}</span></label>
   {% else %}

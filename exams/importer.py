@@ -15,6 +15,7 @@
   предупреждает о слишком мелких, нечитаемых изображениях;
 * убирает нумерацию «A)», «1.» в начале вариантов — порядок всё равно перемешивается.
 """
+from django.utils.translation import gettext_lazy as _
 import io
 import re
 import zipfile
@@ -212,7 +213,7 @@ def read_docx(data: bytes) -> list[Segment]:
     try:
         document = docx.Document(io.BytesIO(data))
     except (PackageNotFoundError, zipfile.BadZipFile, KeyError, ValueError) as exc:
-        raise ImportError_("Файл не похож на документ Word (.docx)") from exc
+        raise ImportError_(_("Файл не похож на документ Word (.docx)")) from exc
     body = document.element.body
     segments = []
     for p in body.iter(W + "p"):
@@ -228,7 +229,7 @@ def read_text(data: bytes) -> list[Segment]:
         except UnicodeDecodeError:
             continue
     else:
-        raise ImportError_("Не удалось определить кодировку текстового файла")
+        raise ImportError_(_("Не удалось определить кодировку текстового файла"))
     return [Segment(line) for line in text.splitlines()]
 
 
@@ -271,7 +272,7 @@ def parse_segments(segments: list[Segment]) -> tuple[list[ImportedQuestion], lis
                 target = "question"
             elif VARIANT_TAG.fullmatch(tag):
                 if current is None:
-                    errors.append("Найден <variant> до первого <question> — пропущен")
+                    errors.append(_("Найден <variant> до первого <question> — пропущен"))
                     target = None
                     continue
                 current.choices.append(("", not current.choices))
@@ -295,8 +296,7 @@ def parse_segments(segments: list[Segment]) -> tuple[list[ImportedQuestion], lis
             current.styled_choices[-1] = current.styled_choices[-1] or styled
             if images:
                 current.warnings.append(
-                    "Картинка внутри варианта ответа не переносится — напишите вариант "
-                    "текстом или формулой $…$")
+                    _("Картинка внутри варианта ответа не переносится — напишите вариант текстом или формулой $…$"))
     return questions, errors
 
 
@@ -307,10 +307,9 @@ def finalize(questions: list[ImportedQuestion]) -> list[ImportedQuestion]:
         q.choices = [(strip_list_marker(clean_text(t)), ok) for t, ok in q.choices]
         if any(q.styled_choices):
             if q.styled_choices and q.styled_choices[0] and not all(q.styled_choices):
-                q.warnings.append("В файле правильный ответ был выделен (жирный/цвет/курсив). "
-                                  "Выделение удалено — на платформе все варианты выглядят одинаково")
+                q.warnings.append(_("В файле правильный ответ был выделен (жирный/цвет/курсив). Выделение удалено — на платформе все варианты выглядят одинаково"))
             else:
-                q.warnings.append("Оформление вариантов (жирный, курсив, цвет) удалено")
+                q.warnings.append(_("Оформление вариантов (жирный, курсив, цвет) удалено"))
         if q.image is not None:
             q.image, image_warnings = normalize_image(q.image)
             q.warnings.extend(image_warnings)
@@ -323,12 +322,10 @@ def normalize_image(blob: bytes) -> tuple[bytes | None, list[str]]:
         img = Image.open(io.BytesIO(blob))
         img.load()
     except (UnidentifiedImageError, OSError):
-        return None, ["Картинку не удалось прочитать (формат WMF/EMF?) — вставьте её как PNG "
-                      "или наберите формулу в редакторе формул"]
+        return None, [_("Картинку не удалось прочитать (формат WMF/EMF?) — вставьте её как PNG или наберите формулу в редакторе формул")]
     warnings = []
     if img.width < MIN_READABLE_WIDTH or img.height < MIN_READABLE_HEIGHT:
-        warnings.append(f"Картинка слишком мелкая ({img.width}×{img.height} px) и может "
-                        "быть нечитаемой. Если это формула — наберите её через $…$")
+        warnings.append(_("Картинка слишком мелкая (%(w)s×%(h)s px) и может быть нечитаемой. Если это формула — наберите её через $…$") % {"w": img.width, "h": img.height})
     if img.mode not in ("RGB", "RGBA", "L"):
         img = img.convert("RGBA")
     if img.width > MAX_IMAGE_WIDTH:
@@ -347,8 +344,8 @@ def import_file(filename: str, data: bytes) -> tuple[list[ImportedQuestion], lis
     elif name.endswith(".txt"):
         segments = read_text(data)
     else:
-        raise ImportError_("Поддерживаются файлы .docx и .txt")
+        raise ImportError_(_("Поддерживаются файлы .docx и .txt"))
     questions, errors = parse_segments(segments)
     if not questions:
-        errors.append("В файле не найдено ни одного тега <question>")
+        errors.append(_("В файле не найдено ни одного тега <question>"))
     return finalize(questions), errors

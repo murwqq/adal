@@ -1,3 +1,5 @@
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language, gettext_noop
 from django import forms
 from django.contrib.auth import password_validation
 
@@ -6,21 +8,29 @@ from .iin import IINError, parse_iin
 from .models import User
 
 COUNTRIES = [
-    "Казахстан", "Узбекистан", "Кыргызстан", "Россия", "Туркменистан",
-    "Таджикистан", "Монголия", "Китай", "Турция", "Другая страна",
+    gettext_noop("Казахстан"),
+    gettext_noop("Узбекистан"),
+    gettext_noop("Кыргызстан"),
+    gettext_noop("Россия"),
+    gettext_noop("Туркменистан"),
+    gettext_noop("Таджикистан"),
+    gettext_noop("Монголия"),
+    gettext_noop("Китай"),
+    gettext_noop("Турция"),
+    gettext_noop("Другая страна"),
 ]
 
 
 class LoginForm(forms.Form):
     iin = forms.CharField(
-        label="ИИН", max_length=12,
+        label=_("ИИН"), max_length=12,
         widget=forms.TextInput(attrs={
             "inputmode": "numeric", "autocomplete": "username",
             "pattern": r"\d{12}", "autofocus": True,
         }),
     )
     password = forms.CharField(
-        label="Пароль",
+        label=_("Пароль"),
         widget=forms.PasswordInput(attrs={"autocomplete": "current-password"}),
     )
 
@@ -28,39 +38,38 @@ class LoginForm(forms.Form):
 class RegistrationForm(forms.ModelForm):
     """Анкета абитуриента — набор полей повторяет регистрацию в Platonus."""
 
-    citizenship = forms.ChoiceField(label="Гражданство", choices=[(c, c) for c in COUNTRIES])
+    citizenship = forms.ChoiceField(label=_("Гражданство"), choices=[(c, _(c)) for c in COUNTRIES])
     password1 = forms.CharField(
-        label="Пароль", widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
-        help_text="Не короче 8 символов, не только цифры.",
+        label=_("Пароль"), widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
+        help_text=_("Не короче 8 символов, не только цифры."),
     )
     password2 = forms.CharField(
-        label="Пароль ещё раз", widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
+        label=_("Пароль ещё раз"), widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
     )
-    captcha = forms.CharField(label="Символы с картинки", max_length=8,
+    captcha = forms.CharField(label=_("Символы с картинки"), max_length=8,
                               widget=forms.TextInput(attrs={"autocomplete": "off"}))
     terms = forms.BooleanField(
-        label="Я принимаю правила и условия платформы",
-        error_messages={"required": "Без согласия с правилами регистрация невозможна"},
+        label=_("Я принимаю правила и условия платформы"),
+        error_messages={"required": _("Без согласия с правилами регистрация невозможна")},
     )
 
     class Meta:
         model = User
         fields = [
-            "interface_language", "degree", "application_type", "citizenship",
+            "degree", "application_type", "citizenship",
             "doc_type", "doc_number", "study_language", "iin",
             "last_name", "first_name", "patronymic", "email",
         ]
         widgets = {
             "iin": forms.TextInput(attrs={"inputmode": "numeric", "pattern": r"\d{12}",
                                           "maxlength": 12, "autocomplete": "off"}),
-            "interface_language": forms.RadioSelect,
             "email": forms.EmailInput(attrs={"autocomplete": "email"}),
         }
         labels = {
-            "patronymic": "Отчество",
-            "application_type": "Форма поступления",
-            "citizenship": "Гражданство",
-            "doc_type": "Документ",
+            "patronymic": _("Отчество"),
+            "application_type": _("Форма поступления"),
+            "citizenship": _("Гражданство"),
+            "doc_type": _("Документ"),
         }
 
     def __init__(self, *args, expected_captcha=None, **kwargs):
@@ -76,20 +85,20 @@ class RegistrationForm(forms.ModelForm):
         except IINError as exc:
             raise forms.ValidationError(str(exc)) from exc
         if User.objects.filter(iin=value).exists():
-            raise forms.ValidationError("Пользователь с таким ИИН уже зарегистрирован")
+            raise forms.ValidationError(_("Пользователь с таким ИИН уже зарегистрирован"))
         return value
 
     def clean_captcha(self):
         value = self.cleaned_data["captcha"]
         if not captcha.check(self.expected_captcha, value):
-            raise forms.ValidationError("Символы не совпадают — введите код с новой картинки")
+            raise forms.ValidationError(_("Символы не совпадают — введите код с новой картинки"))
         return value
 
     def clean(self):
         data = super().clean()
         p1, p2 = data.get("password1"), data.get("password2")
         if p1 and p2 and p1 != p2:
-            self.add_error("password2", "Пароли не совпадают")
+            self.add_error("password2", _("Пароли не совпадают"))
         if p1:
             try:
                 password_validation.validate_password(p1)
@@ -100,6 +109,7 @@ class RegistrationForm(forms.ModelForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.role = User.Role.STUDENT
+        user.interface_language = (get_language() or "ru")[:2]
         user.birth_date = self.iin_info.birth_date
         user.set_password(self.cleaned_data["password1"])
         if commit:

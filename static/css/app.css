@@ -196,13 +196,13 @@ input[type=checkbox], input[type=radio] { width: 20px; height: 20px; accent-colo
 .optional { font-weight: 400; color: var(--ink-3); }
 
 .lang-switch { display: inline-flex; border: 1.5px solid var(--rule-strong); border-radius: var(--r-s);
-  overflow: hidden; }
-.lang-switch label { margin: 0; font-weight: 500; }
-.lang-switch input { position: absolute; opacity: 0; }
-.lang-switch span { display: block; padding: 7px 14px; cursor: pointer; font-size: var(--step--1); color: var(--ink-2); }
-.lang-switch label + label span { border-left: 1.5px solid var(--rule-strong); }
-.lang-switch input:checked + span { background: var(--graphite); color: #fff; }
-.lang-switch input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: -3px; }
+  overflow: hidden; margin: 0; }
+.lang-switch button { border: 0; background: transparent; padding: 6px 12px; cursor: pointer;
+  font: 500 var(--step--1)/1.2 var(--font-ui); color: var(--ink-2); }
+.lang-switch button + button { border-left: 1.5px solid var(--rule-strong); }
+.lang-switch button:hover { color: var(--ink); background: var(--paper); }
+.lang-switch button[aria-pressed="true"] { background: var(--graphite); color: #fff; }
+.auth-lang { display: flex; justify-content: flex-end; margin-bottom: 40px; }
 .box-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 28px; }
 .box-head h2 { margin: 0; }
 

@@ -1,5 +1,6 @@
 """Бизнес-логика тестирования. Не зависит от HTTP: её можно вызвать
 из веб-интерфейса, из консоли или из тестов (раздел 5.3 пособия)."""
+from django.utils.translation import gettext_lazy as _
 import random
 import secrets
 from dataclasses import dataclass
@@ -29,10 +30,10 @@ class ExamError(Exception):
 # ---------- Банк вопросов ----------
 
 BLOCKING_PROBLEMS = (
-    "Пустой текст вопроса",
-    "Нужно минимум два варианта ответа",
-    "Должен быть ровно один правильный ответ",
-    "Есть одинаковые варианты ответа",
+    _("Пустой текст вопроса"),
+    _("Нужно минимум два варианта ответа"),
+    _("Должен быть ровно один правильный ответ"),
+    _("Есть одинаковые варианты ответа"),
 )
 
 
@@ -42,7 +43,7 @@ def validate_question(text: str, choices: list[tuple[str, bool]]) -> list[str]:
     problems = lint_question(text, choices)
     blocking = [p for p in problems if p in BLOCKING_PROBLEMS]
     if blocking:
-        raise ExamError("; ".join(blocking))
+        raise ExamError("; ".join(str(p) for p in blocking))
     return problems
 
 
@@ -66,8 +67,7 @@ def save_question(*, subject, author, text: str, choices: list[tuple[str, bool]]
         # Варианты уже попадали студентам — меняем текст, но не ломаем историю ответов.
         existing = list(question.choices.all())
         if len(existing) != len(choices):
-            raise ExamError("Вопрос уже был в тестах: число вариантов менять нельзя. "
-                            "Создайте новый вопрос")
+            raise ExamError(_("Вопрос уже был в тестах: число вариантов менять нельзя. Создайте новый вопрос"))
         for choice, (t, ok) in zip(existing, choices):
             choice.text, choice.is_correct = t, ok
             choice.save()
@@ -88,7 +88,7 @@ def save_imported(items, *, subject, author, difficulty: int = 2) -> tuple[int, 
                           image=item.image)
             saved += 1
         except ExamError as exc:
-            errors.append(f"Вопрос {number}: {exc}")
+            errors.append(_("Вопрос %(n)s: %(error)s") % {"n": number, "error": exc})
     return saved, errors
 
 
@@ -97,9 +97,9 @@ def delete_question(question: Question) -> str:
     if question.attempt_items.exists():
         question.is_active = False
         question.save(update_fields=["is_active"])
-        return "Вопрос уже был в тестах, поэтому он скрыт из банка, а статистика сохранена"
+        return _("Вопрос уже был в тестах, поэтому он скрыт из банка, а статистика сохранена")
     question.delete()
-    return "Вопрос удалён"
+    return _("Вопрос удалён")
 
 
 # ---------- Доступ к тесту ----------
@@ -108,19 +108,19 @@ def check_access(exam: Exam, student, *, code: str, ip: str | None, now=None) ->
     """Проверяет, может ли студент начать тест. Бросает ExamError."""
     now = now or timezone.now()
     if not exam.is_published:
-        raise ExamError("Тест ещё не опубликован")
+        raise ExamError(_("Тест ещё не опубликован"))
     if now < exam.opens_at:
-        raise ExamError("Тест ещё не открыт")
+        raise ExamError(_("Тест ещё не открыт"))
     if now > exam.closes_at:
-        raise ExamError("Время для прохождения теста закончилось")
+        raise ExamError(_("Время для прохождения теста закончилось"))
     groups = exam.group_list
     if groups and (student.group or "").strip().upper() not in groups:
-        raise ExamError("Этот тест назначен другой группе")
+        raise ExamError(_("Этот тест назначен другой группе"))
     if not secrets.compare_digest((code or "").strip().upper(), exam.access_code.strip().upper()):
-        raise ExamError("Неверный код доступа. Его называет преподаватель в аудитории")
+        raise ExamError(_("Неверный код доступа. Его называет преподаватель в аудитории"))
     prefix = exam.allowed_ip_prefix.strip()
     if prefix and not (ip or "").startswith(prefix):
-        raise ExamError("Тест можно проходить только с компьютеров учебной аудитории")
+        raise ExamError(_("Тест можно проходить только с компьютеров учебной аудитории"))
 
 
 def question_pool(exam: Exam) -> QuerySet:
@@ -137,9 +137,9 @@ def build_variant(question_ids: list[int], choice_ids: dict[int, list[int]],
     """Чистая функция: из банка выбирает `count` вопросов в случайном порядке
     и перемешивает варианты ответов. Одинаковый seed — одинаковый результат."""
     if count <= 0:
-        raise ExamError("В варианте должен быть хотя бы один вопрос")
+        raise ExamError(_("В варианте должен быть хотя бы один вопрос"))
     if len(question_ids) < count:
-        raise ExamError(f"В банке {len(question_ids)} подходящих вопросов, а нужно {count}")
+        raise ExamError(_("В банке %(have)s подходящих вопросов, а нужно %(need)s") % {"have": len(question_ids), "need": count})
     rnd = random.Random(seed)
     picked = rnd.sample(sorted(question_ids), count)
     variant = []
@@ -172,7 +172,7 @@ def start_attempt(exam: Exam, student, *, session_key: str, ip: str | None,
             session_key=session_key, ip_address=ip, last_seen_at=now, max_score=len(variant),
         )
     except IntegrityError as exc:
-        raise ExamError("Попытка уже создана") from exc
+        raise ExamError(_("Попытка уже создана")) from exc
     AttemptItem.objects.bulk_create(
         AttemptItem(attempt=attempt, question_id=qid, position=i, choice_order=order)
         for i, (qid, order) in enumerate(variant, start=1)
@@ -194,7 +194,7 @@ def ensure_active(attempt: Attempt, now=None) -> None:
             seconds=GRACE_SECONDS):
         finish_attempt(attempt, status=Attempt.Status.EXPIRED, now=now)
     if attempt.status != Attempt.Status.ACTIVE:
-        raise ExamError("Тест уже завершён")
+        raise ExamError(_("Тест уже завершён"))
 
 
 def ensure_same_session(attempt: Attempt, session_key: str) -> None:
@@ -206,7 +206,7 @@ def ensure_same_session(attempt: Attempt, session_key: str) -> None:
         return
     if attempt.session_key != session_key:
         register_violation(attempt, Violation.Kind.OTHER_SESSION)
-        raise ExamError("Тест уже открыт в другом браузере. Об этом сообщено преподавателю")
+        raise ExamError(_("Тест уже открыт в другом браузере. Об этом сообщено преподавателю"))
 
 
 def save_answer(attempt: Attempt, position: int, choice_id: int | None, now=None) -> AttemptItem:
@@ -215,9 +215,9 @@ def save_answer(attempt: Attempt, position: int, choice_id: int | None, now=None
     try:
         item = attempt.items.get(position=position)
     except AttemptItem.DoesNotExist as exc:
-        raise ExamError("Такого вопроса нет в вашем варианте") from exc
+        raise ExamError(_("Такого вопроса нет в вашем варианте")) from exc
     if choice_id is not None and choice_id not in item.choice_order:
-        raise ExamError("Такого варианта ответа нет у этого вопроса")
+        raise ExamError(_("Такого варианта ответа нет у этого вопроса"))
     item.selected_id = choice_id
     item.answered_at = now if choice_id else None
     item.save(update_fields=["selected", "answered_at"])
@@ -250,7 +250,7 @@ def register_violation(attempt: Attempt, kind: str, now=None) -> bool:
     Повторы в течение пары секунд (blur + visibilitychange) считаются одним."""
     now = now or timezone.now()
     if kind not in Violation.Kind.values:
-        raise ExamError("Неизвестный тип нарушения")
+        raise ExamError(_("Неизвестный тип нарушения"))
     if attempt.status != Attempt.Status.ACTIVE:
         return attempt.status == Attempt.Status.TERMINATED
     recent = attempt.violations.filter(
@@ -269,7 +269,7 @@ def register_violation(attempt: Attempt, kind: str, now=None) -> bool:
 def allow_resume(attempt: Attempt) -> None:
     """Преподаватель разрешает продолжить тест в другом браузере (например, после сбоя ПК)."""
     if attempt.status != Attempt.Status.ACTIVE:
-        raise ExamError("Попытка уже завершена")
+        raise ExamError(_("Попытка уже завершена"))
     attempt.session_key = ""
     attempt.save(update_fields=["session_key"])
 
@@ -292,22 +292,22 @@ class SortOption:
 
 QUESTION_SORTS = {
     s.key: s for s in (
-        SortOption("new", "Сначала новые", ("-created_at",)),
-        SortOption("old", "Сначала старые", ("created_at",)),
-        SortOption("hard", "Сначала сложные", ("-difficulty", "-created_at")),
-        SortOption("easy", "Сначала лёгкие", ("difficulty", "-created_at")),
-        SortOption("used", "Чаще всего в тестах", ("-times_used", "-created_at")),
-        SortOption("weak", "Хуже всего решают", ("solve_rate", "-times_used")),
+        SortOption("new", _("Сначала новые"), ("-created_at",)),
+        SortOption("old", _("Сначала старые"), ("created_at",)),
+        SortOption("hard", _("Сначала сложные"), ("-difficulty", "-created_at")),
+        SortOption("easy", _("Сначала лёгкие"), ("difficulty", "-created_at")),
+        SortOption("used", _("Чаще всего в тестах"), ("-times_used", "-created_at")),
+        SortOption("weak", _("Хуже всего решают"), ("solve_rate", "-times_used")),
     )
 }
 
 RESULT_SORTS = {
     s.key: s for s in (
-        SortOption("score_desc", "Сначала высокий балл", ("-score", "student__last_name")),
-        SortOption("score_asc", "Сначала низкий балл", ("score", "student__last_name")),
-        SortOption("name", "По фамилии", ("student__last_name", "student__first_name")),
-        SortOption("violations", "Больше нарушений", ("-violation_count", "student__last_name")),
-        SortOption("recent", "Последние начавшие", ("-started_at",)),
+        SortOption("score_desc", _("Сначала высокий балл"), ("-score", "student__last_name")),
+        SortOption("score_asc", _("Сначала низкий балл"), ("score", "student__last_name")),
+        SortOption("name", _("По фамилии"), ("student__last_name", "student__first_name")),
+        SortOption("violations", _("Больше нарушений"), ("-violation_count", "student__last_name")),
+        SortOption("recent", _("Последние начавшие"), ("-started_at",)),
     )
 }
 

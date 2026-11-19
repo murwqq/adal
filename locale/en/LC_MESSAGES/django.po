@@ -1,0 +1,1506 @@
+#
+msgid ""
+msgstr ""
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid " из "
+msgstr " of "
+
+msgid "%(duration_minutes)s мин"
+msgstr "%(duration_minutes)s min"
+
+msgid "%(name)s может войти заново и продолжить тест"
+msgstr "%(name)s can sign in again and continue the test"
+
+msgid "%(number)s из %(num_pages)s"
+msgstr "%(number)s of %(num_pages)s"
+
+msgid "%(question_count)s вопросов"
+msgstr "%(question_count)s questions"
+
+msgid "%(score)s из %(max_score)s"
+msgstr "%(score)s of %(max_score)s"
+
+msgid ", без ответа"
+msgstr ", unanswered"
+
+msgid ", группы %(groups)s"
+msgstr ", groups %(groups)s"
+
+msgid ", каждые 5 секунд"
+msgstr ", every 5 seconds"
+
+msgid ", с замечаниями:"
+msgstr ", with warnings:"
+
+msgid ", сохранено:"
+msgstr ", saved:"
+
+msgid ", тема «%(topic)s»"
+msgstr ", topic “%(topic)s”"
+
+msgid ". %(question_count)s вопросов, %(duration_minutes)s мин. Код доступа"
+msgstr ". %(question_count)s questions, %(duration_minutes)s min. Access code"
+
+msgid ". Для формулы отдельной строкой — двойные:"
+msgstr ". For a formula on its own line, use double ones:"
+
+msgid ""
+". Формулы, набранные в редакторе формул Word, при загрузке файла переводятся"
+" автоматически."
+msgstr ""
+". Formulas typed in Word's equation editor are converted automatically when "
+"you import a file."
+
+msgid "© 2026 Адал. Кызылординский университет имени Коркыт Ата"
+msgstr "© 2026 Adal. Korkyt Ata Kyzylorda University"
+
+msgid "Автор"
+msgstr "Author"
+
+msgid "Адал"
+msgstr "Adal"
+
+msgid "Адал — на главную"
+msgstr "Adal — home"
+
+msgid "Администратор"
+msgstr "Administrator"
+
+msgid "Администрирование"
+msgstr "Administration"
+
+msgid "Академическая степень"
+msgstr "Academic degree"
+
+msgid "Анализ"
+msgstr "Analysis"
+
+msgid "Анализ вопросов"
+msgstr "Question analysis"
+
+msgid "Анализ появится, когда студенты завершат тест."
+msgstr "Analysis appears once students finish the test."
+
+msgid "Бакалавриат"
+msgstr "Bachelor's"
+
+msgid "Баллы"
+msgstr "Score"
+
+msgid "Банк вопросов"
+msgstr "Question bank"
+
+msgid "Без ответа осталось вопросов:"
+msgstr "Questions left unanswered:"
+
+msgid "Без согласия с правилами регистрация невозможна"
+msgstr "You must accept the terms to sign up"
+
+msgid "Больше нарушений"
+msgstr "Most violations"
+
+msgid "В банке"
+msgstr "In bank"
+
+msgid "В банке %(bank_size)s ваших вопросов."
+msgstr "You have %(bank_size)s questions in the bank."
+
+msgid "В банке %(have)s подходящих вопросов, а нужно %(need)s"
+msgstr "The bank has %(have)s suitable questions, but %(need)s are needed"
+
+msgid ""
+"В банке %(pool)s подходящих вопросов, а в варианте должно быть "
+"%(question_count)s. Добавьте вопросы, иначе студенты не смогут начать тест."
+msgstr ""
+"The bank has %(pool)s suitable questions but a variant needs "
+"%(question_count)s. Add questions or students won't be able to start."
+
+msgid ""
+"В банке только %(pool)s подходящих вопросов, а в варианте %(count)s. "
+"Студенты не смогут начать тест"
+msgstr ""
+"The bank has only %(pool)s suitable questions but a variant needs %(count)s."
+" Students won't be able to start"
+
+msgid "В варианте должен быть хотя бы один вопрос"
+msgstr "A variant must have at least one question"
+
+msgid "В файле не найдено ни одного тега <question>"
+msgstr "No <question> tags found in the file"
+
+msgid ""
+"В файле правильный ответ был выделен (жирный/цвет/курсив). Выделение удалено"
+" — на платформе все варианты выглядят одинаково"
+msgstr ""
+"The correct answer was highlighted in the file (bold/colour/italic). "
+"Highlighting removed — all options look the same on the platform"
+
+msgid "Вариант %(n)s"
+msgstr "Option %(n)s"
+
+msgid "Вариант «все перечисленные» облегчает угадывание"
+msgstr "An “all of the above” option makes guessing easier"
+
+msgid "Вариант ответа"
+msgstr "Answer option"
+
+msgid "Варианты ответа"
+msgstr "Answer options"
+
+msgid "Введено цифр:"
+msgstr "Digits entered:"
+
+msgid "Введите символы с картинки"
+msgstr "Enter the characters from the image"
+
+msgid "Вектор"
+msgstr "Vector"
+
+msgid "Вернуться в банк"
+msgstr "Back to the bank"
+
+msgid "Вернуться к вопросам"
+msgstr "Back to questions"
+
+msgid "Вернуться к тесту"
+msgstr "Back to the test"
+
+msgid "Вид на жительство"
+msgstr "Residence permit"
+
+msgid "Войти"
+msgstr "Sign in"
+
+msgid "Вопрос"
+msgstr "Question"
+
+msgid "Вопрос %(counter)s"
+msgstr "Question %(counter)s"
+
+msgid "Вопрос %(n)s: %(error)s"
+msgstr "Question %(n)s: %(error)s"
+
+msgid "Вопрос %(position)s"
+msgstr "Question %(position)s"
+
+msgid "Вопрос %(position)s из %(total)s"
+msgstr "Question %(position)s of %(total)s"
+
+msgid "Вопрос сохранён"
+msgstr "Question saved"
+
+msgid "Вопрос удалён"
+msgstr "Question deleted"
+
+msgid ""
+"Вопрос уже был в тестах, поэтому он скрыт из банка, а статистика сохранена"
+msgstr ""
+"The question was used in tests, so it is hidden from the bank and its "
+"statistics are kept"
+
+msgid ""
+"Вопрос уже был в тестах: число вариантов менять нельзя. Создайте новый "
+"вопрос"
+msgstr ""
+"This question has been used in tests: the number of options can't change. "
+"Create a new question"
+
+msgid "Вопросов"
+msgstr "Questions"
+
+msgid "Вопросов в варианте"
+msgstr "Questions per variant"
+
+msgid "Вопросы"
+msgstr "Questions"
+
+msgid "Время вышло"
+msgstr "Time is up"
+
+msgid "Время вышло. Засчитаны ответы, выбранные до окончания времени."
+msgstr "Time is up. Answers picked before the deadline are counted."
+
+msgid "Время для прохождения теста закончилось"
+msgstr "The time to take this test is over"
+
+msgid "Время должно быть больше нуля"
+msgstr "Time must be greater than zero"
+
+msgid "Время, минут"
+msgstr "Time, minutes"
+
+msgid "Все"
+msgstr "All"
+
+msgid "Все результаты"
+msgstr "All results"
+
+msgid "Все тесты"
+msgstr "All tests"
+
+msgid "Вставить формулу"
+msgstr "Insert formula"
+
+msgid "Второе высшее образование"
+msgstr "Second higher education"
+
+msgid "Вход"
+msgstr "Sign in"
+
+msgid "Вход в Адал"
+msgstr "Sign in to Adal"
+
+msgid "Вы ещё не проходили тесты."
+msgstr "You haven't taken any tests yet."
+
+msgid "Вы ответили на все вопросы."
+msgstr "You've answered every question."
+
+msgid "Вы покинули тест"
+msgstr "You left the test"
+
+msgid "Выберите дисциплину"
+msgstr "Choose a subject"
+
+msgid "Выйти"
+msgstr "Sign out"
+
+msgid "Вышел из полноэкранного режима"
+msgstr "Left full-screen mode"
+
+msgid "Гистограмма результатов"
+msgstr "Score histogram"
+
+msgid "Главная"
+msgstr "Home"
+
+msgid "Гражданство"
+msgstr "Citizenship"
+
+msgid "Греческие"
+msgstr "Greek"
+
+msgid "Группа"
+msgstr "Group"
+
+msgid "Группа %(group)s."
+msgstr "Group %(group)s."
+
+msgid ""
+"Группа не указана — некоторые тесты могут быть не видны. Обратитесь в "
+"деканат."
+msgstr "No group set — some tests may be hidden. Contact the dean's office."
+
+msgid "Группы"
+msgstr "Groups"
+
+msgid "Дата"
+msgstr "Date"
+
+msgid "Дата рождения"
+msgstr "Date of birth"
+
+msgid "Дата рождения:"
+msgstr "Date of birth:"
+
+msgid "Дисциплина"
+msgstr "Subject"
+
+msgid "Дисциплина «%(name)s» добавлена"
+msgstr "Subject “%(name)s” added"
+
+msgid "Дисциплины"
+msgstr "Subjects"
+
+msgid "Для этого префикса ИИН не существует"
+msgstr "No IIN exists for this prefix"
+
+msgid "До автоматического завершения теста осталось нарушений:"
+msgstr "Violations left before automatic stop:"
+
+msgid "Добавить"
+msgstr "Add"
+
+msgid "Добавить вопрос"
+msgstr "Add question"
+
+msgid "Докторантура"
+msgstr "Doctoral"
+
+msgid "Документ"
+msgstr "ID document"
+
+msgid "Должен быть ровно один правильный ответ"
+msgstr "There must be exactly one correct answer"
+
+msgid "Доступны сейчас и скоро"
+msgstr "Available now and soon"
+
+msgid "Дробь"
+msgstr "Fraction"
+
+msgid "Другая картинка"
+msgstr "Another image"
+
+msgid "Другая страна"
+msgstr "Other country"
+
+msgid ""
+"Если компьютер студента завис, разрешите продолжить — он войдёт заново, и "
+"ответы сохранятся."
+msgstr ""
+"If the student's computer froze, allow them to continue — they sign in again"
+" and keep their answers."
+
+msgid ""
+"Если компьютер, на котором вы начали тест, завис или выключился, поднимите "
+"руку: преподаватель разрешит продолжить на этом компьютере. Все ответы, "
+"которые вы уже выбрали, сохранены."
+msgstr ""
+"If the computer where you started froze or turned off, raise your hand: the "
+"teacher will let you continue on this one. All answers you picked are saved."
+
+msgid "Есть одинаковые варианты ответа"
+msgstr "Some answer options are identical"
+
+msgid "Ещё закрыт"
+msgstr "Not open yet"
+
+msgid "Забыли пароль?"
+msgstr "Forgot password?"
+
+msgid "Завершена"
+msgstr "Finished"
+
+msgid "Завершить и узнать результат"
+msgstr "Finish and see the result"
+
+msgid "Завершить тест"
+msgstr "Finish test"
+
+msgid "Завершить тест?"
+msgstr "Finish the test?"
+
+msgid "Загрузите новый файл, чтобы заменить рисунок."
+msgstr "Upload a new file to replace the image."
+
+msgid "Загрузить"
+msgstr "Import"
+
+msgid "Загрузить вопросы из Word"
+msgstr "Import questions from Word"
+
+msgid "Загрузить из Word"
+msgstr "Import from Word"
+
+msgid "Загрузка вопросов"
+msgstr "Import questions"
+
+msgid "Загрузка вопросов из Word"
+msgstr "Import questions from Word"
+
+msgid "Загрузка…"
+msgstr "Loading…"
+
+msgid "Закрывается"
+msgstr "Closes"
+
+msgid "Закрыт"
+msgstr "Closed"
+
+msgid "Защита от списывания"
+msgstr "Anti-cheating"
+
+msgid "Заявление"
+msgstr "Application"
+
+msgid "Здравствуйте, %(first_name)s"
+msgstr "Hello, %(first_name)s"
+
+msgid "Знания видно. Списывание тоже."
+msgstr "Knowledge shows. So does cheating."
+
+msgid "ИИН"
+msgstr "IIN"
+
+msgid "ИИН состоит ровно из 12 цифр"
+msgstr "An IIN has exactly 12 digits"
+
+msgid "Идёт"
+msgstr "In progress"
+
+msgid "Из"
+msgstr "Out of"
+
+msgid "Изменить"
+msgstr "Edit"
+
+msgid "Изменить вопрос"
+msgstr "Edit question"
+
+msgid "Имя"
+msgstr "First name"
+
+msgid "Индекс"
+msgstr "Subscript"
+
+msgid "Интеграл"
+msgstr "Integral"
+
+msgid "К вопросу приложен рисунок."
+msgstr "An image is attached to the question."
+
+msgid "К моим тестам"
+msgstr "To my tests"
+
+msgid ""
+"Каждое такое действие фиксируется и видно преподавателю. После "
+"%(max_violations)s-го нарушения тест завершится сам, и баллы посчитаются по "
+"уже данным ответам."
+msgstr ""
+"Every such action is recorded and visible to the teacher. After violation "
+"number %(max_violations)s the test ends automatically and is scored from the"
+" answers given."
+
+msgid "Каждый студент получит свой случайный вариант из банка вопросов."
+msgstr "Each student gets their own random variant from the question bank."
+
+msgid "Казахстан"
+msgstr "Kazakhstan"
+
+msgid "Как оформить файл"
+msgstr "How to format the file"
+
+msgid "Как писать формулы"
+msgstr "How to write formulas"
+
+msgid "Как читать."
+msgstr "How to read this."
+
+msgid ""
+"Картинка внутри варианта ответа не переносится — напишите вариант текстом "
+"или формулой $…$"
+msgstr ""
+"Images inside answer options aren't imported — write the option as text or a"
+" $…$ formula"
+
+msgid ""
+"Картинка слишком мелкая (%(w)s×%(h)s px) и может быть нечитаемой. Если это "
+"формула — наберите её через $…$"
+msgstr ""
+"The image is too small (%(w)s×%(h)s px) and may be unreadable. If it's a "
+"formula, type it with $…$"
+
+msgid ""
+"Картинку не удалось прочитать (формат WMF/EMF?) — вставьте её как PNG или "
+"наберите формулу в редакторе формул"
+msgstr ""
+"Couldn't read the image (WMF/EMF format?) — insert it as PNG or type the "
+"formula in the equation editor"
+
+msgid "Китай"
+msgstr "China"
+
+msgid "Когда"
+msgstr "When"
+
+msgid "Когда и кто"
+msgstr "When and who"
+
+msgid "Код"
+msgstr "Code"
+
+msgid "Код доступа"
+msgstr "Access code"
+
+msgid "Код доступа — его называет преподаватель в аудитории"
+msgstr "Access code — the teacher announces it in the classroom"
+
+msgid "Код проверки: латинские буквы и цифры"
+msgstr "Check code: Latin letters and digits"
+
+msgid "Контрольная цифра ИИН не совпадает — проверьте номер"
+msgstr "The IIN check digit does not match — check the number"
+
+msgid "Контрольная цифра не совпадает — проверьте ИИН"
+msgstr "Check digit does not match — check your IIN"
+
+msgid "Корень"
+msgstr "Root"
+
+msgid "Куда поступаете"
+msgstr "What you're applying for"
+
+msgid "Кыргызстан"
+msgstr "Kyrgyzstan"
+
+msgid "Личные данные"
+msgstr "Personal details"
+
+msgid "Любая"
+msgstr "Any"
+
+msgid "Любой"
+msgstr "Any"
+
+msgid "Лёгкий"
+msgstr "Easy"
+
+msgid "Магистратура"
+msgstr "Master's"
+
+msgid "Мало ответов для выводов"
+msgstr "Too few answers to draw conclusions"
+
+msgid "Минут"
+msgstr "Minutes"
+
+msgid "Мои тесты"
+msgstr "My tests"
+
+msgid "Монголия"
+msgstr "Mongolia"
+
+msgid "Наблюдать"
+msgstr "Monitor"
+
+msgid "Наблюдение"
+msgstr "Monitoring"
+
+msgid "Нажимал Print Screen"
+msgstr "Pressed Print Screen"
+
+msgid "Нажимал клавиши инструментов разработчика"
+msgstr "Pressed developer tools keys"
+
+msgid "Назад"
+msgstr "Back"
+
+msgid "Название"
+msgstr "Title"
+
+msgid ""
+"Назначенных тестов нет. Когда преподаватель откроет тест для вашей группы, "
+"он появится здесь."
+msgstr ""
+"No tests assigned. When a teacher opens a test for your group, it will "
+"appear here."
+
+msgid "Найден <variant> до первого <question> — пропущен"
+msgstr "Found <variant> before the first <question> — skipped"
+
+msgid "Найдено вопросов:"
+msgstr "Questions found:"
+
+msgid "Найти"
+msgstr "Search"
+
+msgid "Например: производная"
+msgstr "For example: derivative"
+
+msgid "Нарушение записано и видно преподавателю."
+msgstr "The violation is recorded and visible to the teacher."
+
+msgid "Нарушений до завершения"
+msgstr "Violations before stop"
+
+msgid "Нарушений не зафиксировано."
+msgstr "No violations recorded."
+
+msgid "Нарушений нет. Спасибо за честную работу."
+msgstr "No violations. Thanks for working honestly."
+
+msgid "Нарушения"
+msgstr "Violations"
+
+msgid "Настроить"
+msgstr "Settings"
+
+msgid "Настройки"
+msgstr "Settings"
+
+msgid "Настройки теста"
+msgstr "Test settings"
+
+msgid "Начал"
+msgstr "Started"
+
+msgid "Начал в"
+msgstr "Started at"
+
+msgid ""
+"Начало IP-адресов компьютерного класса, например 10.12.5. Пусто — любая сеть"
+msgstr ""
+"Start of the computer lab's IP addresses, e.g. 10.12.5. Empty means any "
+"network"
+
+msgid "Начать"
+msgstr "Start"
+
+msgid "Начать тест"
+msgstr "Start test"
+
+msgid "Начать тест можно только один раз."
+msgstr "You can start the test only once."
+
+msgid "Начните вводить текст вопроса"
+msgstr "Start typing the question"
+
+msgid "Не короче 8 символов, не только цифры."
+msgstr "At least 8 characters, not digits only."
+
+msgid "Не удалось определить кодировку текстового файла"
+msgstr "Couldn't detect the text file's encoding"
+
+msgid "Неверный ИИН или пароль"
+msgstr "Wrong IIN or password"
+
+msgid "Неверный код доступа. Его называет преподаватель в аудитории"
+msgstr "Wrong access code. The teacher announces it in the classroom"
+
+msgid "Неизвестный тип нарушения"
+msgstr "Unknown violation type"
+
+msgid "Неработающих неверных вариантов: %(n)s (их почти не выбирают)"
+msgstr "Non-working distractors: %(n)s (almost nobody picks them)"
+
+msgid "Нет связи"
+msgstr "Offline"
+
+msgid "Нет связи с сервером — выберите ответ ещё раз"
+msgstr "No connection to the server — pick your answer again"
+
+msgid "Никто ещё не начал тест"
+msgstr "Nobody has started yet"
+
+msgid "Новая дисциплина"
+msgstr "New subject"
+
+msgid "Новый вопрос"
+msgstr "New question"
+
+msgid "Новый тест"
+msgstr "New test"
+
+msgid "Номер документа"
+msgstr "Document number"
+
+msgid "Нужен ИИН"
+msgstr "IIN is required"
+
+msgid "Нужен хотя бы один вопрос"
+msgstr "At least one question is needed"
+
+msgid "Нужно минимум два варианта ответа"
+msgstr "At least two answer options are needed"
+
+msgid "Обновлено в"
+msgstr "Updated at"
+
+msgid "Окно теста потеряло фокус"
+msgstr "The test window lost focus"
+
+msgid "Онлайн-экзамены Кызылординского университета имени Коркыт Ата."
+msgstr "Online exams at Korkyt Ata Kyzylorda University."
+
+msgid "Опубликован"
+msgstr "Published"
+
+msgid "Оставьте пустым, чтобы брать вопросы по всей дисциплине"
+msgstr "Leave empty to use questions from the whole subject"
+
+msgid "Осталось"
+msgstr "Left"
+
+msgid "Остановить попытку"
+msgstr "Stop attempt"
+
+msgid ""
+"Остановить тест этого студента? Баллы посчитаются по уже данным ответам."
+msgstr ""
+"Stop this student's test? The score will be counted from the answers given "
+"so far."
+
+msgid "Остановлена за нарушения"
+msgstr "Stopped for violations"
+
+msgid "Ответ не сохранён — выберите ещё раз"
+msgstr "Answer not saved — pick it again"
+
+msgid "Ответ сохранён"
+msgstr "Answer saved"
+
+msgid "Ответил"
+msgstr "Answered"
+
+msgid "Ответили"
+msgstr "Answered"
+
+msgid "Ответы"
+msgstr "Answers"
+
+msgid "Отвечено"
+msgstr "Answered"
+
+msgid "Откроется"
+msgstr "Opens"
+
+msgid "Открывается"
+msgstr "Opens"
+
+msgid "Открывал контекстное меню (правая кнопка)"
+msgstr "Opened the context menu (right click)"
+
+msgid "Открыл тест на другом компьютере или в другом браузере"
+msgstr "Opened the test on another computer or browser"
+
+msgid "Открыт"
+msgstr "Open"
+
+msgid "Открыт до"
+msgstr "Open until"
+
+msgid "Отмена"
+msgstr "Cancel"
+
+msgid ""
+"Отметьте кружок у правильного ответа. Порядок вариантов у каждого студента "
+"будет свой."
+msgstr ""
+"Mark the circle next to the correct answer. Each student sees the options in"
+" a different order."
+
+msgid "Отчество"
+msgstr "Patronymic"
+
+msgid "Оформление вариантов (жирный, курсив, цвет) удалено"
+msgstr "Option formatting (bold, italic, colour) removed"
+
+msgid "Пароли не совпадают"
+msgstr "Passwords don't match"
+
+msgid "Пароль"
+msgstr "Password"
+
+msgid "Пароль для входа"
+msgstr "Password"
+
+msgid "Пароль ещё раз"
+msgstr "Repeat password"
+
+msgid ""
+"Пароль сбрасывает офис регистратора — подойдите с удостоверением личности."
+msgstr "The registrar's office resets passwords — bring your ID card."
+
+msgid "Паспорт"
+msgstr "Passport"
+
+msgid "Первое высшее образование"
+msgstr "First higher education"
+
+msgid "Первые 6 цифр ИИН — некорректная дата рождения"
+msgstr "The first 6 digits of the IIN are not a valid date of birth"
+
+msgid "Первый вариант после вопроса — правильный. Строка"
+msgstr "The first option after a question is the correct one. The"
+
+msgid "Перед началом"
+msgstr "Before you start"
+
+msgid "Перейти к тесту"
+msgstr "Go to test"
+
+msgid "Переключился на другую вкладку или окно"
+msgstr "Switched to another tab or window"
+
+msgid "Пишет"
+msgstr "Writing"
+
+msgid "Пишите между знаками доллара:"
+msgstr "Write between dollar signs:"
+
+msgid ""
+"Платформа сама предупредит, если правильный ответ заметно длиннее остальных "
+"или варианты повторяются."
+msgstr ""
+"The platform warns you if the correct answer is much longer than the others "
+"or options repeat."
+
+msgid "Плохо отделяет знающих от незнающих"
+msgstr "Poorly separates those who know from those who don't"
+
+msgid "По фамилии"
+msgstr "By last name"
+
+msgid "По этим условиям вопросов нет. Измените поиск или добавьте вопросы."
+msgstr "No questions match. Change the search or add questions."
+
+msgid "Поддерживаются файлы .docx и .txt"
+msgstr ".docx and .txt files are supported"
+
+msgid "Подробнее"
+msgstr "Details"
+
+msgid "Поиск по тексту вопроса и ответов"
+msgstr "Search question and answer text"
+
+msgid ""
+"Пока идёт тест, не выходите из полноэкранного режима и не переключайтесь на "
+"другие окна. Нарушений до автоматического завершения: %(max_violations)s."
+msgstr ""
+"While the test is running, don't leave full screen or switch windows. "
+"Violations before automatic stop: %(max_violations)s."
+
+msgid "Пока нет ни одной дисциплины"
+msgstr "No subjects yet"
+
+msgid "Пока никто не проходил тест"
+msgstr "Nobody has taken the test yet"
+
+msgid "Показать"
+msgstr "Show"
+
+msgid "Показать другую картинку"
+msgstr "Show another image"
+
+msgid "Показать студенту разбор после теста"
+msgstr "Show the student a review after the test"
+
+msgid "Пользователь с таким ИИН уже зарегистрирован"
+msgstr "A user with this IIN is already registered"
+
+msgid "Пользовательское соглашение"
+msgstr "Terms of use"
+
+msgid ""
+"Пользовательское соглашение и Политика обработки персональных данных "
+"платформы «Адал»"
+msgstr "Adal Terms of Use and Personal Data Policy"
+
+msgid "Попытка %(name)s остановлена"
+msgstr "%(name)s's attempt stopped"
+
+msgid "Попытка уже завершена"
+msgstr "The attempt is already finished"
+
+msgid "Попытка уже создана"
+msgstr "The attempt already exists"
+
+msgid "Порядок"
+msgstr "Sort"
+
+msgid "После завершения изменить ответы нельзя."
+msgstr "You can't change answers after finishing."
+
+msgid "Последние начавшие"
+msgstr "Most recent"
+
+msgid "Поступаете к нам?"
+msgstr "Applying to us?"
+
+msgid "Поступление"
+msgstr "Admission"
+
+msgid "Поступление начинается здесь."
+msgstr "Admission starts here."
+
+msgid "Правильный"
+msgstr "Correct"
+
+msgid "Правильный вариант"
+msgstr "Correct option"
+
+msgid "Правильный ответ"
+msgstr "Correct answer"
+
+msgid "Правильный ответ заметно длиннее остальных — это подсказка"
+msgstr "The correct answer is much longer than the others — that's a giveaway"
+
+msgid "Правильным отмечен пустой вариант"
+msgstr "An empty option is marked as correct"
+
+msgid "Предел"
+msgstr "Limit"
+
+msgid "Предыдущая страница"
+msgstr "Previous page"
+
+msgid "Предыдущий вопрос"
+msgstr "Previous question"
+
+msgid "Преподаватель"
+msgstr "Teacher"
+
+msgid "Преподаватель говорит его вслух в аудитории"
+msgstr "The teacher says it aloud in the classroom"
+
+msgid "Проверить ещё раз"
+msgstr "Check again"
+
+msgid "Проверка файла"
+msgstr "File check"
+
+msgid "Проверьте поля, отмеченные ниже."
+msgstr "Check the fields marked below."
+
+msgid "Продолжить"
+msgstr "Continue"
+
+msgid "Продолжить здесь нельзя"
+msgstr "You can't continue here"
+
+msgid "Пройденные"
+msgstr "Completed"
+
+msgid "Пропадала связь со страницей теста"
+msgstr "Lost connection to the test page"
+
+msgid "Прошли"
+msgstr "Taken"
+
+msgid "Прошли: %(n_attempts)s"
+msgstr "Taken: %(n_attempts)s"
+
+msgid "Пустой текст вопроса"
+msgstr "The question text is empty"
+
+msgid "Пытался вставить текст"
+msgstr "Tried to paste text"
+
+msgid "Пытался скопировать текст"
+msgstr "Tried to copy text"
+
+msgid "Разбор ответов"
+msgstr "Answer review"
+
+msgid "Разбор ответов преподаватель покажет на занятии."
+msgstr "Your teacher will review the answers in class."
+
+msgid "Разделы"
+msgstr "Sections"
+
+msgid "Разделы теста"
+msgstr "Test sections"
+
+msgid "Различение"
+msgstr "Discrimination"
+
+msgid "Разрешить продолжить в другом браузере"
+msgstr "Allow continuing in another browser"
+
+msgid "Разрешённая сеть"
+msgstr "Allowed network"
+
+msgid "Распределение результатов"
+msgstr "Score distribution"
+
+msgid "Регистрация"
+msgstr "Sign up"
+
+msgid "Регистрация абитуриента"
+msgstr "Applicant sign-up"
+
+msgid "Регистрация завершена. Добро пожаловать!"
+msgstr "You're signed up. Welcome!"
+
+msgid "Результат"
+msgstr "Result"
+
+msgid "Результат загрузки"
+msgstr "Import result"
+
+msgid "Результаты"
+msgstr "Results"
+
+msgid "Решают верно"
+msgstr "Solved correctly"
+
+msgid "Рисунок"
+msgstr "Image"
+
+msgid "Рисунок (необязательно)"
+msgstr "Image (optional)"
+
+msgid "Рисунок к вопросу"
+msgstr "Question image"
+
+msgid "Роль"
+msgstr "Role"
+
+msgid "Россия"
+msgstr "Russia"
+
+msgid "Русский"
+msgstr "Russian"
+
+msgid "Сбросить"
+msgstr "Reset"
+
+msgid ""
+"Сверху — студенты с нарушениями. «Нет связи» значит, что страница теста "
+"закрыта или компьютер отключён от сети больше 45 секунд."
+msgstr ""
+"Students with violations are at the top. “Offline” means the test page is "
+"closed or the computer has been off the network for over 45 seconds."
+
+msgid "Седьмая цифра ИИН должна быть от 1 до 6"
+msgstr "The 7th digit of the IIN must be 1–6"
+
+msgid "Сейчас в аудитории"
+msgstr "In the room now"
+
+msgid "Сейчас пишут: %(n_active)s"
+msgstr "Writing now: %(n_active)s"
+
+msgid "Сильные студенты ошибаются чаще слабых — вероятно, ошибка в ключе"
+msgstr ""
+"Strong students get it wrong more often than weak ones — the key is probably"
+" wrong"
+
+msgid "Символы не совпадают — введите код с новой картинки"
+msgstr "Characters don't match — enter the code from the new image"
+
+msgid "Символы с картинки"
+msgstr "Characters from the image"
+
+msgid "Скачать CSV"
+msgstr "Download CSV"
+
+msgid "Сколько студентов набрало каждый процент"
+msgstr "How many students scored each percentage"
+
+msgid "Скоро"
+msgstr "Soon"
+
+msgid "Следующая страница"
+msgstr "Next page"
+
+msgid "Следующий вопрос"
+msgstr "Next question"
+
+msgid "Слишком лёгкий: почти все отвечают верно"
+msgstr "Too easy: almost everyone answers correctly"
+
+msgid "Слишком много неудачных попыток. Подождите 10 минут."
+msgstr "Too many failed attempts. Wait 10 minutes."
+
+msgid "Слишком трудный — проверьте, верно ли отмечен ответ"
+msgstr "Too hard — check that the right answer is marked"
+
+msgid "Сложность"
+msgstr "Difficulty"
+
+msgid "Сложность всех вопросов"
+msgstr "Difficulty of all questions"
+
+msgid "Сложный"
+msgstr "Hard"
+
+msgid "Сначала высокий балл"
+msgstr "Highest score first"
+
+msgid "Сначала лёгкие"
+msgstr "Easiest first"
+
+msgid "Сначала низкий балл"
+msgstr "Lowest score first"
+
+msgid "Сначала новые"
+msgstr "Newest first"
+
+msgid "Сначала сложные"
+msgstr "Hardest first"
+
+msgid "Сначала старые"
+msgstr "Oldest first"
+
+msgid "Содержание"
+msgstr "Content"
+
+msgid ""
+"Создавая аккаунт, я принимаю <a href=\"%(rules_url)s\" target=\"_blank\" "
+"rel=\"noopener\">Пользовательское соглашение</a> и даю согласие на обработку"
+" персональных данных"
+msgstr ""
+"By creating an account, I accept the <a href=\"%(rules_url)s\" "
+"target=\"_blank\" rel=\"noopener\">Terms of use</a> and consent to the "
+"processing of my personal data"
+
+msgid "Создан"
+msgstr "Created"
+
+msgid "Создать аккаунт"
+msgstr "Create account"
+
+msgid "Создать аккаунт абитуриента"
+msgstr "Create an applicant account"
+
+msgid "Создать тест"
+msgstr "Create test"
+
+msgid "Сокращённая программа (на базе ТиПО)"
+msgstr "Shortened program (after college)"
+
+msgid "Состояние"
+msgstr "State"
+
+msgid "Сохранить вопрос"
+msgstr "Save question"
+
+msgid "Сохранить и добавить ещё"
+msgstr "Save and add another"
+
+msgid "Сохранить тест"
+msgstr "Save test"
+
+msgid "Сохраняем…"
+msgstr "Saving…"
+
+msgid "Средний"
+msgstr "Medium"
+
+msgid "Статус"
+msgstr "Status"
+
+msgid "Степень"
+msgstr "Power"
+
+msgid "Страна"
+msgstr "Country"
+
+msgid "Страницы"
+msgstr "Pages"
+
+msgid "Студент"
+msgstr "Student"
+
+msgid "Сумма"
+msgstr "Sum"
+
+msgid "Таджикистан"
+msgstr "Tajikistan"
+
+msgid ""
+"Таймер идёт на сервере: закрыть страницу, чтобы «остановить время», не "
+"получится. Ответ сохраняется сразу, как только вы его выбрали."
+msgstr ""
+"The timer runs on the server: closing the page won't “stop the clock”. Your "
+"answer is saved as soon as you pick it."
+
+msgid "Так увидит студент"
+msgstr "What the student sees"
+
+msgid "Такая дисциплина уже есть или название пустое"
+msgstr "This subject already exists or the name is empty"
+
+msgid "Такого варианта ответа нет у этого вопроса"
+msgstr "This question has no such answer option"
+
+msgid "Такого вопроса нет в вашем варианте"
+msgstr "There is no such question in your variant"
+
+msgid ""
+"Текст вводится без оформления — на экране студента все варианты выглядят "
+"одинаково."
+msgstr ""
+"Text is entered without formatting — all options look the same on the "
+"student's screen."
+
+msgid "Текст вопроса"
+msgstr "Question text"
+
+msgid "Текущий рисунок"
+msgstr "Current image"
+
+msgid "Тема"
+msgstr "Topic"
+
+msgid "Тест"
+msgstr "Test"
+
+msgid "Тест должен закрываться позже, чем открывается"
+msgstr "The test must close after it opens"
+
+msgid "Тест ещё не опубликован"
+msgstr "The test isn't published yet"
+
+msgid "Тест ещё не открыт"
+msgstr "The test isn't open yet"
+
+msgid ""
+"Тест завершён досрочно: нарушений набралось %(violation_count)s из "
+"%(max_violations)s допустимых. Баллы посчитаны по ответам, данным до "
+"остановки."
+msgstr ""
+"The test ended early: %(violation_count)s of %(max_violations)s allowed "
+"violations. The score counts the answers given before the stop."
+
+msgid "Тест можно проходить только с компьютеров учебной аудитории"
+msgstr "The test can only be taken on classroom computers"
+
+msgid "Тест откроется во весь экран"
+msgstr "The test opens full screen"
+
+msgid ""
+"Тест откроется во весь экран. Не выходите из полноэкранного режима, не "
+"переключайтесь на другие вкладки и программы, не открывайте ИИ-помощников в "
+"браузере."
+msgstr ""
+"The test opens full screen. Don't leave full screen, don't switch to other "
+"tabs or apps, and don't open AI assistants in the browser."
+
+msgid "Тест открыт в другом браузере"
+msgstr "The test is open in another browser"
+
+msgid "Тест сохранён"
+msgstr "Test saved"
+
+msgid "Тест уже завершён"
+msgstr "The test is already finished"
+
+msgid "Тест уже открыт в другом браузере. Об этом сообщено преподавателю"
+msgstr ""
+"The test is already open in another browser. The teacher has been notified"
+
+msgid "Тестов пока нет."
+msgstr "No tests yet."
+
+msgid ""
+"Тестов пока нет. Сначала добавьте вопросы в банк, затем соберите из них "
+"тест."
+msgstr ""
+"No tests yet. Add questions to the bank first, then build a test from them."
+
+msgid "Тесты"
+msgstr "Tests"
+
+msgid "Только мои вопросы"
+msgstr "Only my questions"
+
+msgid "Только проверить, ничего не сохранять"
+msgstr "Check only, save nothing"
+
+msgid "Только с нарушениями"
+msgstr "Only with violations"
+
+msgid "Только тема"
+msgstr "Topic only"
+
+msgid "Тот же формат, что и в Platonus, — переписывать файлы не нужно."
+msgstr "Same format as Platonus — no need to rewrite your files."
+
+msgid "Трудность"
+msgstr "Difficulty"
+
+msgid "Туркменистан"
+msgstr "Turkmenistan"
+
+msgid "Турция"
+msgstr "Turkey"
+
+msgid "Удалить"
+msgstr "Delete"
+
+msgid "Удалить вопрос из банка?"
+msgstr "Delete this question from the bank?"
+
+msgid "Удостоверение личности РК"
+msgstr "Kazakhstan ID card"
+
+msgid "Уже есть аккаунт?"
+msgstr "Already have an account?"
+
+msgid "Узбекистан"
+msgstr "Uzbekistan"
+
+msgid "Управление"
+msgstr "Actions"
+
+msgid "Уход со страницы, выход из полноэкранного режима и т. п."
+msgstr "Leaving the page, exiting full screen, etc."
+
+msgid "ФИО"
+msgstr "Full name"
+
+msgid "ФИО или начало ИИН"
+msgstr "Name or start of IIN"
+
+msgid "Файл .docx или .txt"
+msgstr ".docx or .txt file"
+
+msgid "Файл больше %(mb)s МБ"
+msgstr "The file is larger than %(mb)s MB"
+
+msgid "Файл не похож на документ Word (.docx)"
+msgstr "The file doesn't look like a Word document (.docx)"
+
+msgid "Фамилия"
+msgstr "Last name"
+
+msgid "Форма поступления"
+msgstr "Application type"
+
+msgid "Формулу пишите между знаками доллара:"
+msgstr "Write a formula between dollar signs:"
+
+msgid "Формулы."
+msgstr "Formulas."
+
+msgid "Хуже всего решают"
+msgstr "Least often solved"
+
+msgid "Чаще всего в тестах"
+msgstr "Most used in tests"
+
+msgid "Через запятую, например: ИС-21, ИС-22. Пусто — все"
+msgstr "Comma-separated, e.g. IS-21, IS-22. Empty means everyone"
+
+msgid ""
+"Через этот аккаунт вы будете сдавать вступительные тесты и видеть "
+"результаты."
+msgstr "Use this account to take entrance tests and see your results."
+
+msgid "Что исправится само:"
+msgstr "Fixed automatically:"
+
+msgid "Шаг 1"
+msgstr "Step 1"
+
+msgid "Шаг 2"
+msgstr "Step 2"
+
+msgid "Шаг 3"
+msgstr "Step 3"
+
+msgid "Шаги регистрации"
+msgstr "Sign-up steps"
+
+msgid "Эл. почта"
+msgstr "Email"
+
+msgid "Этот тест назначен другой группе"
+msgstr "This test is assigned to another group"
+
+msgid ""
+"Юридически обязывающей является редакция соглашения на русском языке (п. "
+"14.4). Ниже приведён её текст."
+msgstr ""
+"The Russian version of these terms is legally binding (clause 14.4). Its "
+"text follows below."
+
+msgid "Я принимаю правила и условия платформы"
+msgstr "I accept the platform's terms and conditions"
+
+msgid "Язык интерфейса"
+msgstr "Interface language"
+
+msgid "Язык обучения"
+msgstr "Language of study"
+
+msgid "адал"
+msgstr "adal"
+
+msgid "без группы"
+msgstr "no group"
+
+msgid "без ответа"
+msgstr "unanswered"
+
+msgid "верный"
+msgstr "correct"
+
+msgid "вопрос"
+msgstr "question"
+
+msgid "вопросы"
+msgstr "questions"
+
+msgid "дисциплина"
+msgstr "subject"
+
+msgid "дисциплины"
+msgstr "subjects"
+
+msgid "до"
+msgstr "until"
+
+msgid ""
+"жирный, курсив и цвет будут удалены; формулы из редактора формул Word станут"
+" чёткими; нумерация «А)», «1.» перед вариантами уберётся."
+msgstr ""
+"bold, italic and colour are removed; formulas from Word's equation editor "
+"become sharp; “A)”, “1.” numbering before options is removed."
+
+msgid "завершили тест"
+msgstr "finished the test"
+
+msgid "закончил в"
+msgstr "finished at"
+
+msgid "из %(max_score)s — это %(percent)s%%"
+msgstr "of %(max_score)s — that's %(percent)s%%"
+
+msgid "из %(max_score)s, %(percent)s%%. %(get_status_display)s"
+msgstr "of %(max_score)s, %(percent)s%%. %(get_status_display)s"
+
+msgid "из %(total)s"
+msgstr "of %(total)s"
+
+msgid "или фильтр ничего не нашёл"
+msgstr "or the filter found nothing"
+
+msgid "медиана"
+msgstr "median"
+
+msgid "минут"
+msgstr "minutes"
+
+msgid "необязательна."
+msgstr "line is optional."
+
+msgid "отвечен"
+msgstr "answered"
+
+msgid "пользователи"
+msgstr "users"
+
+msgid "пользователь"
+msgstr "user"
+
+msgid "разброс, п.п."
+msgstr "spread, pp"
+
+msgid "средний результат"
+msgstr "average score"
+
+msgid "тест"
+msgstr "test"
+
+msgid "тесты"
+msgstr "tests"
+
+msgid "Қазақша"
+msgstr "Kazakh"
+
+msgid ""
+"— доля верных ответов: 0,9 и выше — вопрос слишком лёгкий, 0,2 и ниже — "
+"слишком трудный."
+msgstr ""
+"— share of correct answers: 0.9 and above means the question is too easy, "
+"0.2 and below too hard."
+
+msgid "— если есть"
+msgstr "— if any"
+
+msgid ""
+"— насколько чаще сильные студенты отвечают верно, чем слабые: хорошо от 0,3;"
+" отрицательное значение почти всегда означает ошибку в ключе. Вопросы с "
+"замечаниями показаны первыми."
+msgstr ""
+"— how much more often strong students answer correctly than weak ones: 0.3+ "
+"is good; a negative value almost always means a wrong key. Questions with "
+"warnings are shown first."

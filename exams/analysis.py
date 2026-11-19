@@ -4,6 +4,7 @@ p — индекс трудности: доля верных ответов.
 D — индекс дискриминации: p в сильной группе (верхние 27 %) минус p в слабой.
 Дистрактор — неверный вариант; если его почти никто не выбирает, он не работает.
 """
+from django.utils.translation import gettext_lazy as _
 import statistics
 from dataclasses import dataclass, field
 
@@ -56,18 +57,18 @@ def discrimination_index(rows: list[tuple[float, bool]]) -> float | None:
 def flags_for(stat: QuestionStat) -> list[str]:
     flags = []
     if stat.answered < MIN_SAMPLE:
-        return ["Мало ответов для выводов"]
+        return [_("Мало ответов для выводов")]
     if stat.p >= TOO_EASY:
-        flags.append("Слишком лёгкий: почти все отвечают верно")
+        flags.append(_("Слишком лёгкий: почти все отвечают верно"))
     if stat.p <= TOO_HARD:
-        flags.append("Слишком трудный — проверьте, верно ли отмечен ответ")
+        flags.append(_("Слишком трудный — проверьте, верно ли отмечен ответ"))
     if stat.d is not None and stat.d < 0:
-        flags.append("Сильные студенты ошибаются чаще слабых — вероятно, ошибка в ключе")
+        flags.append(_("Сильные студенты ошибаются чаще слабых — вероятно, ошибка в ключе"))
     elif stat.d is not None and stat.d < WEAK_DISCRIMINATION:
-        flags.append("Плохо отделяет знающих от незнающих")
+        flags.append(_("Плохо отделяет знающих от незнающих"))
     dead = [c for c in stat.choices if not c.is_correct and c.share < DEAD_DISTRACTOR]
     if dead:
-        flags.append(f"Неработающих неверных вариантов: {len(dead)} (их почти не выбирают)")
+        flags.append(_("Неработающих неверных вариантов: %(n)s (их почти не выбирают)") % {"n": len(dead)})
     return flags
 
 
@@ -123,20 +124,20 @@ def lint_question(text: str, choices: list[tuple[str, bool]]) -> list[str]:
     """Подсказки преподавателю: что в вопросе может выдать правильный ответ."""
     problems = []
     if not text.strip():
-        problems.append("Пустой текст вопроса")
+        problems.append(_("Пустой текст вопроса"))
     if len(choices) < 2:
-        problems.append("Нужно минимум два варианта ответа")
+        problems.append(_("Нужно минимум два варианта ответа"))
     correct = [t for t, ok in choices if ok]
     if len(correct) != 1:
-        problems.append("Должен быть ровно один правильный ответ")
+        problems.append(_("Должен быть ровно один правильный ответ"))
     normalized = [t.strip().lower() for t, _ in choices]
     if len(set(normalized)) != len(normalized):
-        problems.append("Есть одинаковые варианты ответа")
+        problems.append(_("Есть одинаковые варианты ответа"))
     if len(correct) == 1 and len(choices) >= 3:
         wrong_lengths = [len(t) for t, ok in choices if not ok]
         if len(correct[0]) > LONGEST_RATIO * max(wrong_lengths):
-            problems.append("Правильный ответ заметно длиннее остальных — это подсказка")
+            problems.append(_("Правильный ответ заметно длиннее остальных — это подсказка"))
     lowered = " ".join(normalized)
     if "все перечисленн" in lowered or "все ответы верн" in lowered:
-        problems.append("Вариант «все перечисленные» облегчает угадывание")
+        problems.append(_("Вариант «все перечисленные» облегчает угадывание"))
     return problems

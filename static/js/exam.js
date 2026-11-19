@@ -81,8 +81,8 @@
       if (typeof r.violations === "number") {
         updateStrikes(r.violations);
         var left = r.limit - r.violations;
-        $("gb-text").textContent = "Нарушение записано и видно преподавателю. " +
-          (left > 0 ? "До автоматического завершения теста осталось нарушений: " + left + "." : "");
+        $("gb-text").textContent = E.t.recorded + " " +
+          (left > 0 ? E.t.leftBeforeStop + " " + left + "." : "");
       }
     }).catch(function () {});
   }
@@ -157,27 +157,27 @@
   document.addEventListener("change", function (e) {
     if (e.target.name !== "answer") return;
     var state = $("saved-state");
-    state.textContent = "Сохраняем…";
+    state.textContent = E.t.saving;
     var pos = current;
     post(E.urls.answer, {position: pos, choice: +e.target.value}).then(function (r) {
       if (!r.ok) {
         if (r.status && r.status !== "active") { goResult(); return; }
-        state.textContent = r.error || "Ответ не сохранён — выберите ещё раз";
+        state.textContent = r.error || E.t.notSaved;
         return;
       }
-      state.textContent = "Ответ сохранён";
+      state.textContent = E.t.saved;
       var btn = $("palette").querySelector('[data-go="' + pos + '"]');
       if (btn) btn.classList.add("done");
       $("answered-count").textContent = answeredCount();
-    }).catch(function () { state.textContent = "Нет связи с сервером — выберите ответ ещё раз"; });
+    }).catch(function () { state.textContent = E.t.offline; });
   });
 
   // ---------- Завершение ----------
   function askFinish() {
     var left = E.total - answeredCount();
     $("gf-text").textContent = left
-      ? "Без ответа осталось вопросов: " + left + ". После завершения изменить ответы нельзя."
-      : "Вы ответили на все вопросы. После завершения изменить ответы нельзя.";
+      ? E.t.unanswered + " " + left + ". " + E.t.noChanges
+      : E.t.allAnswered + " " + E.t.noChanges;
     $("guard-finish").classList.add("show");
   }
   $("btn-finish-no").addEventListener("click", function () { $("guard-finish").classList.remove("show"); });
