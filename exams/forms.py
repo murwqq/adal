@@ -10,7 +10,8 @@ MAX_UPLOAD_MB = 10
 class QuestionForm(forms.Form):
     """Вопрос вводится простым текстом. Формулы — в LaTeX между $…$."""
 
-    subject = forms.ModelChoiceField(Subject.objects.all(), label="Дисциплина")
+    subject = forms.ModelChoiceField(Subject.objects.all(), label="Дисциплина",
+                                     empty_label="Выберите дисциплину")
     topic = forms.CharField(label="Тема", required=False, max_length=150)
     difficulty = forms.TypedChoiceField(label="Сложность", coerce=int,
                                         choices=Question.Difficulty.choices, initial=2)
@@ -51,7 +52,8 @@ class QuestionForm(forms.Form):
 
 
 class ImportForm(forms.Form):
-    subject = forms.ModelChoiceField(Subject.objects.all(), label="Дисциплина")
+    subject = forms.ModelChoiceField(Subject.objects.all(), label="Дисциплина",
+                                     empty_label="Выберите дисциплину")
     difficulty = forms.TypedChoiceField(label="Сложность всех вопросов", coerce=int,
                                         choices=Question.Difficulty.choices, initial=2)
     file = forms.FileField(label="Файл .docx или .txt")
@@ -85,6 +87,7 @@ class ExamForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["subject"].empty_label = "Выберите дисциплину"
         if not self.instance.pk and not self.is_bound:
             now = timezone.localtime().replace(second=0, microsecond=0)
             self.initial.setdefault("opens_at", now)
