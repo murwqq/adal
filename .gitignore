@@ -9,7 +9,6 @@ staticfiles/
 htmlcov/
 .pytest_cache/
 .env
-.claude/
 
 # Исходные материалы преподавателя — не часть кода
 Python ортасында*.docx
