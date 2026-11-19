@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Доступ запрещён" %}{% endblock %}
+{% block content %}
+<div class="sheet" style="max-width:640px">
+  <p class="muted num" style="margin-bottom:6px">403</p>
+  <h1>{% translate "Доступ запрещён" %}</h1>
+  <p>{% translate "У вашей роли нет доступа к этой странице. Если вы считаете, что это ошибка, обратитесь к администратору." %}</p>
+  <a class="btn btn-primary" href="{% url 'dashboard' %}">{% translate "На главную" %}</a>
+</div>
+{% endblock %}

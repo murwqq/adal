@@ -10,11 +10,19 @@
   </a>
   <div class="auth-pitch">
     <div class="omr" aria-hidden="true">
+{% get_current_language as LANG %}{% if LANG == "en" %}
+      <div class="omr-row" style="--n:0"><b>1</b><i>A</i><i class="on">B</i><i>C</i><i>D</i></div>
+      <div class="omr-row" style="--n:1"><b>2</b><i class="on">A</i><i>B</i><i>C</i><i>D</i></div>
+      <div class="omr-row" style="--n:2"><b>3</b><i>A</i><i>B</i><i>C</i><i class="on">D</i></div>
+      <div class="omr-row" style="--n:3"><b>4</b><i>A</i><i>B</i><i class="on">C</i><i>D</i></div>
+      <div class="omr-row" style="--n:4"><b>5</b><i>A</i><i class="on">B</i><i>C</i><i>D</i></div>
+      {% else %}
       <div class="omr-row" style="--n:0"><b>1</b><i>А</i><i class="on">Б</i><i>В</i><i>Г</i></div>
       <div class="omr-row" style="--n:1"><b>2</b><i class="on">А</i><i>Б</i><i>В</i><i>Г</i></div>
       <div class="omr-row" style="--n:2"><b>3</b><i>А</i><i>Б</i><i>В</i><i class="on">Г</i></div>
       <div class="omr-row" style="--n:3"><b>4</b><i>А</i><i>Б</i><i class="on">В</i><i>Г</i></div>
       <div class="omr-row" style="--n:4"><b>5</b><i>А</i><i class="on">Б</i><i>В</i><i>Г</i></div>
+      {% endif %}
     </div>
     {% block pitch %}
     <h1>{% translate "Знания видно. Списывание тоже." %}</h1>

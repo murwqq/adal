@@ -337,6 +337,9 @@ msgstr "ID document"
 msgid "Должен быть ровно один правильный ответ"
 msgstr "There must be exactly one correct answer"
 
+msgid "Доступ запрещён"
+msgstr "Access denied"
+
 msgid "Доступны сейчас и скоро"
 msgstr "Available now and soon"
 
@@ -564,6 +567,9 @@ msgstr "My tests"
 
 msgid "Монголия"
 msgstr "Mongolia"
+
+msgid "На главную"
+msgstr "Go home"
 
 msgid "Наблюдать"
 msgstr "Monitor"
@@ -1172,6 +1178,9 @@ msgstr "Power"
 msgid "Страна"
 msgstr "Country"
 
+msgid "Страница не найдена"
+msgstr "Page not found"
+
 msgid "Страницы"
 msgstr "Pages"
 
@@ -1202,6 +1211,9 @@ msgstr "This question has no such answer option"
 
 msgid "Такого вопроса нет в вашем варианте"
 msgstr "There is no such question in your variant"
+
+msgid "Такой страницы нет. Проверьте адрес или вернитесь на главную."
+msgstr "This page doesn't exist. Check the address or go back home."
 
 msgid ""
 "Текст вводится без оформления — на экране студента все варианты выглядят "
@@ -1302,6 +1314,13 @@ msgstr "Turkmenistan"
 msgid "Турция"
 msgstr "Turkey"
 
+msgid ""
+"У вашей роли нет доступа к этой странице. Если вы считаете, что это ошибка, "
+"обратитесь к администратору."
+msgstr ""
+"Your role doesn't have access to this page. If you think this is a mistake, "
+"contact the administrator."
+
 msgid "Удалить"
 msgstr "Delete"
 
@@ -1384,13 +1403,6 @@ msgstr "Email"
 
 msgid "Этот тест назначен другой группе"
 msgstr "This test is assigned to another group"
-
-msgid ""
-"Юридически обязывающей является редакция соглашения на русском языке (п. "
-"14.4). Ниже приведён её текст."
-msgstr ""
-"The Russian version of these terms is legally binding (clause 14.4). Its "
-"text follows below."
 
 msgid "Я принимаю правила и условия платформы"
 msgstr "I accept the platform's terms and conditions"
