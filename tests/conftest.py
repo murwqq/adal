@@ -15,10 +15,13 @@ PASSWORD = "test-pass-2026"
 def _isolation(settings, tmp_path):
     """Каждый тест — со своей папкой файлов и пустым кэшем (счётчик неудачных входов)."""
     from django.core.cache import cache
+    from django.utils import translation
     settings.MEDIA_ROOT = tmp_path / "media"
     cache.clear()
+    translation.activate("ru")
     yield
     cache.clear()
+    translation.activate("ru")
 
 
 def _iin(prefix: str) -> str:
