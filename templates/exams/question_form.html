@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}{% if question %}Изменить вопрос{% else %}Новый вопрос{% endif %}{% endblock %}
+{% block math %}{% include "_math.html" %}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{% if question %}Изменить вопрос{% else %}Новый вопрос{% endif %}</h1>
+    <p class="muted">Текст вводится без оформления — на экране студента все варианты выглядят одинаково.</p>
+  </div>
+  <a class="btn btn-quiet" href="{% url 'exams:question_list' %}">Вернуться в банк</a>
+</div>
+
+{% for e in form.non_field_errors %}<div class="note error" role="alert">{{ e }}</div><br>{% endfor %}
+
+<form method="post" enctype="multipart/form-data" class="cols">
+  {% csrf_token %}
+  <div class="sheet">
+    <div class="field">
+      <label for="{{ form.text.id_for_label }}">Текст вопроса</label>
+      {{ form.text }}
+      {% for e in form.text.errors %}<p class="error">{{ e }}</p>{% endfor %}
+      <div class="chips" aria-label="Вставить формулу">
+        <button type="button" data-tex="$\frac{a}{b}$">Дробь</button>
+        <button type="button" data-tex="$x^{2}$">Степень</button>
+        <button type="button" data-tex="$x_{1}$">Индекс</button>
+        <button type="button" data-tex="$\sqrt{x}$">Корень</button>
+        <button type="button" data-tex="$\int_{a}^{b} f(x)\,dx$">Интеграл</button>
+        <button type="button" data-tex="$\sum_{i=1}^{n} a_i$">Сумма</button>
+        <button type="button" data-tex="$\lim_{x \to 0}$">Предел</button>
+        <button type="button" data-tex="$\vec{F}$">Вектор</button>
+        <button type="button" data-tex="$\alpha, \beta, \pi$">Греческие</button>
+      </div>
+    </div>
+    <div class="field">
+      <span class="label">Так увидит студент</span>
+      <div class="preview" id="preview" aria-live="polite"></div>
+    </div>
+    {% include "_field.html" with field=form.image %}
+    {% if question.image %}<img class="q-img" src="{{ question.image.url }}" alt="Текущий рисунок"><p class="small muted">Загрузите новый файл, чтобы заменить рисунок.</p>{% endif %}
+
+    <h3 style="margin-top:28px">Варианты ответа</h3>
+    <p class="small muted">Отметьте кружок у правильного ответа. Порядок вариантов у каждого студента будет свой.</p>
+    {% for e in form.correct.errors %}<p class="error">{{ e }}</p>{% endfor %}
+    {% for i, field in form.choice_rows %}
+    <div class="choice-row">
+      <span class="bubble-pick"><input type="radio" name="correct" value="{{ i }}" aria-label="Вариант {{ i|add:1 }} правильный" {% if form.correct.value|stringformat:"s" == i|stringformat:"s" %}checked{% endif %}></span>
+      <div>{{ field }}{% for e in field.errors %}<p class="error">{{ e }}</p>{% endfor %}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <aside class="sheet">
+    {% include "_field.html" with field=form.subject %}
+    {% include "_field.html" with field=form.topic %}
+    {% include "_field.html" with field=form.difficulty %}
+    <button class="btn btn-primary btn-block" type="submit">Сохранить вопрос</button>
+    {% if not question %}<button class="btn btn-block" style="margin-top:10px" type="submit" name="add_another" value="1">Сохранить и добавить ещё</button>{% endif %}
+    <div class="formula-help" style="margin-top:24px">
+      <p><b>Формулы.</b> Пишите между знаками доллара: <code>$E = mc^2$</code>. Для формулы отдельной строкой — двойные: <code>$$...$$</code>.</p>
+      <p>Платформа сама предупредит, если правильный ответ заметно длиннее остальных или варианты повторяются.</p>
+    </div>
+  </aside>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+  (function () {
+    var text = document.getElementById("{{ form.text.id_for_label }}");
+    var preview = document.getElementById("preview");
+    function update() {
+      preview.textContent = text.value || "Начните вводить текст вопроса";
+      if (window.renderMath) window.renderMath(preview);
+    }
+    text.addEventListener("input", update);
+    window.addEventListener("load", update);
+    document.querySelectorAll("[data-tex]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var s = text.selectionStart, e = text.selectionEnd, tex = b.dataset.tex;
+        text.value = text.value.slice(0, s) + tex + text.value.slice(e);
+        text.focus();
+        text.selectionStart = text.selectionEnd = s + tex.length;
+        update();
+      });
+    });
+  })();
+</script>
+{% endblock %}

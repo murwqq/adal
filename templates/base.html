@@ -1,0 +1,54 @@
+{% load static %}<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Адал{% endblock %} — Адал</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='12' fill='%2318202c'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  {% block math %}{% endblock %}
+  {% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+{% block chrome %}
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="wordmark" href="{% url 'dashboard' %}" aria-label="Адал — на главную">
+      <span class="mark" aria-hidden="true"><i></i><i class="on"></i><i></i><i></i></span>адал
+    </a>
+    {% if user.is_authenticated %}
+    {% with path=request.path %}
+    <nav class="nav" aria-label="Разделы">
+      <a href="{% url 'dashboard' %}" {% if path == '/' %}aria-current="page"{% endif %}>Главная</a>
+      {% if user.is_teacher %}
+      <a href="{% url 'exams:question_list' %}" {% if '/bank/' in path %}aria-current="page"{% endif %}>Банк вопросов</a>
+      <a href="{% url 'exams:exam_list' %}" {% if '/exams/' in path %}aria-current="page"{% endif %}>Тесты</a>
+      {% endif %}
+      {% if user.is_superuser %}<a href="{% url 'admin:index' %}">Администрирование</a>{% endif %}
+    </nav>
+    {% endwith %}
+    <div class="who">
+      <div class="who-name">{{ user.short_name }}<span>{{ user.get_role_display }}{% if user.group %}, {{ user.group }}{% endif %}</span></div>
+      <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}
+        <button class="btn btn-quiet" type="submit">Выйти</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+</header>
+{% endblock %}
+<main class="{% block main_class %}page{% endblock %}">
+  {% if messages %}
+  <div class="notes" role="status">
+    {% for m in messages %}<div class="note {{ m.tags }}">{{ m }}</div>{% endfor %}
+  </div>
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+{% block footer %}<footer class="footer">Адал — честное тестирование. Кызылординский университет имени Коркыт Ата.</footer>{% endblock %}
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Тест открыт в другом браузере{% endblock %}
+{% block content %}
+<div class="sheet" style="max-width:640px">
+  <h1>Продолжить здесь нельзя</h1>
+  <p>{{ reason }}</p>
+  <p class="muted">Если компьютер, на котором вы начали тест, завис или выключился, поднимите руку: преподаватель разрешит продолжить на этом компьютере. Все ответы, которые вы уже выбрали, сохранены.</p>
+  <a class="btn" href="{% url 'exams:attempt_take' attempt.pk %}">Проверить ещё раз</a>
+</div>
+{% endblock %}

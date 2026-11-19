@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Тесты{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Мои тесты</h1>
+  <a class="btn btn-primary" href="{% url 'exams:exam_new' %}">Создать тест</a>
+</div>
+<section class="sheet">
+  {% if exams %}
+  <div class="table-wrap"><table>
+    <thead><tr><th>Название</th><th>Когда</th><th class="right">Вопросов</th><th class="right">Минут</th><th class="right">Прошли</th><th>Код</th><th></th></tr></thead>
+    <tbody>
+    {% for e in exams %}
+    <tr>
+      <td><a href="{% url 'exams:exam_results' e.pk %}">{{ e.title }}</a><div class="small muted">{{ e.subject }}{% if e.groups %}, группы {{ e.groups }}{% endif %}</div></td>
+      <td class="num">{{ e.opens_at|date:"d.m.Y H:i" }}<br><span class="muted">до {{ e.closes_at|date:"d.m.Y H:i" }}</span></td>
+      <td class="right num">{{ e.question_count }}</td>
+      <td class="right num">{{ e.duration_minutes }}</td>
+      <td class="right num">{{ e.n_attempts }}</td>
+      <td><code>{{ e.access_code }}</code></td>
+      <td class="right" style="white-space:nowrap">
+        {% if e.opens_at <= now and now <= e.closes_at %}<span class="tag ok">Открыт</span>{% elif now > e.closes_at %}<span class="tag">Закрыт</span>{% else %}<span class="tag warn">Скоро</span>{% endif %}
+        <a class="btn btn-quiet" href="{% url 'exams:exam_edit' e.pk %}">Настроить</a>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  {% else %}
+  <div class="empty"><p>Тестов пока нет.</p><a class="btn btn-primary" href="{% url 'exams:exam_new' %}">Создать тест</a></div>
+  {% endif %}
+</section>
+{% endblock %}

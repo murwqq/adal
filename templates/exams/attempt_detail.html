@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ attempt.student.short_name }}: {{ attempt.exam.title }}{% endblock %}
+{% block math %}{% include "_math.html" %}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ attempt.student.full_name }}</h1>
+    <p class="muted">{{ attempt.exam.title }}. Группа {{ attempt.student.group|default:"не указана" }}. Начал в {{ attempt.started_at|date:"H:i" }}{% if attempt.finished_at %}, закончил в {{ attempt.finished_at|date:"H:i" }}{% endif %}. IP {{ attempt.ip_address|default:"неизвестен" }}.</p>
+  </div>
+  <a class="btn btn-quiet" href="{% url 'exams:exam_results' attempt.exam_id %}">Все результаты</a>
+</div>
+<div class="cols">
+  <section class="sheet">
+    <div class="score-big"><b>{{ attempt.score }}</b><span>из {{ attempt.max_score }}, {{ attempt.percent }}%. {{ attempt.get_status_display }}</span></div>
+    {% for r in items %}
+    <div class="review-item">
+      <div class="small muted">Вопрос {{ r.item.position }}{% if not r.item.selected %}, без ответа{% endif %}</div>
+      <div class="q-text">{{ r.item.question.text }}</div>
+      {% for c in r.choices %}
+      <div class="review-choice {% if c.is_correct %}correct{% endif %} {% if r.item.selected_id == c.id %}picked{% if not c.is_correct %} wrong{% endif %}{% endif %}">{{ c.text }}</div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </section>
+  <aside>
+    <section class="sheet">
+      <h3>Нарушения: {{ violations|length }}</h3>
+      {% for v in violations %}
+      <div class="small" style="padding:6px 0;border-bottom:1px solid var(--rule)"><span class="num muted">{{ v.created_at|date:"H:i:s" }}</span> {{ v.get_kind_display }}</div>
+      {% empty %}<p class="muted small">Нарушений не зафиксировано.</p>{% endfor %}
+    </section>
+    {% if attempt.status == "active" %}
+    <section class="sheet">
+      <h3>Управление</h3>
+      <p class="small muted">Если компьютер студента завис, разрешите продолжить — он войдёт заново, и ответы сохранятся.</p>
+      <form method="post" action="{% url 'exams:attempt_manage' attempt.pk %}">{% csrf_token %}
+        <button class="btn btn-block" name="action" value="resume">Разрешить продолжить в другом браузере</button>
+      </form>
+      <form method="post" action="{% url 'exams:attempt_manage' attempt.pk %}" style="margin-top:10px" onsubmit="return confirm('Остановить тест этого студента? Баллы посчитаются по уже данным ответам.')">{% csrf_token %}
+        <button class="btn btn-danger btn-block" name="action" value="stop">Остановить попытку</button>
+      </form>
+    </section>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

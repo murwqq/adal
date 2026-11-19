@@ -1,0 +1,17 @@
+{% extends "accounts/auth_base.html" %}
+{% block title %}Вход{% endblock %}
+{% block auth %}
+<h2>Вход</h2>
+<p class="lead">Студенты и преподаватели входят по ИИН.</p>
+{% for e in form.non_field_errors %}<div class="note error" role="alert">{{ e }}</div><br>{% endfor %}
+<form method="post" novalidate>
+  {% csrf_token %}
+  {% include "_field.html" with field=form.iin %}
+  {% include "_field.html" with field=form.password %}
+  <button class="btn btn-primary btn-lg btn-block" type="submit">Войти</button>
+</form>
+<div class="auth-switch">
+  <p class="muted">Поступаете в университет? <a href="{% url 'accounts:register' %}">Зарегистрируйтесь как абитуриент</a></p>
+  <p class="muted small">Забыли пароль — обратитесь в офис регистратора с удостоверением личности.</p>
+</div>
+{% endblock %}

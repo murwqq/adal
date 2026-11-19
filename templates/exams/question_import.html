@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Загрузка вопросов{% endblock %}
+{% block math %}{% include "_math.html" %}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Загрузка вопросов из Word</h1>
+    <p class="muted">Тот же формат, что и в Platonus, — переписывать файлы не нужно.</p>
+  </div>
+  <a class="btn btn-quiet" href="{% url 'exams:question_list' %}">Вернуться в банк</a>
+</div>
+
+<div class="cols">
+  <form class="sheet" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% include "_field.html" with field=form.file %}
+    <div class="grid-2">
+      {% include "_field.html" with field=form.subject %}
+      {% include "_field.html" with field=form.difficulty %}
+    </div>
+    {% include "_field.html" with field=form.dry_run %}
+    <button class="btn btn-primary btn-lg" type="submit">Загрузить</button>
+  </form>
+  <aside class="sheet">
+    <h3>Как оформить файл</h3>
+<pre class="small" style="background:var(--paper);padding:12px;border-radius:6px;white-space:pre-wrap">&lt;topic&gt;Производная
+&lt;question&gt;Производная функции $x^2$ равна
+&lt;variant&gt;$2x$
+&lt;variant&gt;$x$
+&lt;variant&gt;$x^3/3$
+&lt;variant&gt;$2$</pre>
+    <p class="small">Первый вариант после вопроса — правильный. Строка <code>&lt;topic&gt;</code> необязательна.</p>
+    <p class="small"><b>Что исправится само:</b> жирный, курсив и цвет будут удалены; формулы из редактора формул Word станут чёткими; нумерация «А)», «1.» перед вариантами уберётся.</p>
+  </aside>
+</div>
+
+{% if report %}
+<section class="sheet" style="margin-top:20px">
+  <div class="sheet-title">
+    <h2>{% if report.dry_run %}Проверка файла{% else %}Результат загрузки{% endif %}</h2>
+    <span class="muted">Найдено вопросов: <b>{{ report.items|length }}</b>{% if not report.dry_run %}, сохранено: <b>{{ report.saved }}</b>{% endif %}, с замечаниями: <b>{{ report.with_warnings }}</b></span>
+  </div>
+  {% for e in report.errors %}<div class="note error">{{ e }}</div>{% endfor %}
+  {% for q in report.items %}
+  <div class="review-item">
+    <div class="small muted">Вопрос {{ forloop.counter }}{% if q.topic %}, тема «{{ q.topic }}»{% endif %}</div>
+    <div class="q-text">{{ q.text|default:"(пусто)" }}</div>
+    {% if q.image %}<p class="small muted">К вопросу приложен рисунок.</p>{% endif %}
+    {% for text, ok in q.choices %}<div class="review-choice {% if ok %}correct{% endif %}">{{ text }}</div>{% endfor %}
+    {% for w in q.warnings %}<div class="note warning small" style="margin-top:8px">{{ w }}</div>{% endfor %}
+  </div>
+  {% endfor %}
+</section>
+{% endif %}
+{% endblock %}

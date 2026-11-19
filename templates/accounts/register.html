@@ -1,0 +1,92 @@
+{% extends "accounts/auth_base.html" %}
+{% block title %}Регистрация абитуриента{% endblock %}
+{% block box_class %}wide{% endblock %}
+{% block auth %}
+<h2>Регистрация абитуриента</h2>
+<p class="lead">После регистрации вы войдёте по ИИН и паролю.</p>
+{% if form.errors %}<div class="note error" role="alert">Проверьте поля, отмеченные ниже.</div><br>{% endif %}
+<form method="post" novalidate>
+  {% csrf_token %}
+  <fieldset>
+    <legend>Заявление</legend>
+    <div class="grid-2">
+      {% include "_field.html" with field=form.interface_language %}
+      {% include "_field.html" with field=form.degree %}
+    </div>
+    {% include "_field.html" with field=form.application_type %}
+    <div class="grid-2">
+      {% include "_field.html" with field=form.study_language %}
+      {% include "_field.html" with field=form.citizenship %}
+    </div>
+  </fieldset>
+  <fieldset>
+    <legend>Личность</legend>
+    <div class="field">
+      <label for="{{ form.iin.id_for_label }}">ИИН</label>
+      {{ form.iin }}
+      <div class="iin-info" id="iin-info" aria-live="polite"></div>
+      {% for e in form.iin.errors %}<p class="error">{{ e }}</p>{% endfor %}
+    </div>
+    <div class="grid-2">
+      {% include "_field.html" with field=form.doc_type %}
+      {% include "_field.html" with field=form.doc_number %}
+    </div>
+    <div class="grid-3">
+      {% include "_field.html" with field=form.last_name %}
+      {% include "_field.html" with field=form.first_name %}
+      {% include "_field.html" with field=form.patronymic %}
+    </div>
+    {% include "_field.html" with field=form.email %}
+  </fieldset>
+  <fieldset>
+    <legend>Пароль и проверка</legend>
+    <div class="grid-2">
+      {% include "_field.html" with field=form.password1 %}
+      {% include "_field.html" with field=form.password2 %}
+    </div>
+    <div class="field">
+      <label for="{{ form.captcha.id_for_label }}">{{ form.captcha.label }}</label>
+      <div class="captcha-row">
+        <img id="captcha-img" src="{% url 'accounts:captcha' %}" alt="Код проверки: латинские буквы и цифры">
+        <button class="btn" type="button" id="captcha-refresh">Другая картинка</button>
+      </div>
+      <div style="margin-top:10px">{{ form.captcha }}</div>
+      {% for e in form.captcha.errors %}<p class="error">{{ e }}</p>{% endfor %}
+    </div>
+    <div class="field">
+      <label class="check">{{ form.terms }} <span>Я принимаю <a href="{% url 'accounts:rules' %}" target="_blank" rel="noopener">правила и условия</a> платформы</span></label>
+      {% for e in form.terms.errors %}<p class="error">{{ e }}</p>{% endfor %}
+    </div>
+  </fieldset>
+  <button class="btn btn-primary btn-lg btn-block" type="submit">Зарегистрироваться</button>
+</form>
+<div class="auth-switch"><p class="muted">Уже зарегистрированы? <a href="{% url 'accounts:login' %}">Войти</a></p></div>
+{% endblock %}
+{% block scripts %}
+<script>
+  document.getElementById("captcha-refresh").addEventListener("click", function () {
+    document.getElementById("captcha-img").src = "{% url 'accounts:captcha' %}?t=" + Date.now();
+  });
+  // Подсказка по ИИН прямо при вводе: тот же алгоритм, что и на сервере.
+  (function () {
+    var input = document.getElementById("{{ form.iin.id_for_label }}");
+    var out = document.getElementById("iin-info");
+    var w1 = [1,2,3,4,5,6,7,8,9,10,11], w2 = [3,4,5,6,7,8,9,10,11,1,2];
+    function check(v) {
+      if (!/^\d{12}$/.test(v)) return v.length ? "Введено цифр: " + v.replace(/\D/g, "").length + " из 12" : "";
+      var d = v.split("").map(Number), s = 0, i;
+      for (i = 0; i < 11; i++) s += d[i] * w1[i];
+      s %= 11;
+      if (s === 10) { s = 0; for (i = 0; i < 11; i++) s += d[i] * w2[i]; s %= 11; }
+      if (s === 10 || s !== d[11]) return "Контрольная цифра не совпадает — проверьте ИИН";
+      var c = {1:1800,2:1800,3:1900,4:1900,5:2000,6:2000}[d[6]];
+      if (!c) return "Седьмая цифра ИИН должна быть от 1 до 6";
+      return "Дата рождения: " + v.slice(4,6) + "." + v.slice(2,4) + "." + (c + +v.slice(0,2));
+    }
+    input.addEventListener("input", function () {
+      input.value = input.value.replace(/\D/g, "").slice(0, 12);
+      out.textContent = check(input.value);
+    });
+  })();
+</script>
+{% endblock %}

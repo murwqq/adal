@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Банк вопросов{% endblock %}
+{% block math %}{% include "_math.html" %}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Банк вопросов</h1></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <a class="btn" href="{% url 'exams:question_import' %}">Загрузить из Word</a>
+    <a class="btn btn-primary" href="{% url 'exams:question_new' %}">Добавить вопрос</a>
+  </div>
+</div>
+
+<form class="filters" method="get" role="search">
+  <div class="field">
+    <label for="f-q">Поиск по тексту вопроса и ответов</label>
+    <input id="f-q" type="search" name="q" value="{{ params.q }}" placeholder="Например: производная">
+  </div>
+  <div class="field">
+    <label for="f-subject">Дисциплина</label>
+    <select id="f-subject" name="subject">
+      <option value="">Все</option>
+      {% for s in subjects %}<option value="{{ s.pk }}" {% if params.subject == s.pk|stringformat:"s" %}selected{% endif %}>{{ s.name }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label for="f-topic">Тема</label>
+    <select id="f-topic" name="topic">
+      <option value="">Все</option>
+      {% for t in topics %}<option {% if params.topic == t %}selected{% endif %}>{{ t }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label for="f-diff">Сложность</label>
+    <select id="f-diff" name="difficulty">
+      <option value="">Любая</option>
+      {% for v, l in difficulties %}<option value="{{ v }}" {% if params.difficulty == v|stringformat:"s" %}selected{% endif %}>{{ l }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label for="f-sort">Порядок</label>
+    <select id="f-sort" name="sort">
+      {% for s in sorts %}<option value="{{ s.key }}" {% if params.sort == s.key %}selected{% endif %}>{{ s.label }}</option>{% endfor %}
+    </select>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button class="btn btn-primary" type="submit">Найти</button>
+    <a class="btn btn-quiet" href="{% url 'exams:question_list' %}">Сбросить</a>
+  </div>
+  <label class="check small" style="grid-column:1/-1"><input type="checkbox" name="mine" value="1" {% if params.mine %}checked{% endif %} onchange="this.form.submit()"> Только мои вопросы</label>
+</form>
+
+<p class="result-count">Найдено вопросов: <b class="num">{{ page.paginator.count }}</b></p>
+
+<div class="q-list">
+  {% for q in page %}
+  <article class="q-card">
+    <div>
+      <div class="q-meta">
+        <span>{{ q.subject }}</span>
+        {% if q.topic %}<span>{{ q.topic }}</span>{% endif %}
+        <span class="dots" title="{{ q.get_difficulty_display }}" aria-label="Сложность: {{ q.get_difficulty_display }}">
+          <i class="on"></i><i {% if q.difficulty >= 2 %}class="on"{% endif %}></i><i {% if q.difficulty >= 3 %}class="on"{% endif %}></i>
+        </span>
+        {% if q.times_used %}<span>Решают верно {% widthratio q.times_correct q.times_used 100 %}%</span>{% endif %}
+      </div>
+      <div class="q-text">{{ q.text }}</div>
+      {% if q.image %}<img class="q-img" src="{{ q.image.url }}" alt="Рисунок к вопросу">{% endif %}
+    </div>
+    <div class="q-actions">
+      <a class="btn btn-quiet" href="{% url 'exams:question_edit' q.pk %}">Изменить</a>
+      <form method="post" action="{% url 'exams:question_delete' q.pk %}" onsubmit="return confirm('Удалить вопрос из банка?')">
+        {% csrf_token %}<button class="btn btn-quiet" type="submit">Удалить</button>
+      </form>
+    </div>
+    <ul class="q-choices">
+      {% for c in q.choices.all %}<li class="{% if c.is_correct %}correct{% endif %}">{{ c.text }}</li>{% endfor %}
+    </ul>
+  </article>
+  {% empty %}
+  <div class="empty">
+    <p>По этим условиям вопросов нет. Измените поиск или добавьте вопросы.</p>
+    <a class="btn btn-primary" href="{% url 'exams:question_new' %}">Добавить вопрос</a>
+  </div>
+  {% endfor %}
+</div>
+
+{% if page.has_other_pages %}
+<nav class="q-nav" aria-label="Страницы">
+  {% if page.has_previous %}<a class="btn" href="?{{ query }}&page={{ page.previous_page_number }}">Предыдущая страница</a>{% else %}<span></span>{% endif %}
+  <span class="muted num" style="align-self:center">{{ page.number }} из {{ page.paginator.num_pages }}</span>
+  {% if page.has_next %}<a class="btn" href="?{{ query }}&page={{ page.next_page_number }}">Следующая страница</a>{% else %}<span></span>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

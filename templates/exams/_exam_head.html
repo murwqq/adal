@@ -1,0 +1,12 @@
+<div class="page-head">
+  <div>
+    <h1>{{ exam.title }}</h1>
+    <p class="muted">{{ exam.subject }}{% if exam.topic %}, тема «{{ exam.topic }}»{% endif %}. {{ exam.question_count }} вопросов, {{ exam.duration_minutes }} мин. Код доступа <code>{{ exam.access_code }}</code>.</p>
+  </div>
+  <nav class="nav" aria-label="Разделы теста">
+    <a href="{% url 'exams:exam_results' exam.pk %}" {% if tab == "results" %}aria-current="page"{% endif %}>Результаты</a>
+    <a href="{% url 'exams:exam_analysis' exam.pk %}" {% if tab == "analysis" %}aria-current="page"{% endif %}>Анализ вопросов</a>
+    <a href="{% url 'exams:exam_monitor' exam.pk %}" {% if tab == "monitor" %}aria-current="page"{% endif %}>Наблюдение</a>
+    <a href="{% url 'exams:exam_edit' exam.pk %}">Настройки</a>
+  </nav>
+</div>

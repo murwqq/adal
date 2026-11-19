@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Мои тесты{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Мои тесты</h1>
+    <p class="muted">{% if user.group %}Группа {{ user.group }}.{% else %}Группа не указана — некоторые тесты могут быть не видны. Обратитесь в деканат.{% endif %}</p>
+  </div>
+</div>
+
+<section class="sheet">
+  <h2>Доступны сейчас и скоро</h2>
+  {% for exam in available %}
+  <div class="exam-row">
+    <div>
+      <h3>{{ exam.title }}</h3>
+      <div class="facts">
+        <span>{{ exam.subject }}</span>
+        <span>{{ exam.question_count }} вопросов</span>
+        <span>{{ exam.duration_minutes }} мин</span>
+        <span>{% if exam.opens_at > now %}Откроется {{ exam.opens_at|date:"d.m.Y в H:i" }}{% else %}Открыт до {{ exam.closes_at|date:"d.m.Y H:i" }}{% endif %}</span>
+      </div>
+    </div>
+    {% if exam.opens_at <= now %}
+      <a class="btn btn-primary" href="{% url 'exams:exam_start' exam.pk %}">Перейти к тесту</a>
+    {% else %}
+      <span class="tag">Ещё закрыт</span>
+    {% endif %}
+  </div>
+  {% empty %}
+  <div class="empty"><p>Назначенных тестов нет. Когда преподаватель откроет тест для вашей группы, он появится здесь.</p></div>
+  {% endfor %}
+</section>
+
+<section class="sheet">
+  <h2>Пройденные</h2>
+  {% if attempts %}
+  <div class="table-wrap"><table>
+    <thead><tr><th>Тест</th><th>Дата</th><th>Статус</th><th class="right">Результат</th><th></th></tr></thead>
+    <tbody>
+    {% for a in attempts %}
+    <tr>
+      <td>{{ a.exam.title }}<div class="small muted">{{ a.exam.subject }}</div></td>
+      <td class="num">{{ a.started_at|date:"d.m.Y H:i" }}</td>
+      <td>{% if a.status == "active" %}<span class="tag warn">Идёт</span>{% elif a.status == "terminated" %}<span class="tag bad">{{ a.get_status_display }}</span>{% else %}<span class="tag">{{ a.get_status_display }}</span>{% endif %}</td>
+      <td class="right num">{% if a.status != "active" %}{{ a.score }} из {{ a.max_score }}{% endif %}</td>
+      <td class="right">{% if a.status == "active" %}<a href="{% url 'exams:attempt_take' a.pk %}">Продолжить</a>{% else %}<a href="{% url 'exams:attempt_result' a.pk %}">Подробнее</a>{% endif %}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  {% else %}<p class="muted">Вы ещё не проходили тесты.</p>{% endif %}
+</section>
+{% endblock %}

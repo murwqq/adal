@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Наблюдение: {{ exam.title }}{% endblock %}
+{% block content %}
+{% include "exams/_exam_head.html" with tab="monitor" %}
+<section class="sheet">
+  <div class="sheet-title">
+    <h2><span class="live-dot" aria-hidden="true"></span>Сейчас в аудитории</h2>
+    <span class="muted small">Обновлено в <span id="updated" class="num">—</span>, каждые 5 секунд</span>
+  </div>
+  <p class="small muted">Сверху — студенты с нарушениями. «Нет связи» значит, что страница теста закрыта или компьютер отключён от сети больше 45 секунд.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Студент</th><th>Ответил</th><th>Осталось</th><th>Нарушения</th><th>Состояние</th><th></th></tr></thead>
+    <tbody id="rows"><tr><td colspan="6" class="muted">Загрузка…</td></tr></tbody>
+  </table></div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  var url = "{% url 'exams:exam_monitor_data' exam.pk %}";
+  var detail = "{% url 'exams:attempt_detail' 0 %}";
+  var tbody = document.getElementById("rows");
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function mmss(s) { var m = Math.floor(s / 60), r = s % 60; return m + ":" + (r < 10 ? "0" : "") + r; }
+  function render(data) {
+    document.getElementById("updated").textContent = data.time;
+    tbody.innerHTML = "";
+    if (!data.rows.length) { var tr = el("tr"); var td = el("td", "muted", "Никто ещё не начал тест"); td.colSpan = 6; tr.appendChild(td); tbody.appendChild(tr); return; }
+    data.rows.forEach(function (r) {
+      var tr = el("tr", r.violations ? "flag-row" : "");
+      var who = el("td"); who.appendChild(document.createTextNode(r.name));
+      who.appendChild(el("div", "small muted", (r.group || "без группы") + (r.ip ? ", " + r.ip : ""))); tr.appendChild(who);
+      var prog = el("td", "num"); var bar = el("span", "bar-mini"); var fill = el("i");
+      fill.style.width = (r.total ? Math.round(100 * r.answered / r.total) : 0) + "%"; bar.appendChild(fill);
+      prog.appendChild(bar); prog.appendChild(document.createTextNode(r.answered + " из " + r.total)); tr.appendChild(prog);
+      tr.appendChild(el("td", "num", r.status === "active" ? mmss(r.left) : "—"));
+      var v = el("td"); if (r.violations) { v.appendChild(el("span", "tag bad", r.violations)); v.appendChild(el("div", "small muted", r.last_violation)); } else { v.textContent = "0"; } tr.appendChild(v);
+      var st = el("td");
+      if (r.status === "active") st.appendChild(el("span", r.stale ? "tag bad" : "tag ok", r.stale ? "Нет связи" : "Пишет"));
+      else st.appendChild(el("span", r.status === "terminated" ? "tag bad" : "tag", r.status_label + (r.status !== "active" ? ", " + r.percent + "%" : "")));
+      tr.appendChild(st);
+      var a = el("td", "right"); var link = el("a", "", "Подробнее"); link.href = detail.replace("/0/", "/" + r.id + "/"); a.appendChild(link); tr.appendChild(a);
+      tbody.appendChild(tr);
+    });
+  }
+  function tick() { fetch(url, {credentials: "same-origin"}).then(function (r) { return r.json(); }).then(render).catch(function () {}); }
+  tick(); setInterval(tick, 5000);
+})();
+</script>
+{% endblock %}

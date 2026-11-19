@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Результат: {{ attempt.exam.title }}{% endblock %}
+{% block math %}{% include "_math.html" %}{% endblock %}
+{% block content %}
+<div class="cols">
+  <section class="sheet">
+    <p class="muted" style="margin-bottom:8px">{{ attempt.exam.title }}</p>
+    <div class="score-big"><b>{{ attempt.score }}</b><span>из {{ attempt.max_score }} — это {{ attempt.percent }}%</span></div>
+    {% if attempt.status == "terminated" %}
+      <div class="note error" style="margin-top:20px">Тест завершён досрочно: нарушений набралось {{ attempt.violation_count }} из {{ attempt.exam.max_violations }} допустимых. Баллы посчитаны по ответам, данным до остановки.</div>
+    {% elif attempt.status == "expired" %}
+      <div class="note warning" style="margin-top:20px">Время вышло. Засчитаны ответы, выбранные до окончания времени.</div>
+    {% endif %}
+
+    {% if review %}
+    <h2 style="margin-top:32px">Разбор ответов</h2>
+    {% for r in review %}
+    <div class="review-item">
+      <div class="small muted">Вопрос {{ r.item.position }}{% if not r.item.selected %}, без ответа{% endif %}</div>
+      <div class="q-text">{{ r.item.question.text }}</div>
+      {% for c in r.choices %}
+      <div class="review-choice {% if c.is_correct %}correct{% endif %} {% if r.item.selected_id == c.id %}picked{% if not c.is_correct %} wrong{% endif %}{% endif %}">{{ c.text }}</div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+    {% else %}
+    <p class="muted" style="margin-top:24px">Разбор ответов преподаватель покажет на занятии.</p>
+    {% endif %}
+    <a class="btn" href="{% url 'dashboard' %}" style="margin-top:20px">К моим тестам</a>
+  </section>
+  <aside class="sheet">
+    <h3>Нарушения</h3>
+    {% for v in violations %}
+      <div class="small" style="padding:6px 0;border-bottom:1px solid var(--rule)"><span class="num muted">{{ v.created_at|date:"H:i:s" }}</span> {{ v.get_kind_display }}</div>
+    {% empty %}<p class="muted small">Нарушений нет. Спасибо за честную работу.</p>{% endfor %}
+  </aside>
+</div>
+{% endblock %}
