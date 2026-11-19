@@ -109,7 +109,7 @@ ChatGPT, преподаватель видит это сразу.
 Нужен Python 3.11 или новее.
 
 ```bash
-git clone https://github.com/EVMura/adal.git
+git clone https://github.com/murwqq/adal.git
 cd adal
 python -m venv .venv
 .venv\Scripts\activate            # Linux и macOS: source .venv/bin/activate
