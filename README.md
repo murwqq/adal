@@ -1,8 +1,19 @@
 # Адал — платформа тестирования студентов с таймером
 
+![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/Django-6-0C4B33?logo=django&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-83%20passed-2ea44f)
+![Coverage](https://img.shields.io/badge/coverage-92%25-2ea44f)
+![Languages](https://img.shields.io/badge/UI-қаз%20%7C%20рус%20%7C%20eng-0f6b58)
+
 Веб-приложение на Django для честного тестирования: банк вопросов, случайные варианты
 для каждого студента, серверный таймер, анализ ответов, поиск с фильтрацией и сортировкой.
 Вариант 9 из учебного пособия «Python көмегімен платформааралық қосымшаларды әзірлеу».
+
+![Экран теста](docs/screens/04b-exam-screen.jpg)
+
+📄 **Документация по пособию** (анализ, ТЗ, архитектура, макеты, тесты, руководство,
+пояснительная записка, презентация) — в папке [`docs/`](docs/README.md).
 
 ## Какие проблемы решает
 
@@ -47,6 +58,8 @@ python manage.py runserver
 `adal2026`, ИИН выводятся командой. Код доступа к открытому тесту — `ADAL24`.
 
 ## Тесты
+
+83 теста, покрытие 92 % (бизнес-логика — 98 %). Подробно — [план тестирования](docs/06-test-plan.md).
 
 ```
 python -m pytest
