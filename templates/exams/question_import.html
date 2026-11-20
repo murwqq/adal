@@ -6,7 +6,7 @@
 <div class="page-head">
   <div>
     <h1>{% translate "Загрузка вопросов из Word" %}</h1>
-    <p class="muted">{% translate "Тот же формат, что и в Platonus, — переписывать файлы не нужно." %}</p>
+    <p class="muted">{% translate "Формат тот же, что в Platonus, так что файлы можно загружать без правок." %}</p>
   </div>
   <a class="btn btn-quiet" href="{% url 'exams:question_list' %}">{% translate "Вернуться в банк" %}</a>
 </div>
@@ -30,7 +30,7 @@
 &lt;variant&gt;$x$
 &lt;variant&gt;$x^3/3$
 &lt;variant&gt;$2$</pre>
-    <p class="small">{% translate "Первый вариант после вопроса — правильный. Строка" %} <code>&lt;topic&gt;</code> {% translate "необязательна." %}</p>
+    <p class="small">{% translate "Первый вариант после вопроса считается правильным. Строка" %} <code>&lt;topic&gt;</code> {% translate "необязательна." %}</p>
     <p class="small"><b>{% translate "Что исправится само:" %}</b> {% translate "жирный, курсив и цвет будут удалены; формулы из редактора формул Word станут чёткими; нумерация «А)», «1.» перед вариантами уберётся." %}</p>
   </aside>
 </div>

@@ -15,7 +15,7 @@
   {% for e in form.non_field_errors %}<div class="note error" role="alert">{{ e }}</div><br>{% endfor %}
   <form method="post">
     {% csrf_token %}
-    <label for="{{ form.code.id_for_label }}">{% translate "Код доступа — его называет преподаватель в аудитории" %}</label>
+    <label for="{{ form.code.id_for_label }}">{% translate "Код доступа (его называет преподаватель в аудитории)" %}</label>
     <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
       <input class="code-input" type="text" name="code" id="{{ form.code.id_for_label }}" maxlength="12" autocomplete="off" required autofocus>
       <button class="btn btn-primary btn-lg" type="submit">{% translate "Начать тест" %}</button>

@@ -1,6 +1,9 @@
 {% extends "accounts/auth_base.html" %}
 {% load i18n %}
-{% block title %}{% translate "Вход" %}{% endblock %}
+{% block full_title %}{% translate "Адал: онлайн-тестирование студентов университета Коркыт Ата" %}{% endblock %}
+{% block robots %}index, follow{% endblock %}
+{% block description %}{% translate "Вход по ИИН для студентов и преподавателей Кызылординского университета имени Коркыт Ата. Абитуриенты здесь регистрируются и сдают вступительные тесты." %}{% endblock %}
+{% block seo %}{% translate "Адал: онлайн-тестирование студентов университета Коркыт Ата" as seo_title %}{% translate "Вход по ИИН для студентов и преподавателей Кызылординского университета имени Коркыт Ата. Абитуриенты здесь регистрируются и сдают вступительные тесты." as seo_description %}{% include "_seo.html" %}{% endblock %}
 {% block auth %}
 <h2>{% translate "Вход в Адал" %}</h2>
 {% for e in form.non_field_errors %}<div class="note error" role="alert" style="margin-bottom:20px">{{ e }}</div>{% endfor %}
@@ -18,7 +21,7 @@
     </div>
     {{ form.password }}
     {% for e in form.password.errors %}<p class="error">{{ e }}</p>{% endfor %}
-    <p class="help" id="forgot" hidden>{% translate "Пароль сбрасывает офис регистратора — подойдите с удостоверением личности." %}</p>
+    <p class="help" id="forgot" hidden>{% translate "Пароль сбрасывает офис регистратора. Возьмите с собой удостоверение личности." %}</p>
   </div>
   <button class="btn btn-primary btn-lg btn-block" type="submit">{% translate "Войти" %}</button>
 </form>

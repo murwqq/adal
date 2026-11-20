@@ -66,7 +66,7 @@ def test_registration_errors(client, student):
         "iin": student.iin, "password1": "abc", "password2": "abd", "captcha": "XXXXX"})
     html = r.content.decode()
     assert "уже зарегистрирован" in html and "Пароли не совпадают" in html
-    assert "Символы не совпадают" in html and "Без согласия" in html
+    assert "Символы не совпали" in html and "Без согласия" in html
 
 
 # ---------- Права доступа ----------

@@ -32,7 +32,7 @@ def test_text_format_first_variant_is_correct():
 def test_cp1251_text_and_orphan_variant():
     data = "<variant>сирота\n<question>Вопрос\n<variant>да\n<variant>нет".encode("cp1251")
     items, errors = import_file("old.txt", data)
-    assert len(items) == 1 and "до первого" in errors[0]
+    assert len(items) == 1 and "раньше первого" in errors[0]
 
 
 def test_empty_file_reports_error():

@@ -1,9 +1,12 @@
 {% extends "accounts/auth_base.html" %}
 {% load i18n %}
 {% block title %}{% translate "Регистрация абитуриента" %}{% endblock %}
+{% block robots %}index, follow{% endblock %}
+{% block description %}{% translate "Регистрация абитуриента Кызылординского университета имени Коркыт Ата в три шага. Через аккаунт вы сдаёте вступительные тесты и видите результаты." %}{% endblock %}
+{% block seo %}{% translate "Регистрация абитуриента" as seo_title %}{% translate "Регистрация абитуриента Кызылординского университета имени Коркыт Ата в три шага. Через аккаунт вы сдаёте вступительные тесты и видите результаты." as seo_description %}{% include "_seo.html" %}{% endblock %}
 {% block box_class %}wide{% endblock %}
 {% block pitch %}
-<h1>{% translate "Поступление начинается здесь." %}</h1>
+<h1>{% translate "Абитуриентам сюда." %}</h1>
 <p>{% translate "Через этот аккаунт вы будете сдавать вступительные тесты и видеть результаты." %}</p>
 {% endblock %}
 {% block auth %}
@@ -45,7 +48,7 @@
     </div>
     <div class="grid-2">
       <div class="field">
-        <label for="{{ form.patronymic.id_for_label }}">{% translate "Отчество" %} <span class="optional">{% translate "— если есть" %}</span></label>
+        <label for="{{ form.patronymic.id_for_label }}">{% translate "Отчество" %} <span class="optional">{% translate "(если есть)" %}</span></label>
         {{ form.patronymic }}
       </div>
       {% include "_field.html" with field=form.email %}
@@ -148,7 +151,7 @@
     for (i = 0; i < 11; i++) s += d[i] * w1[i];
     s %= 11;
     if (s === 10) { s = 0; for (i = 0; i < 11; i++) s += d[i] * w2[i]; s %= 11; }
-    if (s === 10 || s !== d[11]) return "{% translate "Контрольная цифра не совпадает — проверьте ИИН" %}";
+    if (s === 10 || s !== d[11]) return "{% translate "Контрольная цифра не совпадает, проверьте ИИН" %}";
     var c = {1:1800,2:1800,3:1900,4:1900,5:2000,6:2000}[d[6]];
     if (!c) return "{% translate "Седьмая цифра ИИН должна быть от 1 до 6" %}";
     return "{% translate "Дата рождения:" %} " + v.slice(4,6) + "." + v.slice(2,4) + "." + (c + +v.slice(0,2));

@@ -40,7 +40,7 @@ def test_wrong_checksum_rejected():
 
 
 def test_impossible_date_rejected():
-    with pytest.raises(IINError, match="дата"):
+    with pytest.raises(IINError, match="дату рождения"):
         parse_iin(valid("0413315"))
 
 

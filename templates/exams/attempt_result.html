@@ -6,7 +6,7 @@
 <div class="cols">
   <section class="sheet">
     <p class="muted" style="margin-bottom:8px">{{ attempt.exam.title }}</p>
-    <div class="score-big"><b>{{ attempt.score }}</b><span>{% blocktranslate trimmed with max_score=attempt.max_score percent=attempt.percent %}из {{ max_score }} — это {{ percent }}%{% endblocktranslate %}</span></div>
+    <div class="score-big"><b>{{ attempt.score }}</b><span>{% blocktranslate trimmed with max_score=attempt.max_score percent=attempt.percent %}из {{ max_score }}, это {{ percent }}%{% endblocktranslate %}</span></div>
     {% if attempt.status == "terminated" %}
       <div class="note error" style="margin-top:20px">{% blocktranslate trimmed with violation_count=attempt.violation_count max_violations=attempt.exam.max_violations %}Тест завершён досрочно: нарушений набралось {{ violation_count }} из {{ max_violations }} допустимых. Баллы посчитаны по ответам, данным до остановки.{% endblocktranslate %}</div>
     {% elif attempt.status == "expired" %}

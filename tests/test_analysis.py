@@ -24,7 +24,7 @@ def test_negative_discrimination_flags_wrong_key():
     answers = [(score, {1: 10 if score < 50 else 11}) for score in range(0, 100, 10)]
     stat = analyze_items(QUESTIONS, answers)[0]
     assert stat.d < 0
-    assert any("ошибка в ключе" in f for f in stat.flags)
+    assert any("в ключе ошибка" in f for f in stat.flags)
 
 
 def test_dead_distractors_and_easy_item():

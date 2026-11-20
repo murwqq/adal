@@ -91,7 +91,7 @@ class RegistrationForm(forms.ModelForm):
     def clean_captcha(self):
         value = self.cleaned_data["captcha"]
         if not captcha.check(self.expected_captcha, value):
-            raise forms.ValidationError(_("Символы не совпадают — введите код с новой картинки"))
+            raise forms.ValidationError(_("Символы не совпали. Введите код с новой картинки"))
         return value
 
     def clean(self):

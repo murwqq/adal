@@ -61,9 +61,9 @@ def flags_for(stat: QuestionStat) -> list[str]:
     if stat.p >= TOO_EASY:
         flags.append(_("Слишком лёгкий: почти все отвечают верно"))
     if stat.p <= TOO_HARD:
-        flags.append(_("Слишком трудный — проверьте, верно ли отмечен ответ"))
+        flags.append(_("Слишком трудный. Проверьте, верно ли отмечен ответ"))
     if stat.d is not None and stat.d < 0:
-        flags.append(_("Сильные студенты ошибаются чаще слабых — вероятно, ошибка в ключе"))
+        flags.append(_("Сильные студенты ошибаются чаще слабых. Скорее всего, в ключе ошибка"))
     elif stat.d is not None and stat.d < WEAK_DISCRIMINATION:
         flags.append(_("Плохо отделяет знающих от незнающих"))
     dead = [c for c in stat.choices if not c.is_correct and c.share < DEAD_DISTRACTOR]
@@ -136,7 +136,7 @@ def lint_question(text: str, choices: list[tuple[str, bool]]) -> list[str]:
     if len(correct) == 1 and len(choices) >= 3:
         wrong_lengths = [len(t) for t, ok in choices if not ok]
         if len(correct[0]) > LONGEST_RATIO * max(wrong_lengths):
-            problems.append(_("Правильный ответ заметно длиннее остальных — это подсказка"))
+            problems.append(_("Правильный ответ заметно длиннее остальных, по длине его легко угадать"))
     lowered = " ".join(normalized)
     if "все перечисленн" in lowered or "все ответы верн" in lowered:
         problems.append(_("Вариант «все перечисленные» облегчает угадывание"))

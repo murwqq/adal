@@ -5,7 +5,7 @@
 <div class="page-head">
   <div>
     <h1>{% translate "Мои тесты" %}</h1>
-    <p class="muted">{% if user.group %}{% blocktranslate trimmed with group=user.group %}Группа {{ group }}.{% endblocktranslate %}{% else %}{% translate "Группа не указана — некоторые тесты могут быть не видны. Обратитесь в деканат." %}{% endif %}</p>
+    <p class="muted">{% if user.group %}{% blocktranslate trimmed with group=user.group %}Группа {{ group }}.{% endblocktranslate %}{% else %}{% translate "Группа не указана, поэтому часть тестов может быть не видна. Обратитесь в деканат." %}{% endif %}</p>
   </div>
 </div>
 

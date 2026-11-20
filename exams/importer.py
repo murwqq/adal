@@ -272,7 +272,7 @@ def parse_segments(segments: list[Segment]) -> tuple[list[ImportedQuestion], lis
                 target = "question"
             elif VARIANT_TAG.fullmatch(tag):
                 if current is None:
-                    errors.append(_("Найден <variant> до первого <question> — пропущен"))
+                    errors.append(_("<variant> стоит раньше первого <question>, этот вариант пропущен"))
                     target = None
                     continue
                 current.choices.append(("", not current.choices))
@@ -296,7 +296,7 @@ def parse_segments(segments: list[Segment]) -> tuple[list[ImportedQuestion], lis
             current.styled_choices[-1] = current.styled_choices[-1] or styled
             if images:
                 current.warnings.append(
-                    _("Картинка внутри варианта ответа не переносится — напишите вариант текстом или формулой $…$"))
+                    _("Картинки в вариантах ответа не переносятся. Напишите вариант текстом или формулой $…$"))
     return questions, errors
 
 
@@ -307,7 +307,7 @@ def finalize(questions: list[ImportedQuestion]) -> list[ImportedQuestion]:
         q.choices = [(strip_list_marker(clean_text(t)), ok) for t, ok in q.choices]
         if any(q.styled_choices):
             if q.styled_choices and q.styled_choices[0] and not all(q.styled_choices):
-                q.warnings.append(_("В файле правильный ответ был выделен (жирный/цвет/курсив). Выделение удалено — на платформе все варианты выглядят одинаково"))
+                q.warnings.append(_("В файле правильный ответ был выделен (жирный, цвет или курсив). Выделение снято, у студентов все варианты будут выглядеть одинаково"))
             else:
                 q.warnings.append(_("Оформление вариантов (жирный, курсив, цвет) удалено"))
         if q.image is not None:
@@ -322,10 +322,10 @@ def normalize_image(blob: bytes) -> tuple[bytes | None, list[str]]:
         img = Image.open(io.BytesIO(blob))
         img.load()
     except (UnidentifiedImageError, OSError):
-        return None, [_("Картинку не удалось прочитать (формат WMF/EMF?) — вставьте её как PNG или наберите формулу в редакторе формул")]
+        return None, [_("Картинку не удалось прочитать, возможно, это WMF или EMF. Вставьте её как PNG или наберите формулу в редакторе формул")]
     warnings = []
     if img.width < MIN_READABLE_WIDTH or img.height < MIN_READABLE_HEIGHT:
-        warnings.append(_("Картинка слишком мелкая (%(w)s×%(h)s px) и может быть нечитаемой. Если это формула — наберите её через $…$") % {"w": img.width, "h": img.height})
+        warnings.append(_("Картинка слишком мелкая (%(w)s×%(h)s px) и может быть нечитаемой. Если это формула, наберите её через $…$") % {"w": img.width, "h": img.height})
     if img.mode not in ("RGB", "RGBA", "L"):
         img = img.convert("RGBA")
     if img.width > MAX_IMAGE_WIDTH:

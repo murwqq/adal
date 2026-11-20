@@ -1,0 +1,12 @@
+{% load i18n static %}{% get_current_language as LANG %}
+  <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{% translate "Адал" %}">
+  <meta property="og:title" content="{{ seo_title }}">
+  <meta property="og:description" content="{{ seo_description }}">
+  <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/og.png' %}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="{% if LANG == 'kk' %}kk_KZ{% elif LANG == 'en' %}en_US{% else %}ru_RU{% endif %}">
+  <meta name="twitter:card" content="summary_large_image">

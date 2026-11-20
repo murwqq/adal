@@ -38,7 +38,7 @@ def parse_iin(raw: str) -> IINInfo:
         raise IINError(_("ИИН состоит ровно из 12 цифр"))
     digits = [int(c) for c in value]
     if checksum(digits[:11]) != digits[11]:
-        raise IINError(_("Контрольная цифра ИИН не совпадает — проверьте номер"))
+        raise IINError(_("Контрольная цифра ИИН не совпадает, проверьте номер"))
     century_digit = digits[6]
     if century_digit not in CENTURY_BY_DIGIT:
         raise IINError(_("Седьмая цифра ИИН должна быть от 1 до 6"))
@@ -46,7 +46,7 @@ def parse_iin(raw: str) -> IINInfo:
     try:
         born = date(year, int(value[2:4]), int(value[4:6]))
     except ValueError as exc:
-        raise IINError(_("Первые 6 цифр ИИН — некорректная дата рождения")) from exc
+        raise IINError(_("Первые 6 цифр ИИН не похожи на дату рождения")) from exc
     return IINInfo(birth_date=born, is_male=century_digit % 2 == 1)
 
 

@@ -75,12 +75,12 @@ class Exam(models.Model):
     opens_at = models.DateTimeField(_("Открывается"))
     closes_at = models.DateTimeField(_("Закрывается"))
     groups = models.CharField(_("Группы"), max_length=300, blank=True,
-                              help_text=_("Через запятую, например: ИС-21, ИС-22. Пусто — все"))
+                              help_text=_("Через запятую, например: ИС-21, ИС-22. Если оставить пустым, тест увидят все группы"))
     access_code = models.CharField(_("Код доступа"), max_length=12,
                                    help_text=_("Преподаватель говорит его вслух в аудитории"))
     allowed_ip_prefix = models.CharField(
         _("Разрешённая сеть"), max_length=60, blank=True,
-        help_text=_("Начало IP-адресов компьютерного класса, например 10.12.5. Пусто — любая сеть"))
+        help_text=_("Начало IP-адресов компьютерного класса, например 10.12.5. Если оставить пустым, тест откроется из любой сети"))
     max_violations = models.PositiveSmallIntegerField(
         _("Нарушений до завершения"), default=3,
         help_text=_("Уход со страницы, выход из полноэкранного режима и т. п."))

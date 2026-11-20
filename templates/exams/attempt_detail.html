@@ -33,7 +33,7 @@
     {% if attempt.status == "active" %}
     <section class="sheet">
       <h3>{% translate "Управление" %}</h3>
-      <p class="small muted">{% translate "Если компьютер студента завис, разрешите продолжить — он войдёт заново, и ответы сохранятся." %}</p>
+      <p class="small muted">{% translate "Если компьютер студента завис, разрешите ему продолжить: он войдёт заново, ответы сохранятся." %}</p>
       <form method="post" action="{% url 'exams:attempt_manage' attempt.pk %}">{% csrf_token %}
         <button class="btn btn-block" name="action" value="resume">{% translate "Разрешить продолжить в другом браузере" %}</button>
       </form>

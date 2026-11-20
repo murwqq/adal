@@ -6,7 +6,7 @@
 <div class="page-head">
   <div>
     <h1>{% if question %}{% translate "Изменить вопрос" %}{% else %}{% translate "Новый вопрос" %}{% endif %}</h1>
-    <p class="muted">{% translate "Текст вводится без оформления — на экране студента все варианты выглядят одинаково." %}</p>
+    <p class="muted">{% translate "Оформление не сохраняется, поэтому на экране студента все варианты выглядят одинаково." %}</p>
   </div>
   <a class="btn btn-quiet" href="{% url 'exams:question_list' %}">{% translate "Вернуться в банк" %}</a>
 </div>
@@ -57,7 +57,7 @@
     <button class="btn btn-primary btn-block" type="submit">{% translate "Сохранить вопрос" %}</button>
     {% if not question %}<button class="btn btn-block" style="margin-top:10px" type="submit" name="add_another" value="1">{% translate "Сохранить и добавить ещё" %}</button>{% endif %}
     <div class="formula-help" style="margin-top:24px">
-      <p><b>{% translate "Формулы." %}</b> {% translate "Пишите между знаками доллара:" %} <code>$E = mc^2$</code>{% translate ". Для формулы отдельной строкой — двойные:" %} <code>$$...$$</code>.</p>
+      <p><b>{% translate "Формулы." %}</b> {% translate "Пишите между знаками доллара:" %} <code>$E = mc^2$</code>{% translate ". Для формулы отдельной строкой ставьте двойные:" %} <code>$$...$$</code>.</p>
       <p>{% translate "Платформа сама предупредит, если правильный ответ заметно длиннее остальных или варианты повторяются." %}</p>
     </div>
   </aside>
