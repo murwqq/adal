@@ -83,7 +83,10 @@ def _database_from_url(url: str) -> dict:
 
 # С переменной DATABASE_URL (например, база Neon на Vercel) данные хранятся
 # в PostgreSQL и не пропадают. Без неё работает локальная SQLite.
-DATABASE_URL = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL")
+# Прямое подключение (UNPOOLED) важнее: через пул Neon (PgBouncer) блокировка
+# миграций при холодном старте может остаться висеть на чужом соединении.
+DATABASE_URL = (os.environ.get("DATABASE_URL_UNPOOLED") or os.environ.get("DATABASE_URL")
+                or os.environ.get("POSTGRES_URL"))
 DATABASES = {
     "default": _database_from_url(DATABASE_URL) if DATABASE_URL else {
         "ENGINE": "django.db.backends.sqlite3",
