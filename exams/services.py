@@ -15,7 +15,7 @@ from django.utils import timezone
 from .analysis import analyze_items, lint_question, score_summary
 from .dbfuncs import ULower
 from .importer import clean_text
-from .models import Attempt, AttemptItem, Choice, Exam, Question, Violation
+from .models import Attempt, AttemptItem, Choice, Exam, Question, Retake, Subject, Violation
 
 GRACE_SECONDS = 5            # запас на сетевую задержку при последнем ответе
 VIOLATION_DEBOUNCE_SECONDS = 3
@@ -56,8 +56,9 @@ def validate_question(text: str, choices: list[tuple[str, bool]]) -> list[str]:
 @transaction.atomic
 def save_question(*, subject, author, text: str, choices: list[tuple[str, bool]],
                   topic: str = "", difficulty: int = 2, image: bytes | None = None,
-                  question: Question | None = None) -> tuple[Question, list[str]]:
-    """Создаёт или обновляет вопрос вместе с вариантами ответов."""
+                  question: Question | None = None, exam: Exam | None = None) -> tuple[Question, list[str]]:
+    """Создаёт или обновляет вопрос вместе с вариантами ответов.
+    С `exam` вопрос сразу добавляется в этот тест (и остаётся в банке)."""
     text = clean_text(text)
     choices = [(clean_text(t), ok) for t, ok in choices if t and t.strip()]
     warnings = validate_question(text, choices)
@@ -81,17 +82,20 @@ def save_question(*, subject, author, text: str, choices: list[tuple[str, bool]]
         question.choices.all().delete()
         Choice.objects.bulk_create(Choice(question=question, text=t, is_correct=ok)
                                    for t, ok in choices)
+    if exam is not None:
+        exam.questions.add(question)
     return question, warnings
 
 
-def save_imported(items, *, subject, author, difficulty: int = 2) -> tuple[int, list[str]]:
+def save_imported(items, *, subject, author, difficulty: int = 2,
+                  exam: Exam | None = None) -> tuple[int, list[str]]:
     """Сохраняет вопросы из импорта; возвращает число сохранённых и ошибки."""
     saved, errors = 0, []
     for number, item in enumerate(items, start=1):
         try:
             save_question(subject=subject, author=author, text=item.text,
                           choices=item.choices, topic=item.topic, difficulty=difficulty,
-                          image=item.image)
+                          image=item.image, exam=exam)
             saved += 1
         except ExamError as exc:
             errors.append(_("Вопрос %(n)s: %(error)s") % {"n": number, "error": exc})
@@ -108,6 +112,66 @@ def delete_question(question: Question) -> str:
     return _("Вопрос удалён")
 
 
+def add_from_bank(exam: Exam, question_ids) -> int:
+    """Добавляет в тест вопросы банка той же дисциплины. Возвращает, сколько добавлено."""
+    ids = set(Question.objects.filter(id__in=question_ids, subject=exam.subject, is_active=True)
+              .exclude(exams=exam).values_list("id", flat=True))
+    exam.questions.add(*ids)
+    return len(ids)
+
+
+def remove_from_exam(exam: Exam, question: Question) -> None:
+    """Убирает вопрос из теста. Сам вопрос остаётся в банке, а уже выданные
+    варианты не меняются."""
+    exam.questions.remove(question)
+
+
+def delete_exam(exam: Exam) -> str:
+    if exam.attempts.filter(status=Attempt.Status.ACTIVE).exists():
+        raise ExamError(_("Тест сейчас пишут. Удалить его можно, когда все закончат"))
+    title = exam.title
+    exam.delete()
+    return _("Тест «%(title)s» удалён вместе с результатами") % {"title": title}
+
+
+def delete_subject(subject: Subject) -> str:
+    """Дисциплину можно удалить, пока по ней нет тестов. Её вопросы удаляются вместе с ней."""
+    n_exams = subject.exams.count()
+    if n_exams:
+        raise ExamError(_("По дисциплине «%(name)s» есть тесты (%(n)s). Сначала удалите их")
+                        % {"name": subject.name, "n": n_exams})
+    if AttemptItem.objects.filter(question__subject=subject).exists():
+        raise ExamError(_("Вопросы этой дисциплины уже попадали студентам, поэтому её нельзя удалить"))
+    name = subject.name
+    subject.delete()
+    return _("Дисциплина «%(name)s» удалена") % {"name": name}
+
+
+# ---------- Пересдача ----------
+
+def active_retake(exam: Exam, student, now=None) -> Retake | None:
+    now = now or timezone.now()
+    return (Retake.objects.filter(exam=exam, student=student, used_at__isnull=True, expires_at__gte=now)
+            .order_by("-expires_at").first())
+
+
+def grant_retake(exam: Exam, student, *, granted_by, expires_at, now=None) -> Retake:
+    """Администратор разрешает студенту пройти тест заново до `expires_at`,
+    даже если тест уже закрыт. Прошлая попытка останется в истории."""
+    now = now or timezone.now()
+    if expires_at <= now:
+        raise ExamError(_("Срок пересдачи должен быть в будущем"))
+    if Attempt.objects.filter(exam=exam, student=student, status=Attempt.Status.ACTIVE).exists():
+        raise ExamError(_("Студент сейчас пишет этот тест"))
+    Retake.objects.filter(exam=exam, student=student, used_at__isnull=True).delete()
+    return Retake.objects.create(exam=exam, student=student, granted_by=granted_by,
+                                 created_at=now, expires_at=expires_at)
+
+
+def cancel_retake(exam: Exam, student) -> None:
+    Retake.objects.filter(exam=exam, student=student, used_at__isnull=True).delete()
+
+
 # ---------- Доступ к тесту ----------
 
 def check_access(exam: Exam, student, *, code: str, ip: str | None, now=None) -> None:
@@ -115,13 +179,15 @@ def check_access(exam: Exam, student, *, code: str, ip: str | None, now=None) ->
     now = now or timezone.now()
     if not exam.is_published:
         raise ExamError(_("Тест ещё не опубликован"))
-    if now < exam.opens_at:
-        raise ExamError(_("Тест ещё не открыт"))
-    if now > exam.closes_at:
-        raise ExamError(_("Время для прохождения теста закончилось"))
-    groups = exam.group_list
-    if groups and (student.group or "").strip().upper() not in groups:
-        raise ExamError(_("Этот тест назначен другой группе"))
+    # Пересдачу открыл администратор лично для этого студента: сроки и группа не важны.
+    if active_retake(exam, student, now) is None:
+        if now < exam.opens_at:
+            raise ExamError(_("Тест ещё не открыт"))
+        if now > exam.closes_at:
+            raise ExamError(_("Время для прохождения теста закончилось"))
+        groups = exam.group_list
+        if groups and (student.group or "").strip().upper() not in groups:
+            raise ExamError(_("Этот тест назначен другой группе"))
     if not secrets.compare_digest((code or "").strip().upper(), exam.access_code.strip().upper()):
         raise ExamError(_("Неверный код доступа. Его называет преподаватель в аудитории"))
     prefix = exam.allowed_ip_prefix.strip()
@@ -130,10 +196,9 @@ def check_access(exam: Exam, student, *, code: str, ip: str | None, now=None) ->
 
 
 def question_pool(exam: Exam) -> QuerySet:
-    pool = Question.objects.filter(subject=exam.subject, is_active=True)
-    if exam.topic:
-        pool = pool.annotate(topic_l=ULower("topic")).filter(topic_l=exam.topic.strip().lower())
-    return pool.annotate(n=Count("choices")).filter(n__gte=MIN_CHOICES)
+    """Вопросы, из которых собираются варианты: те, что добавлены в тест."""
+    return (exam.questions.filter(is_active=True)
+            .annotate(n=Count("choices")).filter(n__gte=MIN_CHOICES))
 
 
 # ---------- Случайные варианты ----------
@@ -161,9 +226,14 @@ def start_attempt(exam: Exam, student, *, session_key: str, ip: str | None,
                   now=None) -> Attempt:
     """Создаёт попытку с персональным вариантом. Повторно начать нельзя."""
     now = now or timezone.now()
+    retake = active_retake(exam, student, now)
     existing = Attempt.objects.filter(exam=exam, student=student).first()
     if existing:
-        return existing
+        if retake is None or existing.status == Attempt.Status.ACTIVE:
+            return existing
+        # Пересдача: прошлая попытка уходит в историю, студент пишет заново.
+        existing.archived = True
+        existing.save(update_fields=["archived"])
     pool = list(question_pool(exam).values_list("id", flat=True))
     choices: dict[int, list[int]] = {}
     for qid, cid in Choice.objects.filter(question_id__in=pool).values_list("question_id", "id"):
@@ -171,7 +241,9 @@ def start_attempt(exam: Exam, student, *, session_key: str, ip: str | None,
     seed = secrets.randbits(48)
     variant = build_variant(pool, choices, exam.question_count, seed)
     # Дедлайн не позже закрытия теста: опоздавший получает меньше времени.
-    deadline = min(now + timedelta(minutes=exam.duration_minutes), exam.closes_at)
+    # При пересдаче тест для студента открыт до срока, который дал администратор.
+    closes_at = max(exam.closes_at, retake.expires_at) if retake else exam.closes_at
+    deadline = min(now + timedelta(minutes=exam.duration_minutes), closes_at)
     try:
         attempt = Attempt.objects.create(
             exam=exam, student=student, started_at=now, deadline=deadline, seed=seed,
@@ -183,6 +255,8 @@ def start_attempt(exam: Exam, student, *, session_key: str, ip: str | None,
         AttemptItem(attempt=attempt, question_id=qid, position=i, choice_order=order)
         for i, (qid, order) in enumerate(variant, start=1)
     )
+    if retake:
+        Retake.objects.filter(pk=retake.pk).update(used_at=now)
     return attempt
 
 

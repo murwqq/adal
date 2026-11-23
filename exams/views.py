@@ -14,13 +14,14 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 
 from . import services
 from .forms import ExamForm, ImportForm, QuestionForm, StartExamForm, SubjectForm
 from .importer import ImportError_, import_file, normalize_image
-from .models import Attempt, Exam, Question, Subject, Violation
+from .models import Attempt, Exam, Question, Retake, Subject, Violation
 from .services import ExamError
 
 PAGE_SIZE = 20
@@ -57,21 +58,28 @@ def session_key(request) -> str:
 def dashboard(request):
     if request.user.is_teacher:
         exams = (Exam.objects.filter(author=request.user).select_related("subject")
-                 .annotate(n_attempts=Count("attempts"),
-                           n_active=Count("attempts", filter=Q(attempts__status="active"))))
+                 .annotate(n_attempts=Count("attempts", filter=Q(attempts__archived=False)),
+                           n_active=Count("attempts", filter=Q(attempts__status="active",
+                                                               attempts__archived=False))))
         return render(request, "exams/teacher_dashboard.html", {
             "exams": exams[:8],
             "bank_size": Question.objects.filter(author=request.user, is_active=True).count(),
             "subjects": Subject.objects.annotate(
-                n=Count("questions", filter=Q(questions__is_active=True))),
+                n=Count("questions", filter=Q(questions__is_active=True), distinct=True),
+                n_exams=Count("exams", distinct=True)),
             "subject_form": SubjectForm(),
         })
     now = timezone.now()
     taken = Attempt.objects.filter(student=request.user).select_related("exam", "exam__subject")
-    taken_ids = taken.values_list("exam_id", flat=True)
+    taken_ids = set(taken.values_list("exam_id", flat=True))
+    retakes = {r.exam_id: r for r in Retake.objects.filter(
+        student=request.user, used_at__isnull=True, expires_at__gte=now)}
     available = [e for e in Exam.objects.filter(is_published=True, closes_at__gte=now)
-                 .exclude(id__in=taken_ids).select_related("subject")
+                 .exclude(id__in=taken_ids | set(retakes)).select_related("subject")
                  if not e.group_list or request.user.group.upper() in e.group_list]
+    for exam in Exam.objects.filter(id__in=retakes, is_published=True).select_related("subject"):
+        exam.retake_until = retakes[exam.id].expires_at
+        available.insert(0, exam)
     return render(request, "exams/student_dashboard.html",
                   {"available": available, "attempts": taken, "now": now})
 
@@ -85,6 +93,17 @@ def subject_create(request):
         messages.success(request, _("Дисциплина «%(name)s» добавлена") % {"name": form.instance.name})
     else:
         messages.error(request, _("Такая дисциплина уже есть или название пустое"))
+    return redirect("dashboard")
+
+
+@teacher_required
+@require_POST
+def subject_delete(request, pk):
+    subject = get_object_or_404(Subject, pk=pk)
+    try:
+        messages.success(request, services.delete_subject(subject))
+    except ExamError as exc:
+        messages.error(request, str(exc))
     return redirect("dashboard")
 
 
@@ -113,10 +132,17 @@ def question_list(request):
     })
 
 
+def _exam_from_request(request):
+    """Тест, внутри которого пишутся или загружаются вопросы (?exam=…)."""
+    exam_id = request.POST.get("exam") or request.GET.get("exam")
+    return _own_exam(request, exam_id) if exam_id and str(exam_id).isdigit() else None
+
+
 @teacher_required
 def question_edit(request, pk=None):
     question = get_object_or_404(Question, pk=pk) if pk else None
-    form = QuestionForm(request.POST or None, request.FILES or None, question=question)
+    exam = _exam_from_request(request)
+    form = QuestionForm(request.POST or None, request.FILES or None, question=question, exam=exam)
     if request.method == "POST" and form.is_valid():
         d = form.cleaned_data
         image = d["image"].read() if d.get("image") else None
@@ -126,7 +152,7 @@ def question_edit(request, pk=None):
             saved, warnings = services.save_question(
                 subject=d["subject"], author=request.user, text=d["text"],
                 choices=form.choices_data(), topic=d["topic"], difficulty=d["difficulty"],
-                image=image, question=question)
+                image=image, question=question, exam=exam)
         except ExamError as exc:
             form.add_error(None, str(exc))
         else:
@@ -134,9 +160,13 @@ def question_edit(request, pk=None):
                 messages.warning(request, w)
             messages.success(request, _("Вопрос сохранён"))
             if "add_another" in request.POST:
-                return redirect("exams:question_new")
+                url = reverse("exams:question_new")
+                return redirect(f"{url}?exam={exam.pk}" if exam else url)
+            if exam:
+                return redirect("exams:exam_questions", pk=exam.pk)
             return redirect("exams:question_list")
-    return render(request, "exams/question_form.html", {"form": form, "question": question})
+    return render(request, "exams/question_form.html",
+                  {"form": form, "question": question, "exam": exam})
 
 
 @teacher_required
@@ -149,7 +179,8 @@ def question_delete(request, pk):
 
 @teacher_required
 def question_import(request):
-    form = ImportForm(request.POST or None, request.FILES or None)
+    exam = _exam_from_request(request)
+    form = ImportForm(request.POST or None, request.FILES or None, exam=exam)
     report = None
     if request.method == "POST" and form.is_valid():
         upload = form.cleaned_data["file"]
@@ -162,12 +193,13 @@ def question_import(request):
             if not form.cleaned_data["dry_run"]:
                 saved, save_errors = services.save_imported(
                     items, subject=form.cleaned_data["subject"], author=request.user,
-                    difficulty=form.cleaned_data["difficulty"])
+                    difficulty=form.cleaned_data["difficulty"], exam=exam)
                 errors += save_errors
             report = {"items": items, "errors": errors, "saved": saved,
                       "dry_run": form.cleaned_data["dry_run"],
                       "with_warnings": sum(1 for i in items if i.warnings)}
-    return render(request, "exams/question_import.html", {"form": form, "report": report})
+    return render(request, "exams/question_import.html",
+                  {"form": form, "report": report, "exam": exam})
 
 
 # ---------- Тесты (преподаватель) ----------
@@ -175,29 +207,74 @@ def question_import(request):
 @teacher_required
 def exam_list(request):
     exams = (Exam.objects.filter(author=request.user).select_related("subject")
-             .annotate(n_attempts=Count("attempts")))
+             .annotate(n_attempts=Count("attempts", filter=Q(attempts__archived=False)),
+                       n_questions=Count("questions", distinct=True)))
     return render(request, "exams/exam_list.html", {"exams": exams, "now": timezone.now()})
 
 
 @teacher_required
 def exam_edit(request, pk=None):
     exam = get_object_or_404(Exam, pk=pk, author=request.user) if pk else None
-    form = ExamForm(request.POST or None, instance=exam)
+    form = ExamForm(request.POST or None, instance=exam,
+                    initial={"source": request.GET.get("source", "manual")})
     if request.method == "POST" and form.is_valid():
+        is_new = exam is None
         exam = form.save(commit=False)
         exam.author = request.user
         exam.save()
+        if is_new:
+            messages.success(request, _("Тест создан. Теперь добавьте в него вопросы"))
+            if form.cleaned_data.get("source") == "word":
+                return redirect(f"{reverse('exams:question_import')}?exam={exam.pk}")
+            return redirect("exams:exam_questions", pk=exam.pk)
         pool = services.question_pool(exam).count()
         if pool < exam.question_count:
-            messages.warning(request, _("В банке только %(pool)s подходящих вопросов, а в варианте %(count)s. Студенты не смогут начать тест") % {"pool": pool, "count": exam.question_count})
+            messages.warning(request, _("В тесте только %(pool)s вопросов, а в варианте %(count)s. Студенты не смогут начать тест") % {"pool": pool, "count": exam.question_count})
         messages.success(request, _("Тест сохранён"))
         return redirect("exams:exam_results", pk=exam.pk)
     return render(request, "exams/exam_form.html", {"form": form, "exam": exam})
 
 
+@teacher_required
+def exam_questions(request, pk):
+    """Вопросы теста: написать новый, загрузить из Word, взять из банка, убрать."""
+    exam = _own_exam(request, pk)
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action == "remove":
+            question = get_object_or_404(Question, pk=request.POST.get("question"))
+            services.remove_from_exam(exam, question)
+            messages.info(request, _("Вопрос убран из теста. В банке он остался"))
+        elif action == "add_bank":
+            added = services.add_from_bank(exam, request.POST.getlist("questions"))
+            messages.success(request, _("Добавлено вопросов из банка: %(n)s") % {"n": added})
+        return redirect("exams:exam_questions", pk=exam.pk)
+    questions = exam.questions.filter(is_active=True).prefetch_related("choices").order_by("pk")
+    bank_query = request.GET.get("q", "").strip()
+    bank = services.search_questions(
+        Question.objects.filter(subject=exam.subject, is_active=True).exclude(exams=exam),
+        text=bank_query, sort="new").prefetch_related("choices")
+    return render(request, "exams/exam_questions.html", {
+        "exam": exam, "questions": questions, "bank": bank[:50], "bank_total": bank.count(),
+        "bank_query": bank_query, "open_bank": bool(bank_query) or request.GET.get("bank") == "1",
+    })
+
+
+@teacher_required
+@require_POST
+def exam_delete(request, pk):
+    exam = _own_exam(request, pk)
+    try:
+        messages.success(request, services.delete_exam(exam))
+    except ExamError as exc:
+        messages.error(request, str(exc))
+        return redirect("exams:exam_results", pk=pk)
+    return redirect("exams:exam_list")
+
+
 def _own_exam(request, pk) -> Exam:
     exam = get_object_or_404(Exam.objects.select_related("subject"), pk=pk)
-    if exam.author_id != request.user.id and not request.user.is_superuser:
+    if exam.author_id != request.user.id and not request.user.is_admin:
         raise PermissionDenied
     return exam
 
@@ -278,11 +355,16 @@ def exam_monitor_data(request, pk):
 
 @teacher_required
 def attempt_detail(request, pk):
-    attempt = get_object_or_404(Attempt.objects.select_related("exam", "student"), pk=pk)
+    attempt = get_object_or_404(Attempt.all_objects.select_related("exam", "student"), pk=pk)
     _own_exam(request, attempt.exam_id)
+    history = (Attempt.all_objects.filter(exam=attempt.exam, student=attempt.student)
+               .exclude(pk=attempt.pk).order_by("-started_at"))
+    default_until = timezone.localtime() + timezone.timedelta(days=1)
     return render(request, "exams/attempt_detail.html", {
         "attempt": attempt, "items": _review_items(attempt),
-        "violations": attempt.violations.all(),
+        "violations": attempt.violations.all(), "history": history,
+        "retake": services.active_retake(attempt.exam, attempt.student),
+        "retake_default": default_until.replace(second=0, microsecond=0).strftime("%Y-%m-%dT%H:%M"),
     })
 
 
@@ -290,11 +372,25 @@ def attempt_detail(request, pk):
 @require_POST
 def attempt_manage(request, pk):
     """Действия преподавателя: разрешить продолжить или остановить попытку."""
-    attempt = get_object_or_404(Attempt, pk=pk)
+    attempt = get_object_or_404(Attempt.all_objects, pk=pk)
     _own_exam(request, attempt.exam_id)
     action = request.POST.get("action")
     try:
-        if action == "resume":
+        if action in ("retake", "cancel_retake") and not request.user.is_admin:
+            raise PermissionDenied
+        if action == "retake":
+            raw = parse_datetime(request.POST.get("until", ""))
+            if raw is None:
+                raise ExamError(_("Укажите, до какого времени открыта пересдача"))
+            until = timezone.make_aware(raw) if timezone.is_naive(raw) else raw
+            services.grant_retake(attempt.exam, attempt.student, granted_by=request.user, expires_at=until)
+            messages.success(request, _("%(name)s может пройти тест заново до %(until)s") % {
+                "name": attempt.student.short_name,
+                "until": timezone.localtime(until).strftime("%d.%m.%Y %H:%M")})
+        elif action == "cancel_retake":
+            services.cancel_retake(attempt.exam, attempt.student)
+            messages.info(request, _("Пересдача отменена"))
+        elif action == "resume":
             services.allow_resume(attempt)
             messages.success(request, _("%(name)s может войти заново и продолжить тест") % {"name": attempt.student.short_name})
         elif action == "stop":
@@ -322,7 +418,8 @@ def _review_items(attempt):
 def exam_start(request, pk):
     exam = get_object_or_404(Exam.objects.select_related("subject"), pk=pk)
     existing = Attempt.objects.filter(exam=exam, student=request.user).first()
-    if existing:
+    retake = services.active_retake(exam, request.user)
+    if existing and (retake is None or existing.status == Attempt.Status.ACTIVE):
         return redirect("exams:attempt_take", pk=existing.pk)
     form = StartExamForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
@@ -335,7 +432,7 @@ def exam_start(request, pk):
             form.add_error(None, str(exc))
         else:
             return redirect("exams:attempt_take", pk=attempt.pk)
-    return render(request, "exams/exam_start.html", {"exam": exam, "form": form})
+    return render(request, "exams/exam_start.html", {"exam": exam, "form": form, "retake": retake})
 
 
 def _student_attempt(request, pk) -> Attempt:

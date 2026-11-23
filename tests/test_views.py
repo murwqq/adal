@@ -203,3 +203,84 @@ def test_errors_are_translated(client, student):
     client.post(reverse("set_language"), {"language": "en", "next": "/"})
     r = client.post(reverse("accounts:login"), {"iin": student.iin, "password": "wrong"})
     assert "Wrong IIN or password" in r.content.decode()
+
+
+# ---------- Тест со своими вопросами, удаление, пересдача ----------
+
+def _exam_post(subject, **extra):
+    from django.utils import timezone
+    now = timezone.localtime()
+    data = {"title": "Новый тест", "subject": subject.pk, "question_count": 2, "duration_minutes": 15,
+            "opens_at": now.strftime("%Y-%m-%dT%H:%M"),
+            "closes_at": (now + timezone.timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M"),
+            "groups": "", "access_code": "QWE123", "allowed_ip_prefix": "", "max_violations": 3,
+            "is_published": "on"}
+    data.update(extra)
+    return data
+
+
+def test_create_exam_then_write_questions(client, teacher, subject):
+    from exams.models import Exam
+    login(client, teacher)
+    r = client.post(reverse("exams:exam_new"), _exam_post(subject, source="manual"))
+    exam = Exam.objects.get(title="Новый тест")
+    assert r["Location"] == reverse("exams:exam_questions", args=[exam.pk])
+    assert exam.questions.count() == 0
+
+    data = {"exam": exam.pk, "text": "Сколько будет 2+2?", "topic": "", "difficulty": "2", "correct": "0",
+            "choice_0": "4", "choice_1": "5"}
+    r = client.post(reverse("exams:question_new"), data)
+    assert r["Location"] == reverse("exams:exam_questions", args=[exam.pk])
+    question = exam.questions.get()
+    assert question.subject == subject  # дисциплина взята из теста
+    assert "Сколько будет 2+2?" in client.get(reverse("exams:exam_questions", args=[exam.pk])).content.decode()
+
+
+def test_create_exam_from_word_goes_to_import(client, teacher, subject):
+    from exams.models import Exam
+    login(client, teacher)
+    r = client.post(reverse("exams:exam_new"), _exam_post(subject, source="word"))
+    exam = Exam.objects.get(title="Новый тест")
+    assert r["Location"] == f"{reverse('exams:question_import')}?exam={exam.pk}"
+
+
+def test_teacher_dashboard_has_two_ways_to_create(client, teacher):
+    login(client, teacher)
+    html = client.get(reverse("dashboard")).content.decode()
+    assert "Загрузить тест из Word" in html and "Добавить вопрос вручную" not in html
+
+
+def test_delete_exam_and_subject_views(client, teacher, exam, subject):
+    from exams.models import Exam, Subject
+    login(client, teacher)
+    client.post(reverse("exams:subject_delete", args=[subject.pk]))
+    assert Subject.objects.filter(pk=subject.pk).exists()  # по дисциплине есть тест
+    client.post(reverse("exams:exam_delete", args=[exam.pk]))
+    assert not Exam.objects.filter(pk=exam.pk).exists()
+    client.post(reverse("exams:subject_delete", args=[subject.pk]))
+    assert not Subject.objects.filter(pk=subject.pk).exists()
+
+
+def test_only_admin_grants_retake(client, teacher, exam, student):
+    from django.utils import timezone
+    from exams import services
+    from exams.models import Retake
+    attempt = services.start_attempt(exam, student, session_key="s", ip=None)
+    services.finish_attempt(attempt)
+    until = (timezone.localtime() + timezone.timedelta(days=1)).strftime("%Y-%m-%dT%H:%M")
+    url = reverse("exams:attempt_manage", args=[attempt.pk])
+
+    login(client, teacher)
+    assert client.post(url, {"action": "retake", "until": until}).status_code == 403
+    admin = User.objects.create_superuser(_iin("8001013"), PASSWORD, first_name="А", last_name="Админ")
+    client.logout()
+    login(client, admin)
+    assert "Разрешить пересдачу" in client.get(reverse("exams:attempt_detail", args=[attempt.pk])).content.decode()
+    client.post(url, {"action": "retake", "until": until})
+    assert Retake.objects.filter(exam=exam, student=student, used_at__isnull=True).exists()
+
+    client.logout()
+    login(client, student)
+    assert "Пересдача до" in client.get(reverse("dashboard")).content.decode()
+    r = client.get(reverse("exams:exam_start", args=[exam.pk]))
+    assert r.status_code == 200 and "заново" in r.content.decode()

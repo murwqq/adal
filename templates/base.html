@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=9">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=16">
   {% block math %}{% endblock %}
   {% block head %}{% endblock %}
 </head>
@@ -43,7 +43,10 @@
         <span class="who-name">{{ user.short_name }}<span>{{ user.get_role_display }}{% if user.group %}, {{ user.group }}{% endif %}</span></span>
       </a>
       <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}
-        <button class="btn btn-quiet" type="submit">{% translate "Выйти" %}</button>
+        <button class="btn btn-quiet logout" type="submit" aria-label="{% translate 'Выйти' %}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          <span>{% translate "Выйти" %}</span>
+        </button>
       </form>
       {% endif %}
     </div>
@@ -59,6 +62,23 @@
   {% block content %}{% endblock %}
 </main>
 {% block footer %}<footer class="footer">{% translate "© 2026 Адал. Кызылординский университет имени Коркыт Ата" %}</footer>{% endblock %}
+<script>
+/* На узком экране строки таблиц становятся карточками: подписываем ячейки заголовками столбцов. */
+(function () {
+  function label(table) {
+    var heads = [].map.call(table.querySelectorAll("thead th"), function (th) { return th.textContent.trim(); });
+    if (!heads.length) return;
+    table.classList.add("stacked");
+    [].forEach.call(table.querySelectorAll("tbody tr"), function (tr) {
+      [].forEach.call(tr.children, function (td, i) { if (!td.hasAttribute("data-label")) td.setAttribute("data-label", heads[i] || ""); });
+    });
+  }
+  [].forEach.call(document.querySelectorAll(".table-wrap table"), function (table) {
+    label(table);
+    new MutationObserver(function () { label(table); }).observe(table, {childList: true, subtree: true});
+  });
+})();
+</script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Вопросы теста" %}: {{ exam.title }}{% endblock %}
+{% block math %}{% include "_math.html" %}{% endblock %}
+{% block content %}
+{% include "exams/_exam_head.html" with tab="questions" %}
+
+<div class="q-toolbar">
+  <p class="muted">{% blocktranslate trimmed with n=questions|length count=exam.question_count %}В тесте {{ n }} вопросов, каждый студент получит {{ count }}.{% endblocktranslate %}</p>
+  <div class="q-toolbar-actions">
+    <a class="btn btn-primary" href="{% url 'exams:question_new' %}?exam={{ exam.pk }}">{% translate "Написать вопрос" %}</a>
+    <a class="btn" href="{% url 'exams:question_import' %}?exam={{ exam.pk }}">{% translate "Загрузить из Word" %}</a>
+    <a class="btn" href="?bank=1#bank">{% translate "Взять из банка" %}</a>
+  </div>
+</div>
+
+{% if questions|length < exam.question_count %}
+<div class="note warning" style="margin-bottom:20px">{% blocktranslate trimmed with n=questions|length count=exam.question_count %}Пока вопросов {{ n }}, а в варианте должно быть {{ count }}. Добавьте вопросы или уменьшите их число в настройках, иначе студенты не смогут начать тест.{% endblocktranslate %}</div>
+{% endif %}
+
+<section class="sheet">
+  {% for q in questions %}
+  <article class="tq">
+    <span class="tq-num num">{{ forloop.counter }}</span>
+    <div class="tq-body">
+      <div class="q-text">{{ q.text }}</div>
+      {% if q.image %}<img class="q-img" src="{{ q.image.url }}" alt="{% translate 'Рисунок к вопросу' %}">{% endif %}
+      <ul class="tq-choices">
+        {% for c in q.choices.all %}<li{% if c.is_correct %} class="ok"{% endif %}>{{ c.text }}</li>{% endfor %}
+      </ul>
+    </div>
+    <div class="tq-actions">
+      <a class="btn btn-quiet" href="{% url 'exams:question_edit' q.pk %}?exam={{ exam.pk }}">{% translate "Изменить" %}</a>
+      <form method="post">{% csrf_token %}<input type="hidden" name="action" value="remove"><input type="hidden" name="question" value="{{ q.pk }}">
+        <button class="btn btn-quiet btn-quiet-danger" type="submit">{% translate "Убрать" %}</button>
+      </form>
+    </div>
+  </article>
+  {% empty %}
+  <div class="empty">
+    <p>{% translate "В тесте пока нет вопросов. Напишите их здесь же или загрузите готовый файл Word в формате Platonus." %}</p>
+    <div class="q-toolbar-actions" style="justify-content:center">
+      <a class="btn btn-primary" href="{% url 'exams:question_new' %}?exam={{ exam.pk }}">{% translate "Написать вопрос" %}</a>
+      <a class="btn" href="{% url 'exams:question_import' %}?exam={{ exam.pk }}">{% translate "Загрузить из Word" %}</a>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+
+<details class="sheet bank-picker" id="bank" {% if open_bank %}open{% endif %}>
+  <summary><h2>{% translate "Взять из банка" %}</h2><span class="muted small">{% blocktranslate trimmed with subject=exam.subject.name n=bank_total %}вопросы по дисциплине «{{ subject }}», которых ещё нет в тесте: {{ n }}{% endblocktranslate %}</span></summary>
+  <form method="get" class="bank-search" role="search">
+    <input type="hidden" name="bank" value="1">
+    <input type="search" name="q" value="{{ bank_query }}" placeholder="{% translate 'Поиск по тексту вопроса и ответов' %}" aria-label="{% translate 'Поиск по тексту вопроса и ответов' %}">
+    <button class="btn" type="submit">{% translate "Найти" %}</button>
+  </form>
+  {% if bank %}
+  <form method="post">
+    {% csrf_token %}<input type="hidden" name="action" value="add_bank">
+    {% for q in bank %}
+    <label class="bank-item"><input type="checkbox" name="questions" value="{{ q.pk }}"><span>{{ q.text|truncatechars:220 }}{% if q.topic %} <span class="tag">{{ q.topic }}</span>{% endif %}</span></label>
+    {% endfor %}
+    <div class="form-foot"><button class="btn btn-primary" type="submit">{% translate "Добавить отмеченные" %}</button></div>
+  </form>
+  {% else %}
+  <p class="empty-line">{% translate "Подходящих вопросов в банке нет." %}</p>
+  {% endif %}
+</details>
+{% endblock %}

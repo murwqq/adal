@@ -5,15 +5,17 @@
 {% block content %}
 <div class="page-head">
   <div>
+    {% if exam %}<a class="back-link" href="{% url 'exams:exam_questions' exam.pk %}">← {{ exam.title }}</a>{% endif %}
     <h1>{% translate "Загрузка вопросов из Word" %}</h1>
-    <p class="muted">{% translate "Формат тот же, что в Platonus, так что файлы можно загружать без правок." %}</p>
+    <p class="muted">{% if exam %}{% translate "Вопросы из файла сразу попадут в этот тест." %} {% endif %}{% translate "Формат тот же, что в Platonus, так что файлы можно загружать без правок." %}</p>
   </div>
-  <a class="btn btn-quiet" href="{% url 'exams:question_list' %}">{% translate "Вернуться в банк" %}</a>
+  {% if exam %}<a class="btn btn-quiet" href="{% url 'exams:exam_questions' exam.pk %}">{% translate "К вопросам теста" %}</a>
+  {% else %}<a class="btn btn-quiet" href="{% url 'exams:question_list' %}">{% translate "Вернуться в банк" %}</a>{% endif %}
 </div>
 
 <div class="cols">
   <form class="sheet" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
+    {% csrf_token %}{% if exam %}<input type="hidden" name="exam" value="{{ exam.pk }}">{% endif %}
     {% include "_field.html" with field=form.file %}
     <div class="grid-2">
       {% include "_field.html" with field=form.subject %}
@@ -41,6 +43,7 @@
     <h2>{% if report.dry_run %}{% translate "Проверка файла" %}{% else %}{% translate "Результат загрузки" %}{% endif %}</h2>
     <span class="muted">{% translate "Найдено вопросов:" %} <b>{{ report.items|length }}</b>{% if not report.dry_run %}{% translate ", сохранено:" %} <b>{{ report.saved }}</b>{% endif %}{% translate ", с замечаниями:" %} <b>{{ report.with_warnings }}</b></span>
   </div>
+  {% if exam and report.saved %}<div class="note" style="margin-bottom:16px">{% translate "Вопросы добавлены в тест." %} <a href="{% url 'exams:exam_questions' exam.pk %}">{% translate "К вопросам теста" %}</a></div>{% endif %}
   {% for e in report.errors %}<div class="note error">{{ e }}</div>{% endfor %}
   {% for q in report.items %}
   <div class="review-item">

@@ -4,7 +4,8 @@
 {% block content %}
 <div class="sheet" style="max-width:760px">
   <h1>{{ exam.title }}</h1>
-  <p class="muted">{{ exam.subject }}. {% translate "Вопросов" %}: {{ exam.question_count }}, {% translate "минут" %}: {{ exam.duration_minutes }}. {% translate "Открыт до" %} {{ exam.closes_at|date:"d.m.Y H:i" }}.</p>
+  <p class="muted">{{ exam.subject }}. {% translate "Вопросов" %}: {{ exam.question_count }}, {% translate "минут" %}: {{ exam.duration_minutes }}. {% translate "Открыт до" %} {% if retake %}{{ retake.expires_at|date:"d.m.Y H:i" }}{% else %}{{ exam.closes_at|date:"d.m.Y H:i" }}{% endif %}.</p>
+  {% if retake %}<div class="note info">{% translate "Администратор разрешил вам пройти этот тест заново. Засчитается новый результат, прошлая попытка останется в истории." %}</div>{% endif %}
   <h3 style="margin-top:24px">{% translate "Перед началом" %}</h3>
   <ol class="rules">
     <li>{% translate "Тест откроется во весь экран. Не выходите из полноэкранного режима, не переключайтесь на другие вкладки и программы, не открывайте ИИ-помощников в браузере." %}</li>

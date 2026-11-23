@@ -66,7 +66,9 @@ def subject(db, teacher):
 @pytest.fixture
 def exam(db, subject, teacher):
     now = timezone.now()
-    return Exam.objects.create(
+    exam = Exam.objects.create(
         title="Рубежный контроль", subject=subject, author=teacher, question_count=4,
         duration_minutes=10, opens_at=now - timedelta(minutes=5),
         closes_at=now + timedelta(hours=1), access_code="ABC123", max_violations=3)
+    exam.questions.set(subject.questions.all())
+    return exam

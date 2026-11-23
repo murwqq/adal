@@ -116,5 +116,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.role in (self.Role.TEACHER, self.Role.ADMIN)
 
     @property
+    def is_admin(self) -> bool:
+        return self.is_superuser or self.role == self.Role.ADMIN
+
+    @property
     def is_student(self) -> bool:
         return self.role == self.Role.STUDENT

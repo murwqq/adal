@@ -61,7 +61,8 @@ class Choice(models.Model):
 
 
 class Exam(models.Model):
-    """Тест: правила, по которым из банка собирается вариант для каждого студента."""
+    """Тест: свой набор вопросов и правила, по которым из него собирается
+    вариант для каждого студента."""
 
     title = models.CharField(_("Название"), max_length=200)
     subject = models.ForeignKey(Subject, on_delete=models.PROTECT, related_name="exams",
@@ -85,6 +86,8 @@ class Exam(models.Model):
         _("Нарушений до завершения"), default=3,
         help_text=_("Уход со страницы, выход из полноэкранного режима и т. п."))
     show_review = models.BooleanField(_("Показать студенту разбор после теста"), default=False)
+    questions = models.ManyToManyField("Question", related_name="exams", blank=True,
+                                       verbose_name=_("Вопросы теста"))
     is_published = models.BooleanField(_("Опубликован"), default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -103,6 +106,13 @@ class Exam(models.Model):
     def is_open(self, now=None) -> bool:
         now = now or timezone.now()
         return self.is_published and self.opens_at <= now <= self.closes_at
+
+
+class CurrentAttemptManager(models.Manager):
+    """По умолчанию видны только текущие попытки, без заменённых пересдачей."""
+
+    def get_queryset(self):
+        return super().get_queryset().filter(archived=False)
 
 
 class Attempt(models.Model):
@@ -126,10 +136,16 @@ class Attempt(models.Model):
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     last_seen_at = models.DateTimeField(null=True, blank=True)
     violation_count = models.PositiveSmallIntegerField(default=0)
+    # Попытка, которую заменила пересдача. Остаётся в истории, но не в результатах.
+    archived = models.BooleanField(default=False)
+
+    objects = CurrentAttemptManager()
+    all_objects = models.Manager()
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["exam", "student"], name="one_attempt_per_student"),
+            models.UniqueConstraint(fields=["exam", "student"], condition=models.Q(archived=False),
+                                    name="one_current_attempt_per_student"),
         ]
         ordering = ["-started_at"]
 
@@ -181,3 +197,22 @@ class Violation(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+
+
+class Retake(models.Model):
+    """Разрешение администратора пройти тест заново, даже если тест уже закрыт."""
+
+    exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name="retakes")
+    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                                related_name="retakes")
+    granted_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+                                   null=True, related_name="+")
+    created_at = models.DateTimeField(default=timezone.now)
+    expires_at = models.DateTimeField(_("Пересдача доступна до"))
+    used_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def is_valid(self, now=None) -> bool:
+        return self.used_at is None and (now or timezone.now()) <= self.expires_at

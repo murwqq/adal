@@ -48,7 +48,7 @@
     </div>
     {% empty %}
     <p class="empty-line">{% translate "В банке пока нет ваших вопросов." %}</p>
-    <a class="btn btn-block" href="{% url 'exams:question_new' %}">{% translate "Добавить вопрос вручную" %}</a>
+    <a class="btn btn-block" href="{% url 'exams:exam_new' %}">{% translate "Создать тест" %}</a>
     {% endfor %}
   </aside>
 </div>

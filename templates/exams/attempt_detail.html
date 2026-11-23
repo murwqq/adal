@@ -5,7 +5,7 @@
 {% block content %}
 <div class="page-head">
   <div>
-    <h1>{{ attempt.student.full_name }}</h1>
+    <h1>{{ attempt.student.full_name }}{% if attempt.archived %} <span class="tag">{% translate "заменена пересдачей" %}</span>{% endif %}</h1>
     <p class="muted">{{ attempt.exam.title }}. {% translate "Группа" %} {{ attempt.student.group|default:"—" }}. {% translate "Начал в" %} {{ attempt.started_at|date:"H:i" }}{% if attempt.finished_at %}, {% translate "закончил в" %} {{ attempt.finished_at|date:"H:i" }}{% endif %}. IP {{ attempt.ip_address|default:"—" }}.</p>
   </div>
   <a class="btn btn-quiet" href="{% url 'exams:exam_results' attempt.exam_id %}">{% translate "Все результаты" %}</a>
@@ -40,6 +40,38 @@
       <form method="post" action="{% url 'exams:attempt_manage' attempt.pk %}" style="margin-top:10px" onsubmit="return confirm('{% filter escapejs %}{% translate 'Остановить тест этого студента? Баллы посчитаются по уже данным ответам.' %}{% endfilter %}')">{% csrf_token %}
         <button class="btn btn-danger btn-block" name="action" value="stop">{% translate "Остановить попытку" %}</button>
       </form>
+    </section>
+    {% endif %}
+    {% if user.is_admin and attempt.status != "active" and not attempt.archived %}
+    <section class="sheet">
+      <h3>{% translate "Пересдача" %}</h3>
+      {% if retake %}
+      <p class="small">{% blocktranslate trimmed with until=retake.expires_at|date:"d.m.Y H:i" %}Пересдача открыта до {{ until }}. Когда студент начнёт тест заново, эта попытка уйдёт в историю.{% endblocktranslate %}</p>
+      <form method="post" action="{% url 'exams:attempt_manage' attempt.pk %}">{% csrf_token %}
+        <button class="btn btn-block" name="action" value="cancel_retake">{% translate "Отменить пересдачу" %}</button>
+      </form>
+      {% else %}
+      <p class="small muted">{% translate "Студент сможет пройти тест заново, даже если тест уже закрыт. Новый результат заменит этот, а этот останется в истории." %}</p>
+      <form method="post" action="{% url 'exams:attempt_manage' attempt.pk %}">{% csrf_token %}
+        <div class="field">
+          <label for="retake-until">{% translate "Пересдача доступна до" %}</label>
+          <input type="datetime-local" id="retake-until" name="until" value="{{ retake_default }}" required>
+        </div>
+        <button class="btn btn-primary btn-block" name="action" value="retake">{% translate "Разрешить пересдачу" %}</button>
+      </form>
+      {% endif %}
+    </section>
+    {% endif %}
+    {% if history %}
+    <section class="sheet">
+      <h3>{% translate "Другие попытки" %}</h3>
+      {% for h in history %}
+      <div class="history-row">
+        <a href="{% url 'exams:attempt_detail' h.pk %}">{{ h.started_at|date:"d.m.Y H:i" }}</a>
+        <span class="num">{{ h.score }} / {{ h.max_score }}</span>
+        {% if h.archived %}<span class="tag">{% translate "заменена пересдачей" %}</span>{% else %}<span class="tag ok">{% translate "текущая" %}</span>{% endif %}
+      </div>
+      {% endfor %}
     </section>
     {% endif %}
   </aside>

@@ -139,6 +139,105 @@ TRANSLATIONS = {
     "Первые 6 цифр ИИН не похожи на дату рождения": ("ЖСН-нің алғашқы 6 саны туған күнге ұқсамайды", "The first 6 digits of the IIN are not a valid date of birth"),
     "Для этого префикса ИИН не существует": ("Бұл префикс үшін ЖСН болмайды", "No IIN exists for this prefix"),
 
+    # ---------- Вопросы внутри теста, удаление, пересдача ----------
+    "Загрузить тест из Word": ("Тестті Word-тан жүктеу", "Import a test from Word"),
+    "Тестов пока нет. Создайте тест и напишите вопросы прямо в нём или загрузите готовый файл Word.": (
+        "Әзірге тесттер жоқ. Тест құрып, сұрақтарды тікелей соның ішінде жазыңыз немесе дайын Word файлын жүктеңіз.",
+        "No tests yet. Create a test and write questions right in it, or import a ready Word file."),
+    "Как добавить вопросы": ("Сұрақтарды қалай қосу керек", "How to add questions"),
+    "Написать вопросы на сайте": ("Сұрақтарды сайтта жазу", "Write questions on the site"),
+    "Загрузить вопросы из Word": ("Сұрақтарды Word-тан жүктеу", "Import questions from Word"),
+    "Вопросы с вариантами ответов, формулами и картинками пишутся прямо в тесте.": (
+        "Жауап нұсқалары, формулалар мен суреттері бар сұрақтар тікелей тестте жазылады.",
+        "Questions with answer options, formulas and images are written right in the test."),
+    "Готовый файл .docx или .txt в формате Platonus. Оформление снимется, формулы станут чёткими.": (
+        "Platonus пішіміндегі дайын .docx немесе .txt файлы. Безендіру алынады, формулалар анық болады.",
+        "A ready .docx or .txt file in Platonus format. Formatting is removed and formulas become sharp."),
+    "Способы можно совмещать: после создания теста добавляйте вопросы любым из них или берите из банка.": (
+        "Тәсілдерді біріктіруге болады: тест құрылғаннан кейін сұрақтарды кез келген тәсілмен қосыңыз немесе банктен алыңыз.",
+        "You can mix both: after creating the test, add questions either way or take them from the bank."),
+    "Каждый студент получит свой случайный вариант из вопросов теста.": (
+        "Әр студент тест сұрақтарынан өзінің кездейсоқ нұсқасын алады.",
+        "Each student gets their own random variant from the test's questions."),
+    "Сколько вопросов получит каждый студент. Если в тесте их больше, каждому достанется свой случайный набор": (
+        "Әр студент қанша сұрақ алады. Тестте сұрақтар көп болса, әркімге өзінің кездейсоқ жиынтығы тиеді",
+        "How many questions each student gets. If the test has more, everyone gets their own random set"),
+    "Создать и добавить вопросы": ("Құру және сұрақтар қосу", "Create and add questions"),
+    "Тест создан. Теперь добавьте в него вопросы": ("Тест құрылды. Енді оған сұрақтар қосыңыз", "Test created. Now add questions to it"),
+    "В тесте только %(pool)s вопросов, а в варианте %(count)s. Студенты не смогут начать тест": (
+        "Тестте тек %(pool)s сұрақ бар, ал нұсқада %(count)s. Студенттер тестті бастай алмайды",
+        "The test has only %(pool)s questions but a variant needs %(count)s. Students won't be able to start"),
+    "Вопросы теста": ("Тест сұрақтары", "Test questions"),
+    "В тесте %(n)s вопросов, каждый студент получит %(count)s.": (
+        "Тестте %(n)s сұрақ бар, әр студент %(count)s алады.",
+        "The test has %(n)s questions; each student gets %(count)s."),
+    "Написать вопрос": ("Сұрақ жазу", "Write a question"),
+    "Взять из банка": ("Банктен алу", "Take from the bank"),
+    "Пока вопросов %(n)s, а в варианте должно быть %(count)s. Добавьте вопросы или уменьшите их число в настройках, иначе студенты не смогут начать тест.": (
+        "Әзірге %(n)s сұрақ бар, ал нұсқада %(count)s болуы керек. Сұрақтар қосыңыз немесе баптауларда санын азайтыңыз, әйтпесе студенттер тестті бастай алмайды.",
+        "There are %(n)s questions so far, but a variant needs %(count)s. Add questions or lower the number in settings, or students won't be able to start."),
+    "Убрать": ("Алып тастау", "Remove"),
+    "В тесте пока нет вопросов. Напишите их здесь же или загрузите готовый файл Word в формате Platonus.": (
+        "Тестте әзірге сұрақтар жоқ. Оларды осында жазыңыз немесе Platonus пішіміндегі дайын Word файлын жүктеңіз.",
+        "The test has no questions yet. Write them here or import a ready Word file in Platonus format."),
+    "вопросы по дисциплине «%(subject)s», которых ещё нет в тесте: %(n)s": (
+        "«%(subject)s» пәні бойынша тестте әлі жоқ сұрақтар: %(n)s",
+        "questions in “%(subject)s” that aren't in the test yet: %(n)s"),
+    "Добавить отмеченные": ("Белгіленгендерді қосу", "Add selected"),
+    "Подходящих вопросов в банке нет.": ("Банкте сәйкес сұрақтар жоқ.", "No matching questions in the bank."),
+    "Вопрос убран из теста. В банке он остался": ("Сұрақ тесттен алынды. Банкте ол қалды", "Question removed from the test. It stays in the bank"),
+    "Добавлено вопросов из банка: %(n)s": ("Банктен қосылған сұрақтар: %(n)s", "Questions added from the bank: %(n)s"),
+    "К вопросам теста": ("Тест сұрақтарына", "Back to test questions"),
+    "Вопросы из файла сразу попадут в этот тест.": ("Файлдағы сұрақтар бірден осы тестке түседі.", "Questions from the file go straight into this test."),
+    "Вопросы добавлены в тест.": ("Сұрақтар тестке қосылды.", "Questions added to the test."),
+    "Удалить тест": ("Тестті жою", "Delete test"),
+    "Тест удалится вместе с результатами студентов. Вопросы останутся в банке.": (
+        "Тест студенттердің нәтижелерімен бірге жойылады. Сұрақтар банкте қалады.",
+        "The test is deleted together with student results. Questions stay in the bank."),
+    "Удалить тест «%(title)s» и все его результаты? Это нельзя отменить.": (
+        "«%(title)s» тестін және оның барлық нәтижелерін жою керек пе? Мұны қайтару мүмкін емес.",
+        "Delete the test “%(title)s” and all its results? This can't be undone."),
+    "Тест «%(title)s» удалён вместе с результатами": ("«%(title)s» тесті нәтижелерімен бірге жойылды", "Test “%(title)s” deleted along with its results"),
+    "Тест сейчас пишут. Удалить его можно, когда все закончат": (
+        "Тестті қазір жазып жатыр. Барлығы аяқтағанда жоюға болады",
+        "Students are taking the test right now. You can delete it once everyone finishes"),
+    "Удалить дисциплину": ("Пәнді жою", "Delete subject"),
+    "Удалить дисциплину «%(name)s»": ("«%(name)s» пәнін жою", "Delete subject “%(name)s”"),
+    "Удалить дисциплину «%(name)s» вместе с её вопросами (%(n)s)? Это нельзя отменить.": (
+        "«%(name)s» пәнін сұрақтарымен (%(n)s) бірге жою керек пе? Мұны қайтару мүмкін емес.",
+        "Delete the subject “%(name)s” with its questions (%(n)s)? This can't be undone."),
+    "Дисциплина «%(name)s» удалена": ("«%(name)s» пәні жойылды", "Subject “%(name)s” deleted"),
+    "По дисциплине «%(name)s» есть тесты (%(n)s). Сначала удалите их": (
+        "«%(name)s» пәні бойынша тесттер бар (%(n)s). Алдымен оларды жойыңыз",
+        "The subject “%(name)s” has tests (%(n)s). Delete them first"),
+    "Вопросы этой дисциплины уже попадали студентам, поэтому её нельзя удалить": (
+        "Бұл пәннің сұрақтары студенттерге берілген, сондықтан оны жоюға болмайды",
+        "Questions of this subject have already been given to students, so it can't be deleted"),
+    "Пересдача": ("Қайта тапсыру", "Retake"),
+    "Пересдача до": ("Қайта тапсыру", "Retake until"),
+    "Пересдача доступна до": ("Қайта тапсыру мерзімі", "Retake available until"),
+    "Разрешить пересдачу": ("Қайта тапсыруға рұқсат беру", "Allow a retake"),
+    "Отменить пересдачу": ("Қайта тапсыруды болдырмау", "Cancel the retake"),
+    "Пересдача отменена": ("Қайта тапсыру болдырылмады", "Retake cancelled"),
+    "Студент сможет пройти тест заново, даже если тест уже закрыт. Новый результат заменит этот, а этот останется в истории.": (
+        "Тест жабылған болса да, студент оны қайта тапсыра алады. Жаңа нәтиже осыны ауыстырады, ал бұл тарихта қалады.",
+        "The student can take the test again even if it's already closed. The new result replaces this one, which stays in the history."),
+    "Пересдача открыта до %(until)s. Когда студент начнёт тест заново, эта попытка уйдёт в историю.": (
+        "Қайта тапсыру %(until)s дейін ашық. Студент тестті қайта бастағанда, бұл талпыныс тарихқа өтеді.",
+        "The retake is open until %(until)s. When the student starts again, this attempt moves to the history."),
+    "%(name)s может пройти тест заново до %(until)s": (
+        "%(name)s тестті %(until)s дейін қайта тапсыра алады",
+        "%(name)s can retake the test until %(until)s"),
+    "Срок пересдачи должен быть в будущем": ("Қайта тапсыру мерзімі болашақта болуы керек", "The retake deadline must be in the future"),
+    "Студент сейчас пишет этот тест": ("Студент қазір осы тестті жазып жатыр", "The student is taking this test right now"),
+    "Укажите, до какого времени открыта пересдача": ("Қайта тапсыру қай уақытқа дейін ашық екенін көрсетіңіз", "Set how long the retake stays open"),
+    "Администратор разрешил вам пройти этот тест заново. Засчитается новый результат, прошлая попытка останется в истории.": (
+        "Әкімші сізге бұл тестті қайта тапсыруға рұқсат берді. Жаңа нәтиже есептеледі, алдыңғы талпыныс тарихта қалады.",
+        "An administrator allowed you to retake this test. The new result counts; the previous attempt stays in the history."),
+    "Другие попытки": ("Басқа талпыныстар", "Other attempts"),
+    "заменена пересдачей": ("қайта тапсырумен ауыстырылды", "replaced by a retake"),
+    "текущая": ("ағымдағы", "current"),
+
     # ---------- Профиль и настройки ----------
     "Профиль": ("Профиль", "Profile"),
     "Изменить фото": ("Суретті өзгерту", "Change photo"),
@@ -366,9 +465,6 @@ TRANSLATIONS = {
     "Дисциплина «%(name)s» добавлена": ("«%(name)s» пәні қосылды", "Subject “%(name)s” added"),
     "Такая дисциплина уже есть или название пустое": ("Мұндай пән бар немесе атауы бос", "This subject already exists or the name is empty"),
     "Вопрос сохранён": ("Сұрақ сақталды", "Question saved"),
-    "В банке только %(pool)s подходящих вопросов, а в варианте %(count)s. Студенты не смогут начать тест": (
-        "Банкте тек %(pool)s сәйкес сұрақ бар, ал нұсқада %(count)s. Студенттер тестті бастай алмайды",
-        "The bank has only %(pool)s suitable questions but a variant needs %(count)s. Students won't be able to start"),
     "Тест сохранён": ("Тест сақталды", "Test saved"),
     "%(name)s может войти заново и продолжить тест": ("%(name)s қайта кіріп, тестті жалғастыра алады", "%(name)s can sign in again and continue the test"),
     "Попытка %(name)s остановлена": ("%(name)s талпынысы тоқтатылды", "%(name)s's attempt stopped"),
@@ -384,15 +480,11 @@ TRANSLATIONS = {
     "В банке %(bank_size)s ваших вопросов.": ("Банкте сіздің %(bank_size)s сұрағыңыз бар.", "You have %(bank_size)s questions in the bank."),
     "Загрузить вопросы из Word": ("Word-тан сұрақтар жүктеу", "Import questions from Word"),
     "Создать тест": ("Тест құру", "Create test"),
-    "Добавить вопрос вручную": ("Сұрақты қолмен қосу", "Add a question manually"),
     "Мои тесты": ("Менің тесттерім", "My tests"),
     "Все тесты": ("Барлық тесттер", "All tests"),
     "Прошли: %(n_attempts)s": ("Тапсырғандар: %(n_attempts)s", "Taken: %(n_attempts)s"),
     "Сейчас пишут: %(n_active)s": ("Қазір жазып жатыр: %(n_active)s", "Writing now: %(n_active)s"),
     "Наблюдать": ("Бақылау", "Monitor"),
-    "Тестов пока нет. Сначала добавьте вопросы в банк, затем соберите из них тест.": (
-        "Әзірге тесттер жоқ. Алдымен банкке сұрақтар қосып, содан кейін олардан тест құрыңыз.",
-        "No tests yet. Add questions to the bank first, then build a test from them."),
     "Дисциплины": ("Пәндер", "Subjects"),
     "Пока нет ни одной дисциплины": ("Әзірге бірде-бір пән жоқ", "No subjects yet"),
     "Новая дисциплина": ("Жаңа пән", "New subject"),
@@ -495,13 +587,9 @@ TRANSLATIONS = {
     "Открыт": ("Ашық", "Open"),
     "Закрыт": ("Жабық", "Closed"),
     "Скоро": ("Жақында", "Soon"),
-    "Настроить": ("Баптау", "Settings"),
     "Тестов пока нет.": ("Әзірге тесттер жоқ.", "No tests yet."),
     "Настройки теста": ("Тест баптаулары", "Test settings"),
     "Новый тест": ("Жаңа тест", "New test"),
-    "Каждый студент получит свой случайный вариант из банка вопросов.": (
-        "Әр студент сұрақтар банкінен өзінің кездейсоқ нұсқасын алады.",
-        "Each student gets their own random variant from the question bank."),
     "Отмена": ("Болдырмау", "Cancel"),
     "Содержание": ("Мазмұны", "Content"),
     "Когда и кто": ("Қашан және кім", "When and who"),

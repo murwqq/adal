@@ -1,3 +1,4 @@
+import secrets
 from django.utils.translation import gettext_lazy as _
 from django import forms
 from django.utils import timezone
@@ -6,6 +7,14 @@ from .models import Exam, Question, Subject
 
 MAX_CHOICES = 6
 MAX_UPLOAD_MB = 10
+
+
+def lock_subject(form, exam):
+    """Вопрос пишется внутри теста: дисциплина берётся из теста и не меняется."""
+    if exam is not None:
+        form.fields["subject"].queryset = Subject.objects.filter(pk=exam.subject_id)
+        form.fields["subject"].initial = exam.subject_id
+        form.fields["subject"].disabled = True
 
 
 class QuestionForm(forms.Form):
@@ -22,8 +31,9 @@ class QuestionForm(forms.Form):
         label=_("Правильный ответ"), coerce=int, widget=forms.RadioSelect,
         choices=[(i, str(i)) for i in range(MAX_CHOICES)], initial=0)
 
-    def __init__(self, *args, question=None, **kwargs):
+    def __init__(self, *args, question=None, exam=None, **kwargs):
         super().__init__(*args, **kwargs)
+        lock_subject(self, exam)
         for i in range(MAX_CHOICES):
             self.fields[f"choice_{i}"] = forms.CharField(
                 label=_("Вариант %(n)s") % {"n": i + 1}, required=i < 2, max_length=1000)
@@ -60,6 +70,10 @@ class ImportForm(forms.Form):
     file = forms.FileField(label=_("Файл .docx или .txt"))
     dry_run = forms.BooleanField(label=_("Только проверить, ничего не сохранять"), required=False)
 
+    def __init__(self, *args, exam=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        lock_subject(self, exam)
+
     def clean_file(self):
         f = self.cleaned_data["file"]
         if f.size > MAX_UPLOAD_MB * 1024 * 1024:
@@ -76,7 +90,7 @@ class SubjectForm(forms.ModelForm):
 class ExamForm(forms.ModelForm):
     class Meta:
         model = Exam
-        fields = ["title", "subject", "topic", "question_count", "duration_minutes",
+        fields = ["title", "subject", "question_count", "duration_minutes",
                   "opens_at", "closes_at", "groups", "access_code", "allowed_ip_prefix",
                   "max_violations", "show_review", "is_published"]
         widgets = {
@@ -86,13 +100,26 @@ class ExamForm(forms.ModelForm):
                                              format="%Y-%m-%dT%H:%M"),
         }
 
+    SOURCES = [
+        ("manual", _("Написать вопросы на сайте")),
+        ("word", _("Загрузить вопросы из Word")),
+    ]
+    source = forms.ChoiceField(choices=SOURCES, initial="manual", widget=forms.RadioSelect,
+                               required=False, label=_("Как добавить вопросы"))
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["subject"].empty_label = _("Выберите дисциплину")
-        if not self.instance.pk and not self.is_bound:
+        self.fields["question_count"].help_text = _("Сколько вопросов получит каждый студент. Если в тесте их больше, каждому достанется свой случайный набор")
+        if self.instance.pk:
+            del self.fields["source"]
+        elif not self.is_bound:
             now = timezone.localtime().replace(second=0, microsecond=0)
             self.initial.setdefault("opens_at", now)
             self.initial.setdefault("closes_at", now + timezone.timedelta(hours=2))
+            self.initial.setdefault("question_count", 10)
+            alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+            self.initial.setdefault("access_code", "".join(secrets.choice(alphabet) for _ in range(6)))
 
     def clean(self):
         data = super().clean()

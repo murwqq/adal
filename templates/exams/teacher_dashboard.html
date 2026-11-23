@@ -8,8 +8,7 @@
     <p class="muted">{% blocktranslate trimmed %}В банке {{ bank_size }} ваших вопросов.{% endblocktranslate %}</p>
   </div>
   <div style="display:flex;gap:10px;flex-wrap:wrap">
-    <a class="btn" href="{% url 'exams:question_new' %}">{% translate "Добавить вопрос вручную" %}</a>
-    <a class="btn" href="{% url 'exams:question_import' %}">{% translate "Загрузить вопросы из Word" %}</a>
+    <a class="btn" href="{% url 'exams:exam_new' %}?source=word">{% translate "Загрузить тест из Word" %}</a>
     <a class="btn btn-primary" href="{% url 'exams:exam_new' %}">{% translate "Создать тест" %}</a>
   </div>
 </div>
@@ -32,8 +31,11 @@
     </div>
     {% empty %}
     <div class="empty">
-      <p>{% translate "Тестов пока нет. Сначала добавьте вопросы в банк, затем соберите из них тест." %}</p>
-      <a class="btn btn-primary" href="{% url 'exams:exam_new' %}">{% translate "Создать тест" %}</a>
+      <p>{% translate "Тестов пока нет. Создайте тест и напишите вопросы прямо в нём или загрузите готовый файл Word." %}</p>
+      <div class="q-toolbar-actions" style="justify-content:center">
+        <a class="btn btn-primary" href="{% url 'exams:exam_new' %}">{% translate "Создать тест" %}</a>
+        <a class="btn" href="{% url 'exams:exam_new' %}?source=word">{% translate "Загрузить тест из Word" %}</a>
+      </div>
     </div>
     {% endfor %}
   </section>
@@ -44,7 +46,16 @@
       <table>
         {% for s in subjects %}
         <tr><td><a href="{% url 'exams:question_list' %}?subject={{ s.pk }}">{{ s.name }}</a></td>
-            <td class="right num muted">{{ s.n }}</td></tr>
+            <td class="right num muted">{{ s.n }}</td>
+            <td class="right subject-del">
+              <form method="post" action="{% url 'exams:subject_delete' s.pk %}"
+                    onsubmit="return confirm('{% filter escapejs %}{% blocktranslate trimmed with name=s.name n=s.n %}Удалить дисциплину «{{ name }}» вместе с её вопросами ({{ n }})? Это нельзя отменить.{% endblocktranslate %}{% endfilter %}')">
+                {% csrf_token %}
+                <button class="icon-btn" type="submit" title="{% translate 'Удалить дисциплину' %}" aria-label="{% blocktranslate trimmed with name=s.name %}Удалить дисциплину «{{ name }}»{% endblocktranslate %}">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+                </button>
+              </form>
+            </td></tr>
         {% empty %}<tr><td class="muted">{% translate "Пока нет ни одной дисциплины" %}</td></tr>{% endfor %}
       </table>
       <form method="post" action="{% url 'exams:subject_create' %}" style="margin-top:16px">

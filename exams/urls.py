@@ -6,6 +6,7 @@ app_name = "exams"
 
 urlpatterns = [
     path("subjects/new/", views.subject_create, name="subject_create"),
+    path("subjects/<int:pk>/delete/", views.subject_delete, name="subject_delete"),
     path("bank/", views.question_list, name="question_list"),
     path("bank/new/", views.question_edit, name="question_new"),
     path("bank/import/", views.question_import, name="question_import"),
@@ -14,6 +15,8 @@ urlpatterns = [
     path("exams/", views.exam_list, name="exam_list"),
     path("exams/new/", views.exam_edit, name="exam_new"),
     path("exams/<int:pk>/edit/", views.exam_edit, name="exam_edit"),
+    path("exams/<int:pk>/questions/", views.exam_questions, name="exam_questions"),
+    path("exams/<int:pk>/delete/", views.exam_delete, name="exam_delete"),
     path("exams/<int:pk>/results/", views.exam_results, name="exam_results"),
     path("exams/<int:pk>/analysis/", views.exam_analysis, name="exam_analysis"),
     path("exams/<int:pk>/monitor/", views.exam_monitor, name="exam_monitor"),

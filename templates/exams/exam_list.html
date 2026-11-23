@@ -4,7 +4,10 @@
 {% block content %}
 <div class="page-head">
   <h1>{% translate "Мои тесты" %}</h1>
-  <a class="btn btn-primary" href="{% url 'exams:exam_new' %}">{% translate "Создать тест" %}</a>
+  <div class="q-toolbar-actions">
+    <a class="btn" href="{% url 'exams:exam_new' %}?source=word">{% translate "Загрузить тест из Word" %}</a>
+    <a class="btn btn-primary" href="{% url 'exams:exam_new' %}">{% translate "Создать тест" %}</a>
+  </div>
 </div>
 <section class="sheet">
   {% if exams %}
@@ -15,13 +18,13 @@
     <tr>
       <td><a href="{% url 'exams:exam_results' e.pk %}">{{ e.title }}</a><div class="small muted">{{ e.subject }}{% if e.groups %}{% blocktranslate trimmed with groups=e.groups %}, группы {{ groups }}{% endblocktranslate %}{% endif %}</div></td>
       <td class="num">{{ e.opens_at|date:"d.m.Y H:i" }}<br><span class="muted">{% translate "до" %} {{ e.closes_at|date:"d.m.Y H:i" }}</span></td>
-      <td class="right num">{{ e.question_count }}</td>
+      <td class="right num">{{ e.question_count }} <span class="muted">/ {{ e.n_questions }}</span></td>
       <td class="right num">{{ e.duration_minutes }}</td>
       <td class="right num">{{ e.n_attempts }}</td>
       <td><code>{{ e.access_code }}</code></td>
       <td class="right" style="white-space:nowrap">
         {% if e.opens_at <= now and now <= e.closes_at %}<span class="tag ok">{% translate "Открыт" %}</span>{% elif now > e.closes_at %}<span class="tag">{% translate "Закрыт" %}</span>{% else %}<span class="tag warn">{% translate "Скоро" %}</span>{% endif %}
-        <a class="btn btn-quiet" href="{% url 'exams:exam_edit' e.pk %}">{% translate "Настроить" %}</a>
+        <a class="btn btn-quiet" href="{% url 'exams:exam_questions' e.pk %}">{% translate "Вопросы" %}</a>
       </td>
     </tr>
     {% endfor %}

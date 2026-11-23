@@ -132,10 +132,13 @@ class Command(BaseCommand):
             author=teacher, question_count=6, duration_minutes=15,
             opens_at=now - timedelta(days=3), closes_at=now - timedelta(days=2),
             access_code="MATH1", max_violations=3)
-        Exam.objects.create(
+        physics_exam = Exam.objects.create(
             title="Итоговый тест по механике", subject=subjects["Физика"], author=teacher2,
             question_count=4, duration_minutes=10, opens_at=now + timedelta(days=2),
             closes_at=now + timedelta(days=2, hours=2), access_code="PHYS")
+        # У каждого теста свой список вопросов: здесь берём все вопросы дисциплины.
+        for exam in (open_exam, past_exam, physics_exam):
+            exam.questions.set(exam.subject.questions.all())
 
         self._simulate(past_exam, students, now - timedelta(days=3) + timedelta(minutes=5))
         self._simulate(open_exam, students[4:], now - timedelta(minutes=50))

@@ -4,8 +4,9 @@
 {% block content %}
 <div class="page-head">
   <div>
+    {% if exam %}<a class="back-link" href="{% url 'exams:exam_results' exam.pk %}">← {{ exam.title }}</a>{% endif %}
     <h1>{% if exam %}{% translate "Настройки теста" %}{% else %}{% translate "Новый тест" %}{% endif %}</h1>
-    <p class="muted">{% translate "Каждый студент получит свой случайный вариант из банка вопросов." %}</p>
+    <p class="muted">{% translate "Каждый студент получит свой случайный вариант из вопросов теста." %}</p>
   </div>
   <a class="btn btn-quiet" href="{% if exam %}{% url 'exams:exam_results' exam.pk %}{% else %}{% url 'exams:exam_list' %}{% endif %}">{% translate "Отмена" %}</a>
 </div>
@@ -13,13 +14,26 @@
 <form method="post" class="cols">
   {% csrf_token %}
   <div>
+    {% if form.source %}
+    <section class="sheet">
+      <h3>{% translate "Как добавить вопросы" %}</h3>
+      <div class="source-cards">
+        {% for radio in form.source %}
+        <label class="source-card">
+          {{ radio.tag }}
+          <span class="source-mark" aria-hidden="true"></span>
+          <b>{{ radio.choice_label }}</b>
+          <small>{% if radio.data.value == "word" %}{% translate "Готовый файл .docx или .txt в формате Platonus. Оформление снимется, формулы станут чёткими." %}{% else %}{% translate "Вопросы с вариантами ответов, формулами и картинками пишутся прямо в тесте." %}{% endif %}</small>
+        </label>
+        {% endfor %}
+      </div>
+      <p class="small muted" style="margin:12px 0 0">{% translate "Способы можно совмещать: после создания теста добавляйте вопросы любым из них или берите из банка." %}</p>
+    </section>
+    {% endif %}
     <section class="sheet">
       <h3>{% translate "Содержание" %}</h3>
       {% include "_field.html" with field=form.title %}
-      <div class="grid-2">
-        {% include "_field.html" with field=form.subject %}
-        {% include "_field.html" with field=form.topic %}
-      </div>
+      {% include "_field.html" with field=form.subject %}
       <div class="grid-2">
         {% include "_field.html" with field=form.question_count %}
         {% include "_field.html" with field=form.duration_minutes %}
@@ -42,8 +56,21 @@
       {% include "_field.html" with field=form.allowed_ip_prefix %}
       {% include "_field.html" with field=form.show_review %}
       {% include "_field.html" with field=form.is_published %}
-      <button class="btn btn-primary btn-block btn-lg" type="submit">{% translate "Сохранить тест" %}</button>
+      <button class="btn btn-primary btn-block btn-lg" type="submit">{% if exam %}{% translate "Сохранить тест" %}{% else %}{% translate "Создать и добавить вопросы" %}{% endif %}</button>
     </section>
   </aside>
 </form>
+{% if exam %}
+<section class="sheet danger-zone">
+  <div>
+    <h3>{% translate "Удалить тест" %}</h3>
+    <p class="small muted">{% translate "Тест удалится вместе с результатами студентов. Вопросы останутся в банке." %}</p>
+  </div>
+  <form method="post" action="{% url 'exams:exam_delete' exam.pk %}"
+        onsubmit="return confirm('{% filter escapejs %}{% blocktranslate trimmed with title=exam.title %}Удалить тест «{{ title }}» и все его результаты? Это нельзя отменить.{% endblocktranslate %}{% endfilter %}')">
+    {% csrf_token %}
+    <button class="btn btn-danger" type="submit">{% translate "Удалить тест" %}</button>
+  </form>
+</section>
+{% endif %}
 {% endblock %}

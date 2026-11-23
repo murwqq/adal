@@ -5,16 +5,18 @@
 {% block content %}
 <div class="page-head">
   <div>
+    {% if exam %}<a class="back-link" href="{% url 'exams:exam_questions' exam.pk %}">← {{ exam.title }}</a>{% endif %}
     <h1>{% if question %}{% translate "Изменить вопрос" %}{% else %}{% translate "Новый вопрос" %}{% endif %}</h1>
     <p class="muted">{% translate "Оформление не сохраняется, поэтому на экране студента все варианты выглядят одинаково." %}</p>
   </div>
-  <a class="btn btn-quiet" href="{% url 'exams:question_list' %}">{% translate "Вернуться в банк" %}</a>
+  {% if exam %}<a class="btn btn-quiet" href="{% url 'exams:exam_questions' exam.pk %}">{% translate "К вопросам теста" %}</a>
+  {% else %}<a class="btn btn-quiet" href="{% url 'exams:question_list' %}">{% translate "Вернуться в банк" %}</a>{% endif %}
 </div>
 
 {% for e in form.non_field_errors %}<div class="note error" role="alert">{{ e }}</div><br>{% endfor %}
 
 <form method="post" enctype="multipart/form-data" class="cols">
-  {% csrf_token %}
+  {% csrf_token %}{% if exam %}<input type="hidden" name="exam" value="{{ exam.pk }}">{% endif %}
   <div class="sheet">
     <div class="field">
       <label for="{{ form.text.id_for_label }}">{% translate "Текст вопроса" %}</label>

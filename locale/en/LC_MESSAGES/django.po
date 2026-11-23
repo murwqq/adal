@@ -15,6 +15,9 @@ msgstr "%(duration_minutes)s min"
 msgid "%(name)s может войти заново и продолжить тест"
 msgstr "%(name)s can sign in again and continue the test"
 
+msgid "%(name)s может пройти тест заново до %(until)s"
+msgstr "%(name)s can retake the test until %(until)s"
+
 msgid "%(number)s из %(num_pages)s"
 msgstr "%(number)s of %(num_pages)s"
 
@@ -94,6 +97,13 @@ msgstr "Adal: online exams for Korkyt Ata University students"
 msgid "Администратор"
 msgstr "Administrator"
 
+msgid ""
+"Администратор разрешил вам пройти этот тест заново. Засчитается новый "
+"результат, прошлая попытка останется в истории."
+msgstr ""
+"An administrator allowed you to retake this test. The new result counts; the"
+" previous attempt stays in the history."
+
 msgid "Администрирование"
 msgstr "Administration"
 
@@ -152,15 +162,25 @@ msgstr ""
 msgid "В банке пока нет ваших вопросов."
 msgstr "You don't have any questions in the bank yet."
 
-msgid ""
-"В банке только %(pool)s подходящих вопросов, а в варианте %(count)s. "
-"Студенты не смогут начать тест"
-msgstr ""
-"The bank has only %(pool)s suitable questions but a variant needs %(count)s."
-" Students won't be able to start"
-
 msgid "В варианте должен быть хотя бы один вопрос"
 msgstr "A variant must have at least one question"
+
+msgid "В тесте %(n)s вопросов, каждый студент получит %(count)s."
+msgstr "The test has %(n)s questions; each student gets %(count)s."
+
+msgid ""
+"В тесте пока нет вопросов. Напишите их здесь же или загрузите готовый файл "
+"Word в формате Platonus."
+msgstr ""
+"The test has no questions yet. Write them here or import a ready Word file "
+"in Platonus format."
+
+msgid ""
+"В тесте только %(pool)s вопросов, а в варианте %(count)s. Студенты не смогут"
+" начать тест"
+msgstr ""
+"The test has only %(pool)s questions but a variant needs %(count)s. Students"
+" won't be able to start"
 
 msgid "В файле не найдено ни одного тега <question>"
 msgstr "No <question> tags found in the file"
@@ -202,6 +222,9 @@ msgstr "Back to questions"
 msgid "Вернуться к тесту"
 msgstr "Back to the test"
 
+msgid "Взять из банка"
+msgstr "Take from the bank"
+
 msgid "Вид на жительство"
 msgstr "Residence permit"
 
@@ -225,6 +248,9 @@ msgstr "Question %(position)s of %(total)s"
 
 msgid "Вопрос сохранён"
 msgstr "Question saved"
+
+msgid "Вопрос убран из теста. В банке он остался"
+msgstr "Question removed from the test. It stays in the bank"
 
 msgid "Вопрос удалён"
 msgstr "Question deleted"
@@ -253,6 +279,27 @@ msgstr "Questions per variant"
 
 msgid "Вопросы"
 msgstr "Questions"
+
+msgid "Вопросы добавлены в тест."
+msgstr "Questions added to the test."
+
+msgid "Вопросы из файла сразу попадут в этот тест."
+msgstr "Questions from the file go straight into this test."
+
+msgid ""
+"Вопросы с вариантами ответов, формулами и картинками пишутся прямо в тесте."
+msgstr ""
+"Questions with answer options, formulas and images are written right in the "
+"test."
+
+msgid "Вопросы теста"
+msgstr "Test questions"
+
+msgid ""
+"Вопросы этой дисциплины уже попадали студентам, поэтому её нельзя удалить"
+msgstr ""
+"Questions of this subject have already been given to students, so it can't "
+"be deleted"
 
 msgid "Время вышло"
 msgstr "Time is up"
@@ -322,6 +369,13 @@ msgstr "Score histogram"
 msgid "Главная"
 msgstr "Home"
 
+msgid ""
+"Готовый файл .docx или .txt в формате Platonus. Оформление снимется, формулы"
+" станут чёткими."
+msgstr ""
+"A ready .docx or .txt file in Platonus format. Formatting is removed and "
+"formulas become sharp."
+
 msgid "Гражданство"
 msgstr "Citizenship"
 
@@ -365,6 +419,9 @@ msgstr "Subject"
 msgid "Дисциплина «%(name)s» добавлена"
 msgstr "Subject “%(name)s” added"
 
+msgid "Дисциплина «%(name)s» удалена"
+msgstr "Subject “%(name)s” deleted"
+
 msgid "Дисциплины"
 msgstr "Subjects"
 
@@ -380,8 +437,11 @@ msgstr "Add"
 msgid "Добавить вопрос"
 msgstr "Add question"
 
-msgid "Добавить вопрос вручную"
-msgstr "Add a question manually"
+msgid "Добавить отмеченные"
+msgstr "Add selected"
+
+msgid "Добавлено вопросов из банка: %(n)s"
+msgstr "Questions added from the bank: %(n)s"
 
 msgid "Докторантура"
 msgstr "Doctoral"
@@ -406,6 +466,9 @@ msgstr "Another image"
 
 msgid "Другая страна"
 msgstr "Other country"
+
+msgid "Другие попытки"
+msgstr "Other attempts"
 
 msgid ""
 "Если компьютер студента завис, разрешите ему продолжить: он войдёт заново, "
@@ -454,6 +517,9 @@ msgstr "Import questions from Word"
 
 msgid "Загрузить из Word"
 msgstr "Import from Word"
+
+msgid "Загрузить тест из Word"
+msgstr "Import a test from Word"
 
 msgid "Загрузить фото"
 msgstr "Upload photo"
@@ -521,6 +587,9 @@ msgstr "Subscript"
 msgid "Интеграл"
 msgstr "Integral"
 
+msgid "К вопросам теста"
+msgstr "Back to test questions"
+
 msgid "К вопросу приложен рисунок."
 msgstr "An image is attached to the question."
 
@@ -536,11 +605,14 @@ msgstr ""
 "number %(max_violations)s the test ends automatically and is scored from the"
 " answers given."
 
-msgid "Каждый студент получит свой случайный вариант из банка вопросов."
-msgstr "Each student gets their own random variant from the question bank."
+msgid "Каждый студент получит свой случайный вариант из вопросов теста."
+msgstr "Each student gets their own random variant from the test's questions."
 
 msgid "Казахстан"
 msgstr "Kazakhstan"
+
+msgid "Как добавить вопросы"
+msgstr "How to add questions"
 
 msgid "Как оформить файл"
 msgstr "How to format the file"
@@ -678,6 +750,12 @@ msgstr "Questions found:"
 msgid "Найти"
 msgstr "Search"
 
+msgid "Написать вопрос"
+msgstr "Write a question"
+
+msgid "Написать вопросы на сайте"
+msgstr "Write questions on the site"
+
 msgid "Например: производная"
 msgstr "For example: derivative"
 
@@ -695,9 +773,6 @@ msgstr "No violations. Thanks for working honestly."
 
 msgid "Нарушения"
 msgstr "Violations"
-
-msgid "Настроить"
-msgstr "Settings"
 
 msgid "Настройки"
 msgstr "Settings"
@@ -850,6 +925,9 @@ msgstr "Open until"
 msgid "Отмена"
 msgstr "Cancel"
 
+msgid "Отменить пересдачу"
+msgstr "Cancel the retake"
+
 msgid ""
 "Отметьте кружок у правильного ответа. Порядок вариантов у каждого студента "
 "будет свой."
@@ -910,6 +988,25 @@ msgstr "Go to test"
 msgid "Переключился на другую вкладку или окно"
 msgstr "Switched to another tab or window"
 
+msgid "Пересдача"
+msgstr "Retake"
+
+msgid "Пересдача до"
+msgstr "Retake until"
+
+msgid "Пересдача доступна до"
+msgstr "Retake available until"
+
+msgid ""
+"Пересдача открыта до %(until)s. Когда студент начнёт тест заново, эта "
+"попытка уйдёт в историю."
+msgstr ""
+"The retake is open until %(until)s. When the student starts again, this "
+"attempt moves to the history."
+
+msgid "Пересдача отменена"
+msgstr "Retake cancelled"
+
 msgid "Пишет"
 msgstr "Writing"
 
@@ -929,6 +1026,9 @@ msgstr "Poorly separates those who know from those who don't"
 msgid "По дисциплинам"
 msgstr "By subject"
 
+msgid "По дисциплине «%(name)s» есть тесты (%(n)s). Сначала удалите их"
+msgstr "The subject “%(name)s” has tests (%(n)s). Delete them first"
+
 msgid "По фамилии"
 msgstr "By last name"
 
@@ -941,8 +1041,19 @@ msgstr ".docx and .txt files are supported"
 msgid "Подробнее"
 msgstr "Details"
 
+msgid "Подходящих вопросов в банке нет."
+msgstr "No matching questions in the bank."
+
 msgid "Поиск по тексту вопроса и ответов"
 msgstr "Search question and answer text"
+
+msgid ""
+"Пока вопросов %(n)s, а в варианте должно быть %(count)s. Добавьте вопросы "
+"или уменьшите их число в настройках, иначе студенты не смогут начать тест."
+msgstr ""
+"There are %(n)s questions so far, but a variant needs %(count)s. Add "
+"questions or lower the number in settings, or students won't be able to "
+"start."
 
 msgid ""
 "Пока идёт тест, не выходите из полноэкранного режима и не переключайтесь на "
@@ -1114,6 +1225,9 @@ msgstr "Test sections"
 msgid "Различение"
 msgstr "Discrimination"
 
+msgid "Разрешить пересдачу"
+msgstr "Allow a retake"
+
 msgid "Разрешить продолжить в другом браузере"
 msgstr "Allow continuing in another browser"
 
@@ -1198,6 +1312,13 @@ msgstr "Characters from the image"
 msgid "Скачать CSV"
 msgstr "Download CSV"
 
+msgid ""
+"Сколько вопросов получит каждый студент. Если в тесте их больше, каждому "
+"достанется свой случайный набор"
+msgstr ""
+"How many questions each student gets. If the test has more, everyone gets "
+"their own random set"
+
 msgid "Сколько студентов набрало каждый процент"
 msgstr "How many students scored each percentage"
 
@@ -1270,6 +1391,9 @@ msgstr "Create account"
 msgid "Создать аккаунт абитуриента"
 msgstr "Create an applicant account"
 
+msgid "Создать и добавить вопросы"
+msgstr "Create and add questions"
+
 msgid "Создать тест"
 msgstr "Create test"
 
@@ -1297,6 +1421,13 @@ msgstr "Save test"
 msgid "Сохраняем…"
 msgstr "Saving…"
 
+msgid ""
+"Способы можно совмещать: после создания теста добавляйте вопросы любым из "
+"них или берите из банка."
+msgstr ""
+"You can mix both: after creating the test, add questions either way or take "
+"them from the bank."
+
 msgid "Средний"
 msgstr "Medium"
 
@@ -1305,6 +1436,9 @@ msgstr "Average score"
 
 msgid "Средний результат студентов"
 msgstr "Students' average score"
+
+msgid "Срок пересдачи должен быть в будущем"
+msgstr "The retake deadline must be in the future"
 
 msgid "Статус"
 msgstr "Status"
@@ -1323,6 +1457,16 @@ msgstr "Pages"
 
 msgid "Студент"
 msgstr "Student"
+
+msgid "Студент сейчас пишет этот тест"
+msgstr "The student is taking this test right now"
+
+msgid ""
+"Студент сможет пройти тест заново, даже если тест уже закрыт. Новый "
+"результат заменит этот, а этот останется в истории."
+msgstr ""
+"The student can take the test again even if it's already closed. The new "
+"result replaces this one, which stays in the history."
 
 msgid ""
 "Студенты с нарушениями показаны сверху. «Нет связи» значит, что страница "
@@ -1374,6 +1518,9 @@ msgstr "Test"
 msgid "Тест «%(title)s» ещё не завершён."
 msgstr "The test “%(title)s” isn't finished yet."
 
+msgid "Тест «%(title)s» удалён вместе с результатами"
+msgstr "Test “%(title)s” deleted along with its results"
+
 msgid "Тест должен закрываться позже, чем открывается"
 msgstr "The test must close after it opens"
 
@@ -1408,8 +1555,22 @@ msgstr ""
 msgid "Тест открыт в другом браузере"
 msgstr "The test is open in another browser"
 
+msgid "Тест сейчас пишут. Удалить его можно, когда все закончат"
+msgstr ""
+"Students are taking the test right now. You can delete it once everyone "
+"finishes"
+
+msgid "Тест создан. Теперь добавьте в него вопросы"
+msgstr "Test created. Now add questions to it"
+
 msgid "Тест сохранён"
 msgstr "Test saved"
+
+msgid ""
+"Тест удалится вместе с результатами студентов. Вопросы останутся в банке."
+msgstr ""
+"The test is deleted together with student results. Questions stay in the "
+"bank."
 
 msgid "Тест уже завершён"
 msgstr "The test is already finished"
@@ -1422,10 +1583,11 @@ msgid "Тестов пока нет."
 msgstr "No tests yet."
 
 msgid ""
-"Тестов пока нет. Сначала добавьте вопросы в банк, затем соберите из них "
-"тест."
+"Тестов пока нет. Создайте тест и напишите вопросы прямо в нём или загрузите "
+"готовый файл Word."
 msgstr ""
-"No tests yet. Add questions to the bank first, then build a test from them."
+"No tests yet. Create a test and write questions right in it, or import a "
+"ready Word file."
 
 msgid "Тестов сдано"
 msgstr "Tests taken"
@@ -1464,11 +1626,34 @@ msgstr ""
 "Your role doesn't have access to this page. If you think this is a mistake, "
 "contact the administrator."
 
+msgid "Убрать"
+msgstr "Remove"
+
 msgid "Удалить"
 msgstr "Delete"
 
 msgid "Удалить вопрос из банка?"
 msgstr "Delete this question from the bank?"
+
+msgid "Удалить дисциплину"
+msgstr "Delete subject"
+
+msgid "Удалить дисциплину «%(name)s»"
+msgstr "Delete subject “%(name)s”"
+
+msgid ""
+"Удалить дисциплину «%(name)s» вместе с её вопросами (%(n)s)? Это нельзя "
+"отменить."
+msgstr ""
+"Delete the subject “%(name)s” with its questions (%(n)s)? This can't be "
+"undone."
+
+msgid "Удалить тест"
+msgstr "Delete test"
+
+msgid "Удалить тест «%(title)s» и все его результаты? Это нельзя отменить."
+msgstr ""
+"Delete the test “%(title)s” and all its results? This can't be undone."
 
 msgid "Удостоверение личности РК"
 msgstr "Kazakhstan ID card"
@@ -1478,6 +1663,9 @@ msgstr "Already have an account?"
 
 msgid "Узбекистан"
 msgstr "Uzbekistan"
+
+msgid "Укажите, до какого времени открыта пересдача"
+msgstr "Set how long the retake stays open"
 
 msgid "Управление"
 msgstr "Actions"
@@ -1597,6 +1785,9 @@ msgstr "question"
 msgid "вопросы"
 msgstr "questions"
 
+msgid "вопросы по дисциплине «%(subject)s», которых ещё нет в тесте: %(n)s"
+msgstr "questions in “%(subject)s” that aren't in the test yet: %(n)s"
+
 msgid "дисциплин:"
 msgstr "subjects:"
 
@@ -1624,6 +1815,9 @@ msgstr "finished the test"
 
 msgid "закончил в"
 msgstr "finished at"
+
+msgid "заменена пересдачей"
+msgstr "replaced by a retake"
 
 msgid "из %(max_score)s, %(percent)s%%. %(get_status_display)s"
 msgstr "of %(max_score)s, %(percent)s%%. %(get_status_display)s"
@@ -1690,6 +1884,9 @@ msgstr "average score"
 
 msgid "средний результат по каждому тесту"
 msgstr "average score for each test"
+
+msgid "текущая"
+msgstr "current"
 
 msgid "тест"
 msgstr "test"

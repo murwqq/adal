@@ -4,7 +4,7 @@ import pytest
 from django.utils import timezone
 
 from exams import services
-from exams.models import Attempt, Question
+from exams.models import Attempt, Exam, Question, Subject
 from exams.services import ExamError
 
 
@@ -58,9 +58,78 @@ def test_not_enough_questions(exam, student):
         start(exam, student)
 
 
-def test_topic_filter_in_pool(exam):
-    exam.topic = "ООП"
-    assert services.question_pool(exam).count() == 2
+def test_pool_is_the_exams_own_questions(exam, subject, teacher):
+    first = exam.questions.first()
+    services.remove_from_exam(exam, first)
+    assert services.question_pool(exam).count() == 5
+    other, _ = services.save_question(subject=subject, author=teacher, text="Только в банке",
+                                      choices=[("да", True), ("нет", False)])
+    assert other not in services.question_pool(exam)
+    assert services.add_from_bank(exam, [other.pk, first.pk]) == 2
+    assert services.question_pool(exam).count() == 7
+
+
+def test_question_written_inside_exam(exam, subject, teacher):
+    question, _ = services.save_question(subject=subject, author=teacher, text="Новый вопрос",
+                                         choices=[("да", True), ("нет", False)], exam=exam)
+    assert question in exam.questions.all() and question.is_active
+
+
+# ---------- Удаление ----------
+
+def test_delete_exam_with_results(exam, student):
+    attempt = start(exam, student)
+    with pytest.raises(ExamError, match="пишут"):
+        services.delete_exam(exam)
+    services.finish_attempt(attempt)
+    services.delete_exam(exam)
+    assert not Exam.objects.filter(pk=exam.pk).exists()
+    assert not Attempt.all_objects.filter(pk=attempt.pk).exists()
+
+
+def test_delete_subject(exam, subject):
+    with pytest.raises(ExamError, match="тесты"):
+        services.delete_subject(subject)
+    exam.delete()
+    services.delete_subject(subject)
+    assert not Subject.objects.filter(pk=subject.pk).exists()
+    assert not Question.objects.filter(subject_id=subject.pk).exists()
+
+
+# ---------- Пересдача ----------
+
+def test_retake_after_exam_closed(exam, student, teacher):
+    now = timezone.now()
+    first = start(exam, student, now=now)
+    answer_all(first, correct=1)
+    services.finish_attempt(first, now=now)
+    exam.closes_at = now + timedelta(minutes=1)
+    exam.save()
+    later = now + timedelta(hours=3)
+    with pytest.raises(ExamError, match="закончилось"):
+        services.check_access(exam, student, code="ABC123", ip=None, now=later)
+
+    services.grant_retake(exam, student, granted_by=teacher, expires_at=later + timedelta(hours=1), now=now)
+    services.check_access(exam, student, code="ABC123", ip=None, now=later)
+    second = services.start_attempt(exam, student, session_key="s2", ip=None, now=later)
+    assert second.pk != first.pk
+    assert second.deadline == later + timedelta(minutes=exam.duration_minutes)
+    first.refresh_from_db()
+    assert first.archived
+    assert list(exam.attempts.all()) == [second]
+    # Разрешение одноразовое: третий раз начать нельзя.
+    services.finish_attempt(second, now=later)
+    assert services.active_retake(exam, student, later) is None
+    assert services.start_attempt(exam, student, session_key="s3", ip=None, now=later) == second
+
+
+def test_retake_rules(exam, student, teacher):
+    now = timezone.now()
+    with pytest.raises(ExamError, match="будущем"):
+        services.grant_retake(exam, student, granted_by=teacher, expires_at=now - timedelta(minutes=1))
+    start(exam, student)
+    with pytest.raises(ExamError, match="пишет"):
+        services.grant_retake(exam, student, granted_by=teacher, expires_at=now + timedelta(hours=1))
 
 
 # ---------- Доступ ----------
