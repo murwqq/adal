@@ -31,9 +31,15 @@ class QuestionForm(forms.Form):
         label=_("Правильный ответ"), coerce=int, widget=forms.RadioSelect,
         choices=[(i, str(i)) for i in range(MAX_CHOICES)], initial=0)
 
-    def __init__(self, *args, question=None, exam=None, **kwargs):
+    def __init__(self, *args, question=None, exam=None, keep=None, **kwargs):
         super().__init__(*args, **kwargs)
         lock_subject(self, exam)
+        if keep and not self.is_bound:
+            # Следующий вопрос той же серии: тема, сложность и дисциплина остаются.
+            names = ("topic", "difficulty") if exam is not None else ("topic", "difficulty", "subject")
+            for name in names:
+                if keep.get(name):
+                    self.initial[name] = keep.get(name)
         for i in range(MAX_CHOICES):
             self.fields[f"choice_{i}"] = forms.CharField(
                 label=_("Вариант %(n)s") % {"n": i + 1}, required=i < 2, max_length=1000)
@@ -86,6 +92,14 @@ class SubjectForm(forms.ModelForm):
         model = Subject
         fields = ["name"]
 
+    def clean_name(self):
+        # Регистр сравниваем в Python: SQLite не умеет без учёта регистра в кириллице.
+        name = " ".join(self.cleaned_data["name"].split())
+        key = name.casefold()
+        if any(s.casefold() == key for s in Subject.objects.values_list("name", flat=True)):
+            raise forms.ValidationError(_("Такая дисциплина уже есть"))
+        return name
+
 
 class ExamForm(forms.ModelForm):
     class Meta:
@@ -118,8 +132,19 @@ class ExamForm(forms.ModelForm):
             self.initial.setdefault("opens_at", now)
             self.initial.setdefault("closes_at", now + timezone.timedelta(hours=2))
             self.initial.setdefault("question_count", 10)
+            # Новый тест сначала черновик: студенты увидят его после публикации.
+            self.initial.setdefault("is_published", False)
             alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
             self.initial.setdefault("access_code", "".join(secrets.choice(alphabet) for _ in range(6)))
+
+    def clean_groups(self):
+        """«ИС-99, ,ис-99» → «ИС-99»: без пустых, без повторов, в верхнем регистре."""
+        groups = []
+        for raw in self.cleaned_data.get("groups", "").replace(";", ",").split(","):
+            group = " ".join(raw.split()).upper()
+            if group and group not in groups:
+                groups.append(group)
+        return ", ".join(groups)
 
     def clean(self):
         data = super().clean()

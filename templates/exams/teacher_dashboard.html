@@ -5,7 +5,7 @@
 <div class="page-head">
   <div>
     <h1>{% blocktranslate trimmed with first_name=user.first_name %}Здравствуйте, {{ first_name }}{% endblocktranslate %}{% if user.patronymic %} {{ user.patronymic }}{% endif %}</h1>
-    <p class="muted">{% blocktranslate trimmed %}В банке {{ bank_size }} ваших вопросов.{% endblocktranslate %}</p>
+    <p class="muted">{% blocktranslate trimmed %}Ваших вопросов в банке: {{ bank_size }}.{% endblocktranslate %}</p>
   </div>
   <div style="display:flex;gap:10px;flex-wrap:wrap">
     <a class="btn" href="{% url 'exams:exam_new' %}?source=word">{% translate "Загрузить тест из Word" %}</a>
@@ -19,10 +19,10 @@
     {% for exam in exams %}
     <div class="exam-row">
       <div>
-        <h3><a href="{% url 'exams:exam_results' exam.pk %}">{{ exam.title }}</a></h3>
+        <h3><a href="{% url 'exams:exam_results' exam.pk %}">{{ exam.title }}</a>{% if not exam.is_published %} <span class="tag warn">{% translate "Черновик" %}</span>{% endif %}</h3>
         <div class="facts">
           <span>{{ exam.subject }}</span>
-          <span>{{ exam.opens_at|date:"d.m.Y H:i" }} – {{ exam.closes_at|date:"H:i" }}</span>
+          <span class="num">{{ exam.opens_at|date:"d.m.Y H:i" }} – {% if exam.opens_at|date:"Ymd" == exam.closes_at|date:"Ymd" %}{{ exam.closes_at|date:"H:i" }}{% else %}{{ exam.closes_at|date:"d.m.Y H:i" }}{% endif %}</span>
           <span>{% blocktranslate trimmed with n_attempts=exam.n_attempts %}Прошли: {{ n_attempts }}{% endblocktranslate %}</span>
           {% if exam.n_active %}<span class="tag warn">{% blocktranslate trimmed with n_active=exam.n_active %}Сейчас пишут: {{ n_active }}{% endblocktranslate %}</span>{% endif %}
         </div>
@@ -48,13 +48,13 @@
         <tr><td><a href="{% url 'exams:question_list' %}?subject={{ s.pk }}">{{ s.name }}</a></td>
             <td class="right num muted">{{ s.n }}</td>
             <td class="right subject-del">
-              <form method="post" action="{% url 'exams:subject_delete' s.pk %}"
-                    onsubmit="return confirm('{% filter escapejs %}{% blocktranslate trimmed with name=s.name n=s.n %}Удалить дисциплину «{{ name }}» вместе с её вопросами ({{ n }})? Это нельзя отменить.{% endblocktranslate %}{% endfilter %}')">
+              {% if user.is_admin or not s.n_foreign %}<form method="post" action="{% url 'exams:subject_delete' s.pk %}"
+                    data-confirm="{% blocktranslate trimmed with name=s.name n=s.n %}Удалить дисциплину «{{ name }}» вместе с её вопросами ({{ n }})? Это нельзя отменить.{% endblocktranslate %}">
                 {% csrf_token %}
                 <button class="icon-btn" type="submit" title="{% translate 'Удалить дисциплину' %}" aria-label="{% blocktranslate trimmed with name=s.name %}Удалить дисциплину «{{ name }}»{% endblocktranslate %}">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
                 </button>
-              </form>
+              </form>{% endif %}
             </td></tr>
         {% empty %}<tr><td class="muted">{% translate "Пока нет ни одной дисциплины" %}</td></tr>{% endfor %}
       </table>

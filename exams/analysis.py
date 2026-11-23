@@ -104,6 +104,17 @@ def analyze_items(questions: dict[int, dict], answers: list[tuple[int, dict[int,
     return result
 
 
+def percent(score: int, total: int) -> int:
+    """Процент с округлением «половина вверх»: 1 из 8 = 13 %, 5 из 8 = 63 %.
+    Встроенный round() в Python округляет 12,5 до 12, а 87,5 до 88, отсюда разнобой."""
+    return (200 * score + total) // (2 * total) if total else 0
+
+
+def mean_percent(values: list[int]) -> int | None:
+    """Среднее из целых процентов, тоже «половина вверх»."""
+    return (2 * sum(values) + len(values)) // (2 * len(values)) if values else None
+
+
 def score_summary(percents: list[int]) -> dict:
     """Среднее, медиана, разброс и гистограмма по 10 корзинам (0–9 %, …, 90–100 %)."""
     buckets = [0] * 10
@@ -114,7 +125,7 @@ def score_summary(percents: list[int]) -> dict:
     return {
         "count": len(percents),
         "mean": round(statistics.fmean(percents), 1),
-        "median": statistics.median(percents),
+        "median": round(float(statistics.median(percents)), 1),
         "stdev": round(statistics.pstdev(percents), 1),
         "buckets": buckets,
     }

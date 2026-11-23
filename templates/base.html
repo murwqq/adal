@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=16">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=17">
   {% block math %}{% endblock %}
   {% block head %}{% endblock %}
 </head>
@@ -63,6 +63,11 @@
 </main>
 {% block footer %}<footer class="footer">{% translate "© 2026 Адал. Кызылординский университет имени Коркыт Ата" %}</footer>{% endblock %}
 <script>
+/* Подтверждение опасных действий: текст лежит в data-confirm у формы. */
+document.addEventListener("submit", function (e) {
+  var text = e.target.getAttribute && e.target.getAttribute("data-confirm");
+  if (text && !window.confirm(text)) e.preventDefault();
+}, true);
 /* На узком экране строки таблиц становятся карточками: подписываем ячейки заголовками столбцов. */
 (function () {
   function label(table) {

@@ -8,17 +8,14 @@ from collections import defaultdict
 
 from django.urls import reverse
 
-
-def _pct(score, max_score):
-    return round(100 * score / max_score) if max_score else 0
-
-
-def _avg(values):
-    return round(sum(values) / len(values)) if values else None
+from exams.analysis import mean_percent as _avg
+from exams.analysis import percent as _pct
 
 
 def student_overview(user):
     from exams.models import Attempt
+    from exams.services import expire_overdue
+    expire_overdue(Attempt.objects.filter(student=user))
     done = list(
         Attempt.objects.filter(student=user).exclude(status=Attempt.Status.ACTIVE)
         .select_related("exam", "exam__subject").order_by("finished_at", "started_at"))
@@ -59,6 +56,8 @@ def student_overview(user):
 
 def teacher_overview(user):
     from exams.models import Attempt, Exam, Question
+    from exams.services import expire_overdue
+    expire_overdue(Attempt.objects.filter(exam__author=user))
     exams = list(Exam.objects.filter(author=user).select_related("subject").order_by("opens_at"))
     works = defaultdict(list)
     for exam_id, score, max_score in (

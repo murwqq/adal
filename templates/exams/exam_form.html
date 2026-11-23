@@ -67,7 +67,7 @@
     <p class="small muted">{% translate "Тест удалится вместе с результатами студентов. Вопросы останутся в банке." %}</p>
   </div>
   <form method="post" action="{% url 'exams:exam_delete' exam.pk %}"
-        onsubmit="return confirm('{% filter escapejs %}{% blocktranslate trimmed with title=exam.title %}Удалить тест «{{ title }}» и все его результаты? Это нельзя отменить.{% endblocktranslate %}{% endfilter %}')">
+        data-confirm="{% blocktranslate trimmed with title=exam.title %}Удалить тест «{{ title }}» и все его результаты? Это нельзя отменить.{% endblocktranslate %}">
     {% csrf_token %}
     <button class="btn btn-danger" type="submit">{% translate "Удалить тест" %}</button>
   </form>

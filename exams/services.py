@@ -126,6 +126,16 @@ def remove_from_exam(exam: Exam, question: Question) -> None:
     exam.questions.remove(question)
 
 
+def set_published(exam: Exam, published: bool) -> None:
+    if published:
+        have = question_pool(exam).count()
+        if have < exam.question_count:
+            raise ExamError(_("Вопросов в тесте: %(have)s, а в варианте должно быть %(need)s. Добавьте вопросы, потом публикуйте")
+                            % {"have": have, "need": exam.question_count})
+    exam.is_published = published
+    exam.save(update_fields=["is_published"])
+
+
 def delete_exam(exam: Exam) -> str:
     if exam.attempts.filter(status=Attempt.Status.ACTIVE).exists():
         raise ExamError(_("Тест сейчас пишут. Удалить его можно, когда все закончат"))
@@ -134,8 +144,17 @@ def delete_exam(exam: Exam) -> str:
     return _("Тест «%(title)s» удалён вместе с результатами") % {"title": title}
 
 
-def delete_subject(subject: Subject) -> str:
-    """Дисциплину можно удалить, пока по ней нет тестов. Её вопросы удаляются вместе с ней."""
+def can_edit_question(user, question: Question) -> bool:
+    """Банк общий: брать чужие вопросы в свой тест можно, менять и удалять нельзя."""
+    return user.is_admin or question.author_id == user.id
+
+
+def delete_subject(subject: Subject, user=None) -> str:
+    """Дисциплину можно удалить, пока по ней нет тестов. Её вопросы удаляются вместе с ней.
+    Если в ней есть вопросы других преподавателей, удалить её может только администратор."""
+    if user is not None and not user.is_admin and subject.questions.exclude(author=user).exists():
+        raise ExamError(_("В дисциплине «%(name)s» есть вопросы других преподавателей. Удалить её может администратор")
+                        % {"name": subject.name})
     n_exams = subject.exams.count()
     if n_exams:
         raise ExamError(_("По дисциплине «%(name)s» есть тесты (%(n)s). Сначала удалите их")
@@ -210,7 +229,7 @@ def build_variant(question_ids: list[int], choice_ids: dict[int, list[int]],
     if count <= 0:
         raise ExamError(_("В варианте должен быть хотя бы один вопрос"))
     if len(question_ids) < count:
-        raise ExamError(_("В банке %(have)s подходящих вопросов, а нужно %(need)s") % {"have": len(question_ids), "need": count})
+        raise ExamError(_("Вопросов в тесте: %(have)s, а в варианте нужно %(need)s") % {"have": len(question_ids), "need": count})
     rnd = random.Random(seed)
     picked = rnd.sample(sorted(question_ids), count)
     variant = []
@@ -319,6 +338,19 @@ def finish_attempt(attempt: Attempt, *, status=Attempt.Status.FINISHED, now=None
     attempt.finished_at = now or timezone.now()
     attempt.save(update_fields=["score", "max_score", "status", "finished_at"])
     return attempt
+
+
+def expire_overdue(attempts=None, now=None) -> int:
+    """Закрывает попытки, у которых вышло время, даже если студент закрыл страницу
+    и никто не смотрел «Наблюдение». Вызывается перед показом результатов и статистики."""
+    now = now or timezone.now()
+    qs = (attempts if attempts is not None else Attempt.objects.all()).filter(
+        status=Attempt.Status.ACTIVE, deadline__lt=now - timedelta(seconds=GRACE_SECONDS))
+    closed = 0
+    for attempt in qs.select_related(None):
+        finish_attempt(attempt, status=Attempt.Status.EXPIRED, now=attempt.deadline)
+        closed += 1
+    return closed
 
 
 def heartbeat(attempt: Attempt, now=None) -> None:
@@ -445,6 +477,7 @@ FINISHED_STATUSES = (Attempt.Status.FINISHED, Attempt.Status.EXPIRED, Attempt.St
 
 
 def exam_report(exam: Exam) -> dict:
+    expire_overdue(exam.attempts.all())
     """Сводка по тесту: распределение баллов и анализ каждого вопроса."""
     attempts = list(exam.attempts.filter(status__in=FINISHED_STATUSES))
     items = AttemptItem.objects.filter(attempt__in=attempts).values_list(

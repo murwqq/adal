@@ -54,7 +54,7 @@ def test_deadline_limited_by_exam_close(exam, student):
 def test_not_enough_questions(exam, student):
     exam.question_count = 50
     exam.save()
-    with pytest.raises(ExamError, match="подходящих вопросов"):
+    with pytest.raises(ExamError, match="Вопросов в тесте"):
         start(exam, student)
 
 

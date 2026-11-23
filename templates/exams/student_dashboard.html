@@ -17,7 +17,7 @@
       <h3>{{ exam.title }}</h3>
       <div class="facts">
         <span>{{ exam.subject }}</span>
-        <span>{% blocktranslate trimmed with question_count=exam.question_count %}{{ question_count }} вопросов{% endblocktranslate %}</span>
+        <span>{% blocktranslate trimmed with question_count=exam.question_count %}Вопросов: {{ question_count }}{% endblocktranslate %}</span>
         <span>{% blocktranslate trimmed with duration_minutes=exam.duration_minutes %}{{ duration_minutes }} мин{% endblocktranslate %}</span>
         {% if exam.retake_until %}<span class="tag warn">{% translate "Пересдача до" %} {{ exam.retake_until|date:"d.m.Y H:i" }}</span>
         {% else %}<span>{% if exam.opens_at > now %}{% translate "Откроется" %} {{ exam.opens_at|date:"d.m.Y H:i" }}{% else %}{% translate "Открыт до" %} {{ exam.closes_at|date:"d.m.Y H:i" }}{% endif %}</span>{% endif %}

@@ -21,9 +21,6 @@ msgstr "%(name)s can retake the test until %(until)s"
 msgid "%(number)s из %(num_pages)s"
 msgstr "%(number)s of %(num_pages)s"
 
-msgid "%(question_count)s вопросов"
-msgstr "%(question_count)s questions"
-
 msgid "%(score)s из %(max_score)s"
 msgstr "%(score)s of %(max_score)s"
 
@@ -48,8 +45,12 @@ msgstr ", saved:"
 msgid ", тема «%(topic)s»"
 msgstr ", topic “%(topic)s”"
 
-msgid ". %(question_count)s вопросов, %(duration_minutes)s мин. Код доступа"
-msgstr ". %(question_count)s questions, %(duration_minutes)s min. Access code"
+msgid ""
+". Вопросов в варианте: %(question_count)s, время: %(duration_minutes)s мин. "
+"Код доступа"
+msgstr ""
+". Questions per variant: %(question_count)s, time: %(duration_minutes)s min."
+" Access code"
 
 msgid ". Для формулы отдельной строкой ставьте двойные:"
 msgstr ". For a formula on its own line, use double ones:"
@@ -75,6 +76,9 @@ msgstr "Applicants sign up here."
 
 msgid "Автор"
 msgstr "Author"
+
+msgid "Автор: %(author)s"
+msgstr "Author: %(author)s"
 
 msgid "Адал"
 msgstr "Adal"
@@ -146,27 +150,18 @@ msgstr "Most violations"
 msgid "В банке"
 msgstr "In bank"
 
-msgid "В банке %(bank_size)s ваших вопросов."
-msgstr "You have %(bank_size)s questions in the bank."
-
-msgid "В банке %(have)s подходящих вопросов, а нужно %(need)s"
-msgstr "The bank has %(have)s suitable questions, but %(need)s are needed"
-
-msgid ""
-"В банке %(pool)s подходящих вопросов, а в варианте должно быть "
-"%(question_count)s. Добавьте вопросы, иначе студенты не смогут начать тест."
-msgstr ""
-"The bank has %(pool)s suitable questions but a variant needs "
-"%(question_count)s. Add questions or students won't be able to start."
-
 msgid "В банке пока нет ваших вопросов."
 msgstr "You don't have any questions in the bank yet."
 
 msgid "В варианте должен быть хотя бы один вопрос"
 msgstr "A variant must have at least one question"
 
-msgid "В тесте %(n)s вопросов, каждый студент получит %(count)s."
-msgstr "The test has %(n)s questions; each student gets %(count)s."
+msgid ""
+"В дисциплине «%(name)s» есть вопросы других преподавателей. Удалить её может"
+" администратор"
+msgstr ""
+"The subject “%(name)s” has questions by other teachers. Only an "
+"administrator can delete it"
 
 msgid ""
 "В тесте пока нет вопросов. Напишите их здесь же или загрузите готовый файл "
@@ -174,13 +169,6 @@ msgid ""
 msgstr ""
 "The test has no questions yet. Write them here or import a ready Word file "
 "in Platonus format."
-
-msgid ""
-"В тесте только %(pool)s вопросов, а в варианте %(count)s. Студенты не смогут"
-" начать тест"
-msgstr ""
-"The test has only %(pool)s questions but a variant needs %(count)s. Students"
-" won't be able to start"
 
 msgid "В файле не найдено ни одного тега <question>"
 msgstr "No <question> tags found in the file"
@@ -203,6 +191,9 @@ msgstr "Answer option"
 
 msgid "Варианты ответа"
 msgstr "Answer options"
+
+msgid "Ваших вопросов в банке: %(bank_size)s."
+msgstr "Your questions in the bank: %(bank_size)s."
 
 msgid "Введено цифр:"
 msgstr "Digits entered:"
@@ -276,6 +267,44 @@ msgstr "Questions in the bank"
 
 msgid "Вопросов в варианте"
 msgstr "Questions per variant"
+
+msgid ""
+"Вопросов в тесте: %(have)s, а в варианте должно быть %(need)s. Добавьте "
+"вопросы, потом публикуйте"
+msgstr ""
+"Questions in the test: %(have)s, but a variant needs %(need)s. Add "
+"questions, then publish"
+
+msgid "Вопросов в тесте: %(have)s, а в варианте нужно %(need)s"
+msgstr "Questions in the test: %(have)s, but a variant needs %(need)s"
+
+msgid ""
+"Вопросов в тесте: %(n)s, а в варианте должно быть %(count)s. Добавьте "
+"вопросы или уменьшите их число в настройках, иначе студенты не смогут начать"
+" тест."
+msgstr ""
+"Questions in the test: %(n)s, but a variant needs %(count)s. Add questions "
+"or lower the number in settings, or students won't be able to start."
+
+msgid "Вопросов в тесте: %(n)s. В варианте у студента: %(count)s."
+msgstr "Questions in the test: %(n)s. Per student variant: %(count)s."
+
+msgid ""
+"Вопросов в тесте: %(pool)s, а в варианте %(count)s. Студенты не смогут "
+"начать тест"
+msgstr ""
+"Questions in the test: %(pool)s, but a variant needs %(count)s. Students "
+"won't be able to start"
+
+msgid ""
+"Вопросов в тесте: %(pool)s, а в варианте должно быть %(question_count)s. "
+"Добавьте вопросы, иначе студенты не смогут начать тест."
+msgstr ""
+"Questions in the test: %(pool)s, but a variant needs %(question_count)s. Add"
+" questions or students won't be able to start."
+
+msgid "Вопросов: %(question_count)s"
+msgstr "Questions: %(question_count)s"
 
 msgid "Вопросы"
 msgstr "Questions"
@@ -868,6 +897,9 @@ msgstr "Online exams at Korkyt Ata Kyzylorda University."
 msgid "Опубликован"
 msgstr "Published"
 
+msgid "Опубликовать"
+msgstr "Publish"
+
 msgid "Оставьте пустым, чтобы брать вопросы по всей дисциплине"
 msgstr "Leave empty to use questions from the whole subject"
 
@@ -1046,14 +1078,6 @@ msgstr "No matching questions in the bank."
 
 msgid "Поиск по тексту вопроса и ответов"
 msgstr "Search question and answer text"
-
-msgid ""
-"Пока вопросов %(n)s, а в варианте должно быть %(count)s. Добавьте вопросы "
-"или уменьшите их число в настройках, иначе студенты не смогут начать тест."
-msgstr ""
-"There are %(n)s questions so far, but a variant needs %(count)s. Add "
-"questions or lower the number in settings, or students won't be able to "
-"start."
 
 msgid ""
 "Пока идёт тест, не выходите из полноэкранного режима и не переключайтесь на "
@@ -1370,6 +1394,9 @@ msgstr "Hardest first"
 msgid "Сначала старые"
 msgstr "Oldest first"
 
+msgid "Снять с публикации"
+msgstr "Unpublish"
+
 msgid "Содержание"
 msgstr "Content"
 
@@ -1468,6 +1495,21 @@ msgstr ""
 "The student can take the test again even if it's already closed. The new "
 "result replaces this one, which stays in the history."
 
+msgid "Студенты видят тест в своём списке."
+msgstr "Students see the test in their list."
+
+msgid ""
+"Студенты пока не видят тест. Вопросов в тесте: %(n)s, а в варианте должно "
+"быть %(count)s. Добавьте вопросы или уменьшите их число в настройках."
+msgstr ""
+"Students can't see the test yet. Questions in the test: %(n)s, but a variant"
+" needs %(count)s. Add questions or lower the number in settings."
+
+msgid "Студенты пока не видят тест. Вопросов хватает, его можно публиковать."
+msgstr ""
+"Students can't see the test yet. There are enough questions, so you can "
+"publish it."
+
 msgid ""
 "Студенты с нарушениями показаны сверху. «Нет связи» значит, что страница "
 "теста закрыта или компьютер отключён от сети больше 45 секунд."
@@ -1490,6 +1532,9 @@ msgstr ""
 
 msgid "Так увидит студент"
 msgstr "What the student sees"
+
+msgid "Такая дисциплина уже есть"
+msgstr "This subject already exists"
 
 msgid "Такая дисциплина уже есть или название пустое"
 msgstr "This subject already exists or the name is empty"
@@ -1541,6 +1586,9 @@ msgstr ""
 msgid "Тест можно проходить только с компьютеров учебной аудитории"
 msgstr "The test can only be taken on classroom computers"
 
+msgid "Тест опубликован, студенты его видят"
+msgstr "Test published, students can see it"
+
 msgid "Тест откроется во весь экран"
 msgstr "The test opens full screen"
 
@@ -1559,6 +1607,9 @@ msgid "Тест сейчас пишут. Удалить его можно, ко�
 msgstr ""
 "Students are taking the test right now. You can delete it once everyone "
 "finishes"
+
+msgid "Тест снят с публикации, студенты его не видят"
+msgstr "Test unpublished, students can't see it"
 
 msgid "Тест создан. Теперь добавьте в него вопросы"
 msgstr "Test created. Now add questions to it"
@@ -1736,6 +1787,9 @@ msgid ""
 "Через этот аккаунт вы будете сдавать вступительные тесты и видеть "
 "результаты."
 msgstr "Use this account to take entrance tests and see your results."
+
+msgid "Черновик"
+msgstr "Draft"
 
 msgid "Что исправится само:"
 msgstr "Fixed automatically:"

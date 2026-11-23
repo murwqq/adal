@@ -1,7 +1,7 @@
 {% load i18n %}<div class="page-head">
   <div>
-    <h1>{{ exam.title }}</h1>
-    <p class="muted">{{ exam.subject }}{% blocktranslate trimmed with question_count=exam.question_count duration_minutes=exam.duration_minutes %}. {{ question_count }} вопросов, {{ duration_minutes }} мин. Код доступа{% endblocktranslate %} <code>{{ exam.access_code }}</code>.</p>
+    <h1>{{ exam.title }}{% if not exam.is_published %} <span class="tag warn">{% translate "Черновик" %}</span>{% endif %}</h1>
+    <p class="muted">{{ exam.subject }}{% blocktranslate trimmed with question_count=exam.question_count duration_minutes=exam.duration_minutes %}. Вопросов в варианте: {{ question_count }}, время: {{ duration_minutes }} мин. Код доступа{% endblocktranslate %} <code>{{ exam.access_code }}</code>.</p>
   </div>
   <nav class="nav" aria-label="{% translate 'Разделы теста' %}">
     <a href="{% url 'exams:exam_questions' exam.pk %}" {% if tab == "questions" %}aria-current="page"{% endif %}>{% translate "Вопросы" %}</a>

@@ -164,18 +164,9 @@ TRANSLATIONS = {
         "How many questions each student gets. If the test has more, everyone gets their own random set"),
     "Создать и добавить вопросы": ("Құру және сұрақтар қосу", "Create and add questions"),
     "Тест создан. Теперь добавьте в него вопросы": ("Тест құрылды. Енді оған сұрақтар қосыңыз", "Test created. Now add questions to it"),
-    "В тесте только %(pool)s вопросов, а в варианте %(count)s. Студенты не смогут начать тест": (
-        "Тестте тек %(pool)s сұрақ бар, ал нұсқада %(count)s. Студенттер тестті бастай алмайды",
-        "The test has only %(pool)s questions but a variant needs %(count)s. Students won't be able to start"),
     "Вопросы теста": ("Тест сұрақтары", "Test questions"),
-    "В тесте %(n)s вопросов, каждый студент получит %(count)s.": (
-        "Тестте %(n)s сұрақ бар, әр студент %(count)s алады.",
-        "The test has %(n)s questions; each student gets %(count)s."),
     "Написать вопрос": ("Сұрақ жазу", "Write a question"),
     "Взять из банка": ("Банктен алу", "Take from the bank"),
-    "Пока вопросов %(n)s, а в варианте должно быть %(count)s. Добавьте вопросы или уменьшите их число в настройках, иначе студенты не смогут начать тест.": (
-        "Әзірге %(n)s сұрақ бар, ал нұсқада %(count)s болуы керек. Сұрақтар қосыңыз немесе баптауларда санын азайтыңыз, әйтпесе студенттер тестті бастай алмайды.",
-        "There are %(n)s questions so far, but a variant needs %(count)s. Add questions or lower the number in settings, or students won't be able to start."),
     "Убрать": ("Алып тастау", "Remove"),
     "В тесте пока нет вопросов. Напишите их здесь же или загрузите готовый файл Word в формате Platonus.": (
         "Тестте әзірге сұрақтар жоқ. Оларды осында жазыңыз немесе Platonus пішіміндегі дайын Word файлын жүктеңіз.",
@@ -237,6 +228,48 @@ TRANSLATIONS = {
     "Другие попытки": ("Басқа талпыныстар", "Other attempts"),
     "заменена пересдачей": ("қайта тапсырумен ауыстырылды", "replaced by a retake"),
     "текущая": ("ағымдағы", "current"),
+
+    # ---------- Исправления по отчёту тестировщика ----------
+    ". Вопросов в варианте: %(question_count)s, время: %(duration_minutes)s мин. Код доступа": (
+        ". Нұсқадағы сұрақтар: %(question_count)s, уақыты: %(duration_minutes)s мин. Кіру коды",
+        ". Questions per variant: %(question_count)s, time: %(duration_minutes)s min. Access code"),
+    "Ваших вопросов в банке: %(bank_size)s.": ("Банктегі сіздің сұрақтарыңыз: %(bank_size)s.", "Your questions in the bank: %(bank_size)s."),
+    "Вопросов: %(question_count)s": ("Сұрақтар: %(question_count)s", "Questions: %(question_count)s"),
+    "Вопросов в тесте: %(n)s. В варианте у студента: %(count)s.": (
+        "Тесттегі сұрақтар: %(n)s. Студент нұсқасында: %(count)s.",
+        "Questions in the test: %(n)s. Per student variant: %(count)s."),
+    "Вопросов в тесте: %(have)s, а в варианте нужно %(need)s": (
+        "Тесттегі сұрақтар: %(have)s, ал нұсқаға %(need)s қажет",
+        "Questions in the test: %(have)s, but a variant needs %(need)s"),
+    "Вопросов в тесте: %(pool)s, а в варианте %(count)s. Студенты не смогут начать тест": (
+        "Тесттегі сұрақтар: %(pool)s, ал нұсқада %(count)s. Студенттер тестті бастай алмайды",
+        "Questions in the test: %(pool)s, but a variant needs %(count)s. Students won't be able to start"),
+    "Вопросов в тесте: %(pool)s, а в варианте должно быть %(question_count)s. Добавьте вопросы, иначе студенты не смогут начать тест.": (
+        "Тесттегі сұрақтар: %(pool)s, ал нұсқада %(question_count)s болуы керек. Сұрақтар қосыңыз, әйтпесе студенттер тестті бастай алмайды.",
+        "Questions in the test: %(pool)s, but a variant needs %(question_count)s. Add questions or students won't be able to start."),
+    "Вопросов в тесте: %(n)s, а в варианте должно быть %(count)s. Добавьте вопросы или уменьшите их число в настройках, иначе студенты не смогут начать тест.": (
+        "Тесттегі сұрақтар: %(n)s, ал нұсқада %(count)s болуы керек. Сұрақтар қосыңыз немесе баптауларда санын азайтыңыз, әйтпесе студенттер тестті бастай алмайды.",
+        "Questions in the test: %(n)s, but a variant needs %(count)s. Add questions or lower the number in settings, or students won't be able to start."),
+    "Вопросов в тесте: %(have)s, а в варианте должно быть %(need)s. Добавьте вопросы, потом публикуйте": (
+        "Тесттегі сұрақтар: %(have)s, ал нұсқада %(need)s болуы керек. Алдымен сұрақтар қосыңыз, содан кейін жариялаңыз",
+        "Questions in the test: %(have)s, but a variant needs %(need)s. Add questions, then publish"),
+    "Черновик": ("Жоба", "Draft"),
+    "Опубликовать": ("Жариялау", "Publish"),
+    "Снять с публикации": ("Жариялауды тоқтату", "Unpublish"),
+    "Студенты видят тест в своём списке.": ("Студенттер тестті өз тізімінде көреді.", "Students see the test in their list."),
+    "Студенты пока не видят тест. Вопросов в тесте: %(n)s, а в варианте должно быть %(count)s. Добавьте вопросы или уменьшите их число в настройках.": (
+        "Студенттер тестті әлі көрмейді. Тесттегі сұрақтар: %(n)s, ал нұсқада %(count)s болуы керек. Сұрақтар қосыңыз немесе баптауларда санын азайтыңыз.",
+        "Students can't see the test yet. Questions in the test: %(n)s, but a variant needs %(count)s. Add questions or lower the number in settings."),
+    "Студенты пока не видят тест. Вопросов хватает, его можно публиковать.": (
+        "Студенттер тестті әлі көрмейді. Сұрақтар жеткілікті, оны жариялауға болады.",
+        "Students can't see the test yet. There are enough questions, so you can publish it."),
+    "Тест опубликован, студенты его видят": ("Тест жарияланды, студенттер оны көреді", "Test published, students can see it"),
+    "Тест снят с публикации, студенты его не видят": ("Тест жариялаудан алынды, студенттер оны көрмейді", "Test unpublished, students can't see it"),
+    "Такая дисциплина уже есть": ("Мұндай пән бар", "This subject already exists"),
+    "Автор: %(author)s": ("Авторы: %(author)s", "Author: %(author)s"),
+    "В дисциплине «%(name)s» есть вопросы других преподавателей. Удалить её может администратор": (
+        "«%(name)s» пәнінде басқа оқытушылардың сұрақтары бар. Оны әкімші жоя алады",
+        "The subject “%(name)s” has questions by other teachers. Only an administrator can delete it"),
 
     # ---------- Профиль и настройки ----------
     "Профиль": ("Профиль", "Profile"),
@@ -413,7 +446,6 @@ TRANSLATIONS = {
     "Неверный код доступа. Его называет преподаватель в аудитории": ("Кіру коды қате. Оны оқытушы аудиторияда айтады", "Wrong access code. The teacher announces it in the classroom"),
     "Тест можно проходить только с компьютеров учебной аудитории": ("Тестті тек оқу аудиториясының компьютерлерінен тапсыруға болады", "The test can only be taken on classroom computers"),
     "В варианте должен быть хотя бы один вопрос": ("Нұсқада кемінде бір сұрақ болуы керек", "A variant must have at least one question"),
-    "В банке %(have)s подходящих вопросов, а нужно %(need)s": ("Банкте %(have)s сәйкес сұрақ бар, ал %(need)s қажет", "The bank has %(have)s suitable questions, but %(need)s are needed"),
     "Попытка уже создана": ("Талпыныс бұрын құрылған", "The attempt already exists"),
     "Тест уже завершён": ("Тест аяқталып қойған", "The test is already finished"),
     "Тест уже открыт в другом браузере. Об этом сообщено преподавателю": ("Тест басқа браузерде ашық. Бұл туралы оқытушыға хабарланды", "The test is already open in another browser. The teacher has been notified"),
@@ -477,7 +509,6 @@ TRANSLATIONS = {
 
     # ---------- Кабинет преподавателя ----------
     "Здравствуйте, %(first_name)s": ("Сәлеметсіз бе, %(first_name)s", "Hello, %(first_name)s"),
-    "В банке %(bank_size)s ваших вопросов.": ("Банкте сіздің %(bank_size)s сұрағыңыз бар.", "You have %(bank_size)s questions in the bank."),
     "Загрузить вопросы из Word": ("Word-тан сұрақтар жүктеу", "Import questions from Word"),
     "Создать тест": ("Тест құру", "Create test"),
     "Мои тесты": ("Менің тесттерім", "My tests"),
@@ -597,18 +628,12 @@ TRANSLATIONS = {
     "Сохранить тест": ("Тестті сақтау", "Save test"),
 
     # Результаты и анализ
-    ". %(question_count)s вопросов, %(duration_minutes)s мин. Код доступа": (
-        ". %(question_count)s сұрақ, %(duration_minutes)s мин. Кіру коды",
-        ". %(question_count)s questions, %(duration_minutes)s min. Access code"),
     "Разделы теста": ("Тест бөлімдері", "Test sections"),
     "Результаты": ("Нәтижелер", "Results"),
     "Анализ вопросов": ("Сұрақтарды талдау", "Question analysis"),
     "Наблюдение": ("Бақылау", "Monitoring"),
     "Настройки": ("Баптаулар", "Settings"),
     "Анализ": ("Талдау", "Analysis"),
-    "В банке %(pool)s подходящих вопросов, а в варианте должно быть %(question_count)s. Добавьте вопросы, иначе студенты не смогут начать тест.": (
-        "Банкте %(pool)s сәйкес сұрақ бар, ал нұсқада %(question_count)s болуы керек. Сұрақтар қосыңыз, әйтпесе студенттер тестті бастай алмайды.",
-        "The bank has %(pool)s suitable questions but a variant needs %(question_count)s. Add questions or students won't be able to start."),
     "завершили тест": ("тестті аяқтады", "finished the test"),
     "средний результат": ("орташа нәтиже", "average score"),
     "медиана": ("медиана", "median"),
@@ -678,7 +703,6 @@ TRANSLATIONS = {
         "Топ көрсетілмеген, сондықтан кейбір тесттер көрінбеуі мүмкін. Деканатқа хабарласыңыз.",
         "Your group isn't set, so some tests may be hidden. Contact the dean's office."),
     "Доступны сейчас и скоро": ("Қазір және жақында қолжетімді", "Available now and soon"),
-    "%(question_count)s вопросов": ("%(question_count)s сұрақ", "%(question_count)s questions"),
     "%(duration_minutes)s мин": ("%(duration_minutes)s мин", "%(duration_minutes)s min"),
     "Откроется": ("Ашылады", "Opens"),
     "Открыт до": ("Ашық уақыты", "Open until"),

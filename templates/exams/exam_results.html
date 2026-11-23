@@ -5,7 +5,7 @@
 {% include "exams/_exam_head.html" with tab="results" %}
 
 {% if pool < exam.question_count %}
-<div class="note warning" style="margin-bottom:20px">{% blocktranslate trimmed with question_count=exam.question_count %}В банке {{ pool }} подходящих вопросов, а в варианте должно быть {{ question_count }}. Добавьте вопросы, иначе студенты не смогут начать тест.{% endblocktranslate %}</div>
+<div class="note warning" style="margin-bottom:20px">{% blocktranslate trimmed with question_count=exam.question_count %}Вопросов в тесте: {{ pool }}, а в варианте должно быть {{ question_count }}. Добавьте вопросы, иначе студенты не смогут начать тест.{% endblocktranslate %}</div>
 {% endif %}
 
 <div class="stats">

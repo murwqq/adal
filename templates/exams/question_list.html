@@ -68,10 +68,12 @@
       {% if q.image %}<img class="q-img" src="{{ q.image.url }}" alt="{% translate 'Рисунок к вопросу' %}">{% endif %}
     </div>
     <div class="q-actions">
+      {% if user.is_admin or q.author_id == user.id %}
       <a class="btn btn-quiet" href="{% url 'exams:question_edit' q.pk %}">{% translate "Изменить" %}</a>
-      <form method="post" action="{% url 'exams:question_delete' q.pk %}" onsubmit="return confirm('{% filter escapejs %}{% translate 'Удалить вопрос из банка?' %}{% endfilter %}')">
+      <form method="post" action="{% url 'exams:question_delete' q.pk %}" data-confirm="{% translate 'Удалить вопрос из банка?' %}">
         {% csrf_token %}<button class="btn btn-quiet" type="submit">{% translate "Удалить" %}</button>
       </form>
+      {% endif %}
     </div>
     <ul class="q-choices">
       {% for c in q.choices.all %}<li class="{% if c.is_correct %}correct{% endif %}">{{ c.text }}</li>{% endfor %}

@@ -6,7 +6,7 @@
 {% include "exams/_exam_head.html" with tab="questions" %}
 
 <div class="q-toolbar">
-  <p class="muted">{% blocktranslate trimmed with n=questions|length count=exam.question_count %}В тесте {{ n }} вопросов, каждый студент получит {{ count }}.{% endblocktranslate %}</p>
+  <p class="muted">{% blocktranslate trimmed with n=questions|length count=exam.question_count %}Вопросов в тесте: {{ n }}. В варианте у студента: {{ count }}.{% endblocktranslate %}</p>
   <div class="q-toolbar-actions">
     <a class="btn btn-primary" href="{% url 'exams:question_new' %}?exam={{ exam.pk }}">{% translate "Написать вопрос" %}</a>
     <a class="btn" href="{% url 'exams:question_import' %}?exam={{ exam.pk }}">{% translate "Загрузить из Word" %}</a>
@@ -14,8 +14,30 @@
   </div>
 </div>
 
+{% if not exam.is_published %}
+<div class="publish-bar">
+  <div>
+    <b>{% translate "Черновик" %}.</b>
+    {% if questions|length < exam.question_count %}
+    {% blocktranslate trimmed with n=questions|length count=exam.question_count %}Студенты пока не видят тест. Вопросов в тесте: {{ n }}, а в варианте должно быть {{ count }}. Добавьте вопросы или уменьшите их число в настройках.{% endblocktranslate %}
+    {% else %}
+    {% translate "Студенты пока не видят тест. Вопросов хватает, его можно публиковать." %}
+    {% endif %}
+  </div>
+  <form method="post">{% csrf_token %}<input type="hidden" name="action" value="publish">
+    <button class="btn btn-primary" type="submit" {% if questions|length < exam.question_count %}disabled{% endif %}>{% translate "Опубликовать" %}</button>
+  </form>
+</div>
+{% else %}
 {% if questions|length < exam.question_count %}
-<div class="note warning" style="margin-bottom:20px">{% blocktranslate trimmed with n=questions|length count=exam.question_count %}Пока вопросов {{ n }}, а в варианте должно быть {{ count }}. Добавьте вопросы или уменьшите их число в настройках, иначе студенты не смогут начать тест.{% endblocktranslate %}</div>
+<div class="note warning" style="margin-bottom:20px">{% blocktranslate trimmed with n=questions|length count=exam.question_count %}Вопросов в тесте: {{ n }}, а в варианте должно быть {{ count }}. Добавьте вопросы или уменьшите их число в настройках, иначе студенты не смогут начать тест.{% endblocktranslate %}</div>
+{% endif %}
+<div class="publish-bar published">
+  <div><span class="tag ok">{% translate "Опубликован" %}</span> {% translate "Студенты видят тест в своём списке." %}</div>
+  <form method="post">{% csrf_token %}<input type="hidden" name="action" value="unpublish">
+    <button class="btn btn-quiet" type="submit">{% translate "Снять с публикации" %}</button>
+  </form>
+</div>
 {% endif %}
 
 <section class="sheet">
@@ -30,7 +52,8 @@
       </ul>
     </div>
     <div class="tq-actions">
-      <a class="btn btn-quiet" href="{% url 'exams:question_edit' q.pk %}?exam={{ exam.pk }}">{% translate "Изменить" %}</a>
+      {% if q.editable %}<a class="btn btn-quiet" href="{% url 'exams:question_edit' q.pk %}?exam={{ exam.pk }}">{% translate "Изменить" %}</a>
+      {% else %}<span class="small muted tq-foreign">{% blocktranslate trimmed with author=q.author.short_name %}Автор: {{ author }}{% endblocktranslate %}</span>{% endif %}
       <form method="post">{% csrf_token %}<input type="hidden" name="action" value="remove"><input type="hidden" name="question" value="{{ q.pk }}">
         <button class="btn btn-quiet btn-quiet-danger" type="submit">{% translate "Убрать" %}</button>
       </form>

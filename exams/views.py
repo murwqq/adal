@@ -57,6 +57,7 @@ def session_key(request) -> str:
 @login_required
 def dashboard(request):
     if request.user.is_teacher:
+        services.expire_overdue(Attempt.objects.filter(exam__author=request.user))
         exams = (Exam.objects.filter(author=request.user).select_related("subject")
                  .annotate(n_attempts=Count("attempts", filter=Q(attempts__archived=False)),
                            n_active=Count("attempts", filter=Q(attempts__status="active",
@@ -66,17 +67,19 @@ def dashboard(request):
             "bank_size": Question.objects.filter(author=request.user, is_active=True).count(),
             "subjects": Subject.objects.annotate(
                 n=Count("questions", filter=Q(questions__is_active=True), distinct=True),
-                n_exams=Count("exams", distinct=True)),
+                n_foreign=Count("questions", filter=~Q(questions__author=request.user), distinct=True)),
             "subject_form": SubjectForm(),
         })
     now = timezone.now()
+    services.expire_overdue(Attempt.objects.filter(student=request.user), now)
     taken = Attempt.objects.filter(student=request.user).select_related("exam", "exam__subject")
     taken_ids = set(taken.values_list("exam_id", flat=True))
     retakes = {r.exam_id: r for r in Retake.objects.filter(
         student=request.user, used_at__isnull=True, expires_at__gte=now)}
     available = [e for e in Exam.objects.filter(is_published=True, closes_at__gte=now)
                  .exclude(id__in=taken_ids | set(retakes)).select_related("subject")
-                 if not e.group_list or request.user.group.upper() in e.group_list]
+                 if (not e.group_list or request.user.group.upper() in e.group_list)
+                 and services.question_pool(e).count() >= e.question_count]
     for exam in Exam.objects.filter(id__in=retakes, is_published=True).select_related("subject"):
         exam.retake_until = retakes[exam.id].expires_at
         available.insert(0, exam)
@@ -92,7 +95,8 @@ def subject_create(request):
         form.save()
         messages.success(request, _("Дисциплина «%(name)s» добавлена") % {"name": form.instance.name})
     else:
-        messages.error(request, _("Такая дисциплина уже есть или название пустое"))
+        for error in form.errors.get("name", [_("Такая дисциплина уже есть или название пустое")]):
+            messages.error(request, error)
     return redirect("dashboard")
 
 
@@ -101,7 +105,7 @@ def subject_create(request):
 def subject_delete(request, pk):
     subject = get_object_or_404(Subject, pk=pk)
     try:
-        messages.success(request, services.delete_subject(subject))
+        messages.success(request, services.delete_subject(subject, request.user))
     except ExamError as exc:
         messages.error(request, str(exc))
     return redirect("dashboard")
@@ -141,8 +145,11 @@ def _exam_from_request(request):
 @teacher_required
 def question_edit(request, pk=None):
     question = get_object_or_404(Question, pk=pk) if pk else None
+    if question is not None and not services.can_edit_question(request.user, question):
+        raise PermissionDenied
     exam = _exam_from_request(request)
-    form = QuestionForm(request.POST or None, request.FILES or None, question=question, exam=exam)
+    form = QuestionForm(request.POST or None, request.FILES or None, question=question, exam=exam,
+                        keep=request.GET if question is None else None)
     if request.method == "POST" and form.is_valid():
         d = form.cleaned_data
         image = d["image"].read() if d.get("image") else None
@@ -160,8 +167,13 @@ def question_edit(request, pk=None):
                 messages.warning(request, w)
             messages.success(request, _("Вопрос сохранён"))
             if "add_another" in request.POST:
-                url = reverse("exams:question_new")
-                return redirect(f"{url}?exam={exam.pk}" if exam else url)
+                from urllib.parse import urlencode
+                keep = {"topic": d["topic"], "difficulty": d["difficulty"]}
+                if exam:
+                    keep["exam"] = exam.pk
+                else:
+                    keep["subject"] = d["subject"].pk
+                return redirect(f"{reverse('exams:question_new')}?{urlencode(keep)}")
             if exam:
                 return redirect("exams:exam_questions", pk=exam.pk)
             return redirect("exams:question_list")
@@ -173,6 +185,8 @@ def question_edit(request, pk=None):
 @require_POST
 def question_delete(request, pk):
     question = get_object_or_404(Question, pk=pk)
+    if not services.can_edit_question(request.user, question):
+        raise PermissionDenied
     messages.info(request, services.delete_question(question))
     return redirect("exams:question_list")
 
@@ -207,8 +221,9 @@ def question_import(request):
 @teacher_required
 def exam_list(request):
     exams = (Exam.objects.filter(author=request.user).select_related("subject")
-             .annotate(n_attempts=Count("attempts", filter=Q(attempts__archived=False)),
+             .annotate(n_attempts=Count("attempts", filter=Q(attempts__archived=False), distinct=True),
                        n_questions=Count("questions", distinct=True)))
+    services.expire_overdue(Attempt.objects.filter(exam__author=request.user))
     return render(request, "exams/exam_list.html", {"exams": exams, "now": timezone.now()})
 
 
@@ -229,7 +244,7 @@ def exam_edit(request, pk=None):
             return redirect("exams:exam_questions", pk=exam.pk)
         pool = services.question_pool(exam).count()
         if pool < exam.question_count:
-            messages.warning(request, _("В тесте только %(pool)s вопросов, а в варианте %(count)s. Студенты не смогут начать тест") % {"pool": pool, "count": exam.question_count})
+            messages.warning(request, _("Вопросов в тесте: %(pool)s, а в варианте %(count)s. Студенты не смогут начать тест") % {"pool": pool, "count": exam.question_count})
         messages.success(request, _("Тест сохранён"))
         return redirect("exams:exam_results", pk=exam.pk)
     return render(request, "exams/exam_form.html", {"form": form, "exam": exam})
@@ -245,11 +260,22 @@ def exam_questions(request, pk):
             question = get_object_or_404(Question, pk=request.POST.get("question"))
             services.remove_from_exam(exam, question)
             messages.info(request, _("Вопрос убран из теста. В банке он остался"))
+        elif action in ("publish", "unpublish"):
+            try:
+                services.set_published(exam, action == "publish")
+            except ExamError as exc:
+                messages.error(request, str(exc))
+            else:
+                messages.success(request, _("Тест опубликован, студенты его видят") if action == "publish"
+                                 else _("Тест снят с публикации, студенты его не видят"))
         elif action == "add_bank":
             added = services.add_from_bank(exam, request.POST.getlist("questions"))
             messages.success(request, _("Добавлено вопросов из банка: %(n)s") % {"n": added})
         return redirect("exams:exam_questions", pk=exam.pk)
-    questions = exam.questions.filter(is_active=True).prefetch_related("choices").order_by("pk")
+    questions = (exam.questions.filter(is_active=True).select_related("author")
+                 .prefetch_related("choices").order_by("pk"))
+    for q in questions:
+        q.editable = services.can_edit_question(request.user, q)
     bank_query = request.GET.get("q", "").strip()
     bank = services.search_questions(
         Question.objects.filter(subject=exam.subject, is_active=True).exclude(exams=exam),
@@ -282,6 +308,7 @@ def _own_exam(request, pk) -> Exam:
 @teacher_required
 def exam_results(request, pk):
     exam = _own_exam(request, pk)
+    services.expire_overdue(exam.attempts.all())
     params = request.GET
     qs = services.search_results(
         exam.attempts.select_related("student"), text=params.get("q", "").strip(),
@@ -289,7 +316,7 @@ def exam_results(request, pk):
         flagged=bool(params.get("flagged")), sort=params.get("sort", "score_desc"))
     if params.get("export") == "csv":
         return _results_csv(exam, qs)
-    groups = (exam.attempts.exclude(student__group="")
+    groups = (exam.attempts.exclude(student__group="").order_by("student__group")
               .values_list("student__group", flat=True).distinct())
     report = services.exam_report(exam)
     peak = max(report["summary"]["buckets"]) or 1

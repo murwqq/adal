@@ -154,7 +154,8 @@ class Attempt(models.Model):
 
     @property
     def percent(self) -> int:
-        return round(100 * self.score / self.max_score) if self.max_score else 0
+        from .analysis import percent
+        return percent(self.score, self.max_score)
 
 
 class AttemptItem(models.Model):

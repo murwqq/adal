@@ -16,7 +16,7 @@
     <tbody>
     {% for e in exams %}
     <tr>
-      <td><a href="{% url 'exams:exam_results' e.pk %}">{{ e.title }}</a><div class="small muted">{{ e.subject }}{% if e.groups %}{% blocktranslate trimmed with groups=e.groups %}, группы {{ groups }}{% endblocktranslate %}{% endif %}</div></td>
+      <td><a href="{% url 'exams:exam_results' e.pk %}">{{ e.title }}</a>{% if not e.is_published %} <span class="tag warn">{% translate "Черновик" %}</span>{% endif %}<div class="small muted">{{ e.subject }}{% if e.groups %}{% blocktranslate trimmed with groups=e.groups %}, группы {{ groups }}{% endblocktranslate %}{% endif %}</div></td>
       <td class="num">{{ e.opens_at|date:"d.m.Y H:i" }}<br><span class="muted">{% translate "до" %} {{ e.closes_at|date:"d.m.Y H:i" }}</span></td>
       <td class="right num">{{ e.question_count }} <span class="muted">/ {{ e.n_questions }}</span></td>
       <td class="right num">{{ e.duration_minutes }}</td>

@@ -37,7 +37,7 @@
       <form method="post" action="{% url 'exams:attempt_manage' attempt.pk %}">{% csrf_token %}
         <button class="btn btn-block" name="action" value="resume">{% translate "Разрешить продолжить в другом браузере" %}</button>
       </form>
-      <form method="post" action="{% url 'exams:attempt_manage' attempt.pk %}" style="margin-top:10px" onsubmit="return confirm('{% filter escapejs %}{% translate 'Остановить тест этого студента? Баллы посчитаются по уже данным ответам.' %}{% endfilter %}')">{% csrf_token %}
+      <form method="post" action="{% url 'exams:attempt_manage' attempt.pk %}" style="margin-top:10px" data-confirm="{% translate 'Остановить тест этого студента? Баллы посчитаются по уже данным ответам.' %}">{% csrf_token %}
         <button class="btn btn-danger btn-block" name="action" value="stop">{% translate "Остановить попытку" %}</button>
       </form>
     </section>
