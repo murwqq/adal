@@ -61,6 +61,9 @@ msgstr ""
 msgid "<variant> стоит раньше первого <question>, этот вариант пропущен"
 msgstr "A <variant> comes before the first <question> and was skipped"
 
+msgid "JPG, PNG или WebP до 5 МБ. Фото обрежется до квадрата."
+msgstr "JPG, PNG or WebP up to 5 MB. The photo is cropped to a square."
+
 msgid "© 2026 Адал. Кызылординский университет имени Коркыт Ата"
 msgstr "© 2026 Adal. Korkyt Ata Kyzylorda University"
 
@@ -97,6 +100,9 @@ msgstr "Administration"
 msgid "Академическая степень"
 msgstr "Academic degree"
 
+msgid "Аккаунт"
+msgstr "Account"
+
 msgid "Анализ"
 msgstr "Analysis"
 
@@ -123,6 +129,9 @@ msgstr "You must accept the terms to sign up"
 
 msgid "Больше нарушений"
 msgstr "Most violations"
+
+msgid "В Адал с"
+msgstr "On Adal since"
 
 msgid "В банке"
 msgstr "In bank"
@@ -292,6 +301,9 @@ msgstr "You left the test"
 msgid "Выберите дисциплину"
 msgstr "Choose a subject"
 
+msgid "Выбрать фото"
+msgstr "Choose a photo"
+
 msgid "Выйти"
 msgstr "Sign out"
 
@@ -326,6 +338,9 @@ msgstr ""
 msgid "Группы"
 msgstr "Groups"
 
+msgid "Данные сохранены"
+msgstr "Details saved"
+
 msgid "Дата"
 msgstr "Date"
 
@@ -355,6 +370,9 @@ msgstr "Add"
 
 msgid "Добавить вопрос"
 msgstr "Add question"
+
+msgid "Добавить вопрос вручную"
+msgstr "Add a question manually"
 
 msgid "Докторантура"
 msgstr "Doctoral"
@@ -572,6 +590,9 @@ msgstr "Kyrgyzstan"
 msgid "Личные данные"
 msgstr "Personal details"
 
+msgid "Личный кабинет"
+msgstr "My account"
+
 msgid "Любая"
 msgstr "Any"
 
@@ -712,6 +733,9 @@ msgstr "Nobody has started yet"
 msgid "Новая дисциплина"
 msgstr "New subject"
 
+msgid "Новое фото"
+msgstr "New photo"
+
 msgid "Новый вопрос"
 msgstr "New question"
 
@@ -830,6 +854,9 @@ msgstr "Password"
 msgid "Пароль ещё раз"
 msgstr "Repeat password"
 
+msgid "Пароль изменён"
+msgstr "Password changed"
+
 msgid ""
 "Пароль сбрасывает офис регистратора. Возьмите с собой удостоверение "
 "личности."
@@ -942,6 +969,9 @@ msgstr "You can't change answers after finishing."
 
 msgid "Последние начавшие"
 msgstr "Most recent"
+
+msgid "Последний вход"
+msgstr "Last sign-in"
 
 msgid "Поступаете к нам?"
 msgstr "Applying to us?"
@@ -1143,6 +1173,9 @@ msgstr "Difficulty of all questions"
 msgid "Сложный"
 msgstr "Hard"
 
+msgid "Сменить пароль"
+msgstr "Change password"
+
 msgid "Сначала высокий балл"
 msgstr "Highest score first"
 
@@ -1191,6 +1224,9 @@ msgstr "Shortened program (after college)"
 msgid "Состояние"
 msgstr "State"
 
+msgid "Сохранить"
+msgstr "Save"
+
 msgid "Сохранить вопрос"
 msgstr "Save question"
 
@@ -1199,6 +1235,9 @@ msgstr "Save and add another"
 
 msgid "Сохранить тест"
 msgstr "Save test"
+
+msgid "Сохранить фото"
+msgstr "Save photo"
 
 msgid "Сохраняем…"
 msgstr "Saving…"
@@ -1361,6 +1400,9 @@ msgstr "Delete"
 msgid "Удалить вопрос из банка?"
 msgstr "Delete this question from the bank?"
 
+msgid "Удалить фото"
+msgstr "Remove photo"
+
 msgid "Удостоверение личности РК"
 msgstr "Kazakhstan ID card"
 
@@ -1381,6 +1423,12 @@ msgstr "Full name"
 
 msgid "ФИО или начало ИИН"
 msgstr "Name or start of IIN"
+
+msgid ""
+"ФИО печатается на экране теста, поэтому его меняет деканат по документам."
+msgstr ""
+"Your full name is printed on the test screen, so the dean's office changes "
+"it based on your documents."
 
 msgid "Файл .docx или .txt"
 msgstr ".docx or .txt file"
@@ -1406,6 +1454,15 @@ msgstr "Write a formula between dollar signs:"
 
 msgid "Формулы."
 msgstr "Formulas."
+
+msgid "Фото обновлено"
+msgstr "Photo updated"
+
+msgid "Фото профиля"
+msgstr "Profile photo"
+
+msgid "Фото удалено"
+msgstr "Photo removed"
 
 msgid "Хуже всего решают"
 msgstr "Least often solved"
@@ -1452,6 +1509,9 @@ msgstr "I accept the platform's terms and conditions"
 msgid "Язык интерфейса"
 msgstr "Interface language"
 
+msgid "Язык интерфейса сохранён"
+msgstr "Interface language saved"
+
 msgid "Язык обучения"
 msgstr "Language of study"
 
@@ -1470,8 +1530,14 @@ msgstr "correct"
 msgid "вопрос"
 msgstr "question"
 
+msgid "вопросов в банке"
+msgstr "questions in the bank"
+
 msgid "вопросы"
 msgstr "questions"
+
+msgid "дисциплин"
+msgstr "subjects"
 
 msgid "дисциплина"
 msgstr "subject"
@@ -1507,11 +1573,17 @@ msgstr "of %(total)s"
 msgid "или фильтр ничего не нашёл"
 msgstr "or the filter found nothing"
 
+msgid "лучший результат"
+msgstr "best score"
+
 msgid "медиана"
 msgstr "median"
 
 msgid "минут"
 msgstr "minutes"
+
+msgid "нарушений за всё время"
+msgstr "violations in total"
 
 msgid "необязательна."
 msgstr "line is optional."
@@ -1534,6 +1606,9 @@ msgstr "users"
 msgid "пользователь"
 msgstr "user"
 
+msgid "работ студентов"
+msgstr "student submissions"
+
 msgid "разброс, п.п."
 msgstr "spread, pp"
 
@@ -1542,6 +1617,12 @@ msgstr "average score"
 
 msgid "тест"
 msgstr "test"
+
+msgid "тестов сдано"
+msgstr "tests taken"
+
+msgid "тестов создано"
+msgstr "tests created"
 
 msgid "тесты"
 msgstr "tests"

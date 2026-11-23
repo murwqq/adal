@@ -19,6 +19,12 @@ from .models import Attempt, AttemptItem, Choice, Exam, Question, Violation
 
 GRACE_SECONDS = 5            # запас на сетевую задержку при последнем ответе
 VIOLATION_DEBOUNCE_SECONDS = 3
+# Нарушением считается только уход со страницы теста. Правую кнопку, копирование
+# и горячие клавиши браузер блокирует молча: их легко нажать случайно.
+COUNTED_VIOLATIONS = {
+    Violation.Kind.TAB_HIDDEN, Violation.Kind.WINDOW_BLUR, Violation.Kind.FULLSCREEN_EXIT,
+    Violation.Kind.OTHER_SESSION, Violation.Kind.OFFLINE,
+}
 HEARTBEAT_STALE_SECONDS = 45
 MIN_CHOICES = 2
 
@@ -253,6 +259,8 @@ def register_violation(attempt: Attempt, kind: str, now=None) -> bool:
         raise ExamError(_("Неизвестный тип нарушения"))
     if attempt.status != Attempt.Status.ACTIVE:
         return attempt.status == Attempt.Status.TERMINATED
+    if kind not in COUNTED_VIOLATIONS:
+        return False
     recent = attempt.violations.filter(
         created_at__gte=now - timedelta(seconds=VIOLATION_DEBOUNCE_SECONDS)).exists()
     if not recent:

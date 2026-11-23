@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Личный кабинет" %}{% endblock %}
+{% block content %}
+<section class="profile-head">
+  <div class="avatar avatar-xl" aria-hidden="true">
+    {% if user.avatar %}<img src="{{ user.avatar.url }}" alt="">{% else %}<span>{{ user.initials }}</span>{% endif %}
+  </div>
+  <div class="profile-id">
+    <p class="muted small">{% translate "Личный кабинет" %}</p>
+    <h1>{{ user.full_name }}</h1>
+    <div class="chips">
+      <span class="tag ok">{{ user.get_role_display }}</span>
+      {% if user.group %}<span class="tag">{{ user.group }}</span>{% endif %}
+      <span class="tag">{% translate "ИИН" %} <span class="num">{{ user.masked_iin }}</span></span>
+    </div>
+  </div>
+</section>
+
+<div class="stats profile-stats">
+  {% for value, label in stats %}<div><b class="num">{{ value }}</b><span>{{ label }}</span></div>{% endfor %}
+</div>
+
+<div class="cols profile-cols">
+  <div>
+    <section class="sheet" id="data">
+      <div class="sheet-title"><h2>{% translate "Личные данные" %}</h2></div>
+      <form method="post" novalidate>
+        {% csrf_token %}<input type="hidden" name="action" value="profile">
+        <div class="grid-2">
+          {% include "_field.html" with field=profile_form.last_name %}
+          {% include "_field.html" with field=profile_form.first_name %}
+          {% include "_field.html" with field=profile_form.patronymic %}
+          {% include "_field.html" with field=profile_form.email %}
+        </div>
+        {% if not user.is_teacher %}<p class="small muted profile-note">{% translate "ФИО печатается на экране теста, поэтому его меняет деканат по документам." %}</p>{% endif %}
+        <button class="btn btn-primary" type="submit">{% translate "Сохранить" %}</button>
+      </form>
+    </section>
+
+    <section class="sheet" id="password">
+      <div class="sheet-title"><h2>{% translate "Пароль" %}</h2></div>
+      <form method="post" novalidate>
+        {% csrf_token %}<input type="hidden" name="action" value="password">
+        {% include "_field.html" with field=password_form.old_password %}
+        <div class="grid-2">
+          {% include "_field.html" with field=password_form.new_password1 %}
+          {% include "_field.html" with field=password_form.new_password2 %}
+        </div>
+        <button class="btn" type="submit">{% translate "Сменить пароль" %}</button>
+      </form>
+    </section>
+  </div>
+
+  <aside>
+    <section class="sheet" id="photo">
+      <div class="sheet-title"><h2>{% translate "Фото профиля" %}</h2></div>
+      <form method="post" enctype="multipart/form-data" class="avatar-picker" novalidate>
+        {% csrf_token %}<input type="hidden" name="action" value="avatar">
+        <div class="avatar avatar-lg" id="avatar-preview">
+          {% if user.avatar %}<img src="{{ user.avatar.url }}" alt="{% translate 'Фото профиля' %}">{% else %}<span>{{ user.initials }}</span>{% endif %}
+        </div>
+        <label class="btn btn-block avatar-file">
+          <input type="file" name="avatar" accept="image/png,image/jpeg,image/webp" id="avatar-input">
+          <span>{% translate "Выбрать фото" %}</span>
+        </label>
+        {% for e in avatar_form.avatar.errors %}<p class="error">{{ e }}</p>{% endfor %}
+        <p class="small muted">{% translate "JPG, PNG или WebP до 5 МБ. Фото обрежется до квадрата." %}</p>
+        <button class="btn btn-primary btn-block" type="submit" id="avatar-save" hidden>{% translate "Сохранить фото" %}</button>
+      </form>
+      {% if user.avatar %}
+      <form method="post" class="avatar-remove">
+        {% csrf_token %}<input type="hidden" name="action" value="avatar_delete">
+        <button class="btn btn-quiet btn-block" type="submit">{% translate "Удалить фото" %}</button>
+      </form>
+      {% endif %}
+    </section>
+
+    <section class="sheet" id="language">
+      <div class="sheet-title"><h2>{% translate "Язык интерфейса" %}</h2></div>
+      <form method="post" class="lang-options">
+        {% csrf_token %}<input type="hidden" name="action" value="interface">
+        {% for radio in interface_form.interface_language %}
+        <label class="lang-option">{{ radio.tag }}<span>{{ radio.choice_label }}</span></label>
+        {% endfor %}
+        <button class="btn btn-block" type="submit">{% translate "Сохранить" %}</button>
+      </form>
+    </section>
+
+    <section class="sheet">
+      <div class="sheet-title"><h2>{% translate "Аккаунт" %}</h2></div>
+      <dl class="account-facts">
+        <dt>{% translate "В Адал с" %}</dt><dd>{{ user.date_joined|date:"d.m.Y" }}</dd>
+        {% if user.last_login %}<dt>{% translate "Последний вход" %}</dt><dd>{{ user.last_login|date:"d.m.Y H:i" }}</dd>{% endif %}
+        {% if user.birth_date %}<dt>{% translate "Дата рождения" %}</dt><dd>{{ user.birth_date|date:"d.m.Y" }}</dd>{% endif %}
+      </dl>
+    </section>
+  </aside>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  var input = document.getElementById("avatar-input");
+  if (!input) return;
+  input.addEventListener("change", function () {
+    var file = input.files && input.files[0];
+    if (!file) return;
+    var box = document.getElementById("avatar-preview");
+    var img = document.createElement("img");
+    img.alt = "";
+    img.src = URL.createObjectURL(file);
+    box.innerHTML = "";
+    box.appendChild(img);
+    document.getElementById("avatar-save").hidden = false;
+  });
+  var open = "{{ open_section|default:'' }}";
+  var target = {profile: "data", password: "password", avatar: "photo", interface: "language"}[open];
+  if (target) document.getElementById(target).scrollIntoView({block: "start"});
+})();
+</script>
+{% endblock %}

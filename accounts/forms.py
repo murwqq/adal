@@ -115,3 +115,49 @@ class RegistrationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+# ---------- Личный кабинет ----------
+
+AVATAR_MAX_MB = 5
+AVATAR_SIZE = 320
+
+
+class ProfileForm(forms.ModelForm):
+    """ФИО меняет только преподаватель и администратор: у студента оно
+    печатается в водяном знаке теста и должно совпадать с документами."""
+
+    class Meta:
+        model = User
+        fields = ["last_name", "first_name", "patronymic", "email"]
+        widgets = {"email": forms.EmailInput(attrs={"autocomplete": "email"})}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.instance.is_teacher:
+            for name in ("last_name", "first_name", "patronymic"):
+                self.fields[name].disabled = True
+
+
+class AvatarForm(forms.Form):
+    avatar = forms.ImageField(label=_("Новое фото"))
+
+    def clean_avatar(self):
+        from io import BytesIO
+        from PIL import Image, ImageOps
+        upload = self.cleaned_data["avatar"]
+        if upload.size > AVATAR_MAX_MB * 1024 * 1024:
+            raise forms.ValidationError(_("Файл больше %(mb)s МБ") % {"mb": AVATAR_MAX_MB})
+        upload.seek(0)
+        image = ImageOps.exif_transpose(Image.open(upload)).convert("RGB")
+        image = ImageOps.fit(image, (AVATAR_SIZE, AVATAR_SIZE), Image.Resampling.LANCZOS)
+        out = BytesIO()
+        image.save(out, "JPEG", quality=86, optimize=True)
+        return out.getvalue()
+
+
+class InterfaceForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["interface_language"]
+        widgets = {"interface_language": forms.RadioSelect}

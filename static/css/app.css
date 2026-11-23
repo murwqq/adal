@@ -437,3 +437,57 @@ tr.flag-row td { background: #fff8f1; }
 @media print { .topbar, .footer, .filters, .btn { display: none !important; } body { background: #fff; } }
 td.num { white-space: nowrap; }
 fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+
+/* ---------- Личный кабинет ----------
+   Аватар нарисован как закрашенный кружок бланка: тонкое кольцо краски бланка,
+   внутри графит или фото. */
+.avatar { position: relative; flex: none; display: grid; place-items: center; overflow: hidden;
+  width: 36px; height: 36px; border-radius: 50%; background: var(--graphite); color: #fff;
+  font-weight: 600; font-size: 0.8rem; letter-spacing: 0.02em;
+  box-shadow: 0 0 0 2px var(--sheet), 0 0 0 3px var(--form); }
+.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.avatar-lg { width: 132px; height: 132px; font-size: 2.6rem; margin: 4px auto 18px;
+  box-shadow: 0 0 0 4px var(--sheet), 0 0 0 6px var(--form); }
+.avatar-xl { width: 104px; height: 104px; font-size: 2.1rem;
+  box-shadow: 0 0 0 4px var(--paper), 0 0 0 6px var(--form); }
+
+.who-link { display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none;
+  padding: 4px 8px 4px 4px; border-radius: 99px; }
+.who-link:hover { background: var(--form-soft); }
+.who-link:hover .who-name { color: var(--form-deep); }
+
+.profile-head { display: flex; align-items: center; gap: 24px; margin: 8px 0 26px; }
+.profile-head h1 { margin: 2px 0 0; }
+.profile-head p { margin: 0; }
+.profile-head .chips .tag { background: var(--sheet); border: 1px solid var(--rule); }
+.profile-head .chips .tag.ok { background: var(--form-soft); border-color: transparent; }
+.profile-stats b { font-size: var(--step-3); }
+.profile-note { margin: -4px 0 16px; }
+.profile-cols aside .sheet + .sheet { margin-top: 20px; }
+
+.avatar-picker { text-align: center; }
+.avatar-file { position: relative; cursor: pointer; }
+.avatar-file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+.avatar-file:focus-within { outline: 3px solid var(--form-soft); border-color: var(--form); }
+.avatar-picker .small { margin: 8px 0 12px; }
+.avatar-picker .error { text-align: left; }
+.avatar-remove { margin-top: 6px; }
+
+.lang-options { display: grid; gap: 8px; }
+.lang-option { display: flex; align-items: center; gap: 12px; margin: 0; padding: 10px 14px;
+  border: 1px solid var(--rule); border-radius: var(--r-s); font-weight: 500; cursor: pointer; }
+.lang-option:hover { border-color: var(--rule-strong); }
+.lang-option:has(input:checked) { border-color: var(--form); background: var(--form-soft); }
+.lang-options .btn { margin-top: 6px; }
+
+.account-facts { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; margin: 0; }
+.account-facts dt { color: var(--ink-3); }
+.account-facts dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+
+@media (max-width: 640px) {
+  .profile-head { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .who-link .who-name { display: none; }
+}
+[hidden] { display: none !important; }
+input:disabled, select:disabled, textarea:disabled { background: var(--paper); color: var(--ink-2);
+  border-style: dashed; cursor: not-allowed; }

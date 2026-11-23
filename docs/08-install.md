@@ -57,7 +57,7 @@ GNU gettext не нужен.
    * Linux: `pip install gunicorn` → `gunicorn -w 3 -b 127.0.0.1:8000 config.wsgi`
 5. Поставьте перед ним nginx с HTTPS: nginx отдаёт `/static/` из `staticfiles/` и `/media/`
    из `media/`, остальное проксирует на порт 8000.
-6. Настройте ежедневное копирование `db.sqlite3` и папки `media/`.
+6. Настройте ежедневное копирование базы данных (картинки вопросов и аватарки хранятся в ней же).
 7. Для нагрузки больше одной-двух аудиторий одновременно замените SQLite на PostgreSQL:
    в `DATABASES` укажите `django.db.backends.postgresql` и параметры подключения.
 

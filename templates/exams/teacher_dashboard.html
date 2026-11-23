@@ -8,6 +8,7 @@
     <p class="muted">{% blocktranslate trimmed %}В банке {{ bank_size }} ваших вопросов.{% endblocktranslate %}</p>
   </div>
   <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <a class="btn" href="{% url 'exams:question_new' %}">{% translate "Добавить вопрос вручную" %}</a>
     <a class="btn" href="{% url 'exams:question_import' %}">{% translate "Загрузить вопросы из Word" %}</a>
     <a class="btn btn-primary" href="{% url 'exams:exam_new' %}">{% translate "Создать тест" %}</a>
   </div>

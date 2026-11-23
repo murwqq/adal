@@ -162,11 +162,20 @@ def test_violations_debounced_and_terminate(exam, student):
     assert services.register_violation(attempt, "window_blur", now=t) is False
     assert services.register_violation(attempt, "tab_hidden", now=t + timedelta(seconds=1)) is False
     assert attempt.violation_count == 1  # blur + скрытие вкладки = одно событие
-    services.register_violation(attempt, "copy", now=t + timedelta(seconds=10))
-    assert services.register_violation(attempt, "context_menu", now=t + timedelta(seconds=20))
+    services.register_violation(attempt, "fullscreen_exit", now=t + timedelta(seconds=10))
+    assert services.register_violation(attempt, "tab_hidden", now=t + timedelta(seconds=20))
     attempt.refresh_from_db()
     assert attempt.status == Attempt.Status.TERMINATED
-    assert services.register_violation(attempt, "copy") is True
+    assert services.register_violation(attempt, "tab_hidden") is True
+
+
+def test_right_click_and_copy_are_not_violations(exam, student):
+    attempt = start(exam, student)
+    t = timezone.now()
+    for i, kind in enumerate(["context_menu", "copy", "paste", "devtools", "print_screen"] * 3):
+        assert services.register_violation(attempt, kind, now=t + timedelta(seconds=10 * i)) is False
+    attempt.refresh_from_db()
+    assert attempt.violation_count == 0 and attempt.status == Attempt.Status.ACTIVE
 
 
 def test_unknown_violation_kind(exam, student):
@@ -270,7 +279,7 @@ def test_search_results(exam, student, other_student):
     answer_all(a, correct=4)
     services.finish_attempt(a)
     b = start(exam, other_student)
-    services.register_violation(b, "copy")
+    services.register_violation(b, "tab_hidden")
     services.finish_attempt(b)
     qs = exam.attempts.all()
     assert services.search_results(qs, sort="score_desc").first() == a

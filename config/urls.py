@@ -1,10 +1,9 @@
-from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import include, path, reverse
 
 from exams.views import dashboard
+from files.views import serve as serve_file
 
 admin.site.site_header = "Администрирование Адал"
 
@@ -41,5 +40,6 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
     path("i18n/", include("django.conf.urls.i18n")),
     path("", include("exams.urls")),
+    path("media/<path:name>", serve_file, name="file"),
     path("admin/", admin.site.urls),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]

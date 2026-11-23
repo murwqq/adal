@@ -75,6 +75,8 @@ class User(AbstractBaseUser, PermissionsMixin):
                                       choices=Language.choices, default=Language.KAZAKH)
     birth_date = models.DateField(_("Дата рождения"), null=True, blank=True)
 
+    avatar = models.ImageField(_("Фото профиля"), upload_to="avatars/", blank=True)
+
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
@@ -100,6 +102,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     def short_name(self) -> str:
         initials = "".join(f"{p[0]}." for p in (self.first_name, self.patronymic) if p)
         return f"{self.last_name} {initials}".strip()
+
+    @property
+    def initials(self) -> str:
+        return "".join(p[0] for p in (self.first_name, self.last_name) if p).upper()
 
     @property
     def masked_iin(self) -> str:

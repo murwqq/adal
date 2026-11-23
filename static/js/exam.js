@@ -97,26 +97,23 @@
   document.addEventListener("webkitfullscreenchange", function () {
     if (!isFullscreen()) report("fullscreen_exit", true);
   });
-  // Правая кнопка — путь к «Спросить Gemini» и переводчикам в Chrome.
-  document.addEventListener("contextmenu", function (e) { e.preventDefault(); report("context_menu", false); });
-  ["copy", "cut"].forEach(function (t) {
-    document.addEventListener(t, function (e) { e.preventDefault(); report("copy", false); });
+  // Правая кнопка ведёт к «Спросить Gemini» и переводчикам в Chrome, поэтому
+  // меню просто не открывается. Нарушением это не считается: студент мог
+  // нажать случайно. То же с копированием, вставкой и инструментами разработчика.
+  // Нарушения дают только уход со страницы и выход из полноэкранного режима.
+  function block(e) { e.preventDefault(); }
+  ["contextmenu", "copy", "cut", "paste", "selectstart", "dragstart"].forEach(function (t) {
+    document.addEventListener(t, block);
   });
-  document.addEventListener("paste", function (e) { e.preventDefault(); report("paste", false); });
-  document.addEventListener("selectstart", function (e) { e.preventDefault(); });
   document.addEventListener("keydown", function (e) {
     var k = (e.key || "").toLowerCase(), mod = e.ctrlKey || e.metaKey;
-    if (e.key === "F12" || (mod && e.shiftKey && ["i", "j", "c"].indexOf(k) >= 0) || (mod && k === "u")) {
-      e.preventDefault(); report("devtools", false); return;
-    }
-    if (mod && (k === "c" || k === "x")) { e.preventDefault(); report("copy", false); return; }
-    if (mod && k === "v") { e.preventDefault(); report("paste", false); return; }
-    if (mod && ["a", "p", "s", "f"].indexOf(k) >= 0) { e.preventDefault(); }
+    if (e.key === "F12" || e.key === "ContextMenu" || (e.shiftKey && e.key === "F10")) { e.preventDefault(); return; }
+    if (mod && e.shiftKey && ["i", "j", "c"].indexOf(k) >= 0) { e.preventDefault(); return; }
+    if (mod && ["a", "c", "f", "p", "s", "u", "v", "x"].indexOf(k) >= 0) { e.preventDefault(); }
   });
   document.addEventListener("keyup", function (e) {
-    if (e.key === "PrintScreen") {
-      report("print_screen", false);
-      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText("").catch(function () {});
+    if (e.key === "PrintScreen" && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText("").catch(function () {});
     }
   });
   window.addEventListener("beforeunload", function (e) {

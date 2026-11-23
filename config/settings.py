@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "accounts",
     "exams",
+    "files",
 ]
 
 MIDDLEWARE = [
@@ -64,8 +65,27 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
+def _database_from_url(url: str) -> dict:
+    """postgres://user:password@host:5432/name?sslmode=require → настройки Django."""
+    from urllib.parse import parse_qsl, unquote, urlsplit
+    parts = urlsplit(url)
+    return {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": unquote(parts.path.lstrip("/")),
+        "USER": unquote(parts.username or ""),
+        "PASSWORD": unquote(parts.password or ""),
+        "HOST": parts.hostname or "",
+        "PORT": str(parts.port or ""),
+        "OPTIONS": dict(parse_qsl(parts.query)),
+        "CONN_MAX_AGE": 0 if ON_VERCEL else 60,
+    }
+
+
+# С переменной DATABASE_URL (например, база Neon на Vercel) данные хранятся
+# в PostgreSQL и не пропадают. Без неё работает локальная SQLite.
+DATABASE_URL = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL")
 DATABASES = {
-    "default": {
+    "default": _database_from_url(DATABASE_URL) if DATABASE_URL else {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": os.environ.get("DJANGO_DB_PATH", BASE_DIR / "db.sqlite3"),
     }
@@ -94,7 +114,12 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "media/"
-MEDIA_ROOT = Path("/tmp/media") if ON_VERCEL else BASE_DIR / "media"
+MEDIA_ROOT = BASE_DIR / "media"
+# Загруженные картинки хранятся в базе (см. files/models.py), а не в папке media/.
+STORAGES = {
+    "default": {"BACKEND": "files.storage.DatabaseStorage"},
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+}
 WHITENOISE_USE_FINDERS = True  # статика отдаётся прямо из static/ без collectstatic
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
