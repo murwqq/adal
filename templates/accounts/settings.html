@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Настройки" %}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <a class="back-link" href="{% url 'accounts:profile' %}">← {% translate "Профиль" %}</a>
+    <h1>{% translate "Настройки" %}</h1>
+  </div>
+</div>
+
+<div class="settings">
+  <nav class="settings-nav" aria-label="{% translate 'Разделы настроек' %}">
+    <a href="#account">{% translate "Профиль" %}</a>
+    <a href="#security">{% translate "Безопасность" %}</a>
+  </nav>
+
+  <div class="settings-body">
+    <section class="sheet settings-section" id="account">
+      <h2>{% translate "Профиль" %}</h2>
+
+      <div class="photo-row">
+        <div class="avatar avatar-lg" id="avatar-preview">
+          {% if user.avatar %}<img src="{{ user.avatar.url }}" alt="{% translate 'Фото профиля' %}">{% else %}<span>{{ user.initials }}</span>{% endif %}
+        </div>
+        <div class="photo-actions">
+          <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}<input type="hidden" name="action" value="avatar">
+            <label class="btn avatar-file">
+              <input type="file" name="avatar" accept="image/png,image/jpeg,image/webp" onchange="this.form.submit()">
+              <span>{% if user.avatar %}{% translate "Заменить фото" %}{% else %}{% translate "Загрузить фото" %}{% endif %}</span>
+            </label>
+          </form>
+          {% if user.avatar %}
+          <form method="post">
+            {% csrf_token %}<input type="hidden" name="action" value="avatar_delete">
+            <button class="btn btn-quiet" type="submit">{% translate "Удалить" %}</button>
+          </form>
+          {% endif %}
+          <p class="small muted">{% translate "JPG, PNG или WebP до 5 МБ. Фото обрежется до квадрата." %}</p>
+          {% for e in avatar_form.avatar.errors %}<p class="error">{{ e }}</p>{% endfor %}
+        </div>
+      </div>
+
+      <form method="post" novalidate class="settings-form">
+        {% csrf_token %}<input type="hidden" name="action" value="profile">
+        <div class="grid-2">
+          {% include "_field.html" with field=profile_form.last_name %}
+          {% include "_field.html" with field=profile_form.first_name %}
+          {% include "_field.html" with field=profile_form.patronymic %}
+          {% include "_field.html" with field=profile_form.email %}
+        </div>
+        {% if not user.is_teacher %}<p class="small muted">{% translate "ФИО печатается на экране теста, поэтому его меняет деканат по документам." %}</p>{% endif %}
+        <div class="form-foot"><button class="btn btn-primary" type="submit">{% translate "Сохранить" %}</button></div>
+      </form>
+    </section>
+
+    <section class="sheet settings-section" id="security">
+      <h2>{% translate "Безопасность" %}</h2>
+      <div class="setting-row">
+        <div>
+          <b>{% translate "ИИН" %}</b>
+          <p class="muted small">{% translate "Логин для входа. Изменить его нельзя." %}</p>
+        </div>
+        <span class="num">{{ user.masked_iin }}</span>
+      </div>
+      <details class="setting-row setting-details" {% if password_open %}open{% endif %}>
+        <summary>
+          <div>
+            <b>{% translate "Пароль" %}</b>
+            <p class="muted small">{% translate "Не короче 8 символов, не только цифры." %}</p>
+          </div>
+          <span class="btn">{% translate "Сменить пароль" %}</span>
+        </summary>
+        <form method="post" novalidate class="password-form">
+          {% csrf_token %}<input type="hidden" name="action" value="password">
+          {% include "_field.html" with field=password_form.old_password %}
+          <div class="grid-2">
+            {% include "_field.html" with field=password_form.new_password1 %}
+            {% include "_field.html" with field=password_form.new_password2 %}
+          </div>
+          <div class="form-foot"><button class="btn btn-primary" type="submit">{% translate "Сохранить пароль" %}</button></div>
+        </form>
+      </details>
+    </section>
+  </div>
+</div>
+{% endblock %}

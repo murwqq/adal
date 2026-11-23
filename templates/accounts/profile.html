@@ -1,122 +1,139 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% block title %}{% translate "Личный кабинет" %}{% endblock %}
+{% block title %}{% translate "Профиль" %}{% endblock %}
 {% block content %}
 <section class="profile-head">
-  <div class="avatar avatar-xl" aria-hidden="true">
-    {% if user.avatar %}<img src="{{ user.avatar.url }}" alt="">{% else %}<span>{{ user.initials }}</span>{% endif %}
-  </div>
+  <form method="post" action="{% url 'accounts:settings' %}" enctype="multipart/form-data" class="avatar-quick">
+    {% csrf_token %}<input type="hidden" name="action" value="avatar"><input type="hidden" name="next" value="{{ request.path }}">
+    <label class="avatar avatar-xl avatar-edit" title="{% translate 'Изменить фото' %}">
+      {% if user.avatar %}<img src="{{ user.avatar.url }}" alt="">{% else %}<span>{{ user.initials }}</span>{% endif %}
+      <input type="file" name="avatar" accept="image/png,image/jpeg,image/webp" onchange="this.form.submit()">
+      <em>{% translate "Изменить" %}</em>
+    </label>
+  </form>
   <div class="profile-id">
-    <p class="muted small">{% translate "Личный кабинет" %}</p>
     <h1>{{ user.full_name }}</h1>
     <div class="chips">
       <span class="tag ok">{{ user.get_role_display }}</span>
       {% if user.group %}<span class="tag">{{ user.group }}</span>{% endif %}
-      <span class="tag">{% translate "ИИН" %} <span class="num">{{ user.masked_iin }}</span></span>
     </div>
   </div>
+  <a class="btn profile-settings" href="{% url 'accounts:settings' %}">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    {% translate "Настройки" %}
+  </a>
 </section>
 
-<div class="stats profile-stats">
-  {% for value, label in stats %}<div><b class="num">{{ value }}</b><span>{{ label }}</span></div>{% endfor %}
+{% if user.is_teacher %}
+{# ===================== Преподаватель ===================== #}
+<div class="kpis">
+  <div class="kpi kpi-main"><span>{% translate "Средний результат студентов" %}</span><b class="num">{% if o.avg is not None %}{{ o.avg }}%{% else %}—{% endif %}</b><small>{% translate "работ:" %} <span class="num">{{ o.works }}</span></small></div>
+  <div class="kpi"><span>{% translate "Вопросов в банке" %}</span><b class="num">{{ o.bank }}</b><small>{% translate "дисциплин:" %} <span class="num">{{ o.by_subject|length }}</span></small></div>
+  <div class="kpi"><span>{% translate "Тестов создано" %}</span><b class="num">{{ o.exams }}</b><small><a href="{% url 'exams:exam_new' %}">{% translate "Создать тест" %}</a></small></div>
+  <div class="kpi"><span>{% translate "Работ студентов" %}</span><b class="num">{{ o.works }}</b><small><a href="{% url 'exams:exam_list' %}">{% translate "Все тесты" %}</a></small></div>
 </div>
 
-<div class="cols profile-cols">
-  <div>
-    <section class="sheet" id="data">
-      <div class="sheet-title"><h2>{% translate "Личные данные" %}</h2></div>
-      <form method="post" novalidate>
-        {% csrf_token %}<input type="hidden" name="action" value="profile">
-        <div class="grid-2">
-          {% include "_field.html" with field=profile_form.last_name %}
-          {% include "_field.html" with field=profile_form.first_name %}
-          {% include "_field.html" with field=profile_form.patronymic %}
-          {% include "_field.html" with field=profile_form.email %}
-        </div>
-        {% if not user.is_teacher %}<p class="small muted profile-note">{% translate "ФИО печатается на экране теста, поэтому его меняет деканат по документам." %}</p>{% endif %}
-        <button class="btn btn-primary" type="submit">{% translate "Сохранить" %}</button>
-      </form>
-    </section>
-
-    <section class="sheet" id="password">
-      <div class="sheet-title"><h2>{% translate "Пароль" %}</h2></div>
-      <form method="post" novalidate>
-        {% csrf_token %}<input type="hidden" name="action" value="password">
-        {% include "_field.html" with field=password_form.old_password %}
-        <div class="grid-2">
-          {% include "_field.html" with field=password_form.new_password1 %}
-          {% include "_field.html" with field=password_form.new_password2 %}
-        </div>
-        <button class="btn" type="submit">{% translate "Сменить пароль" %}</button>
-      </form>
-    </section>
-  </div>
-
-  <aside>
-    <section class="sheet" id="photo">
-      <div class="sheet-title"><h2>{% translate "Фото профиля" %}</h2></div>
-      <form method="post" enctype="multipart/form-data" class="avatar-picker" novalidate>
-        {% csrf_token %}<input type="hidden" name="action" value="avatar">
-        <div class="avatar avatar-lg" id="avatar-preview">
-          {% if user.avatar %}<img src="{{ user.avatar.url }}" alt="{% translate 'Фото профиля' %}">{% else %}<span>{{ user.initials }}</span>{% endif %}
-        </div>
-        <label class="btn btn-block avatar-file">
-          <input type="file" name="avatar" accept="image/png,image/jpeg,image/webp" id="avatar-input">
-          <span>{% translate "Выбрать фото" %}</span>
-        </label>
-        {% for e in avatar_form.avatar.errors %}<p class="error">{{ e }}</p>{% endfor %}
-        <p class="small muted">{% translate "JPG, PNG или WebP до 5 МБ. Фото обрежется до квадрата." %}</p>
-        <button class="btn btn-primary btn-block" type="submit" id="avatar-save" hidden>{% translate "Сохранить фото" %}</button>
-      </form>
-      {% if user.avatar %}
-      <form method="post" class="avatar-remove">
-        {% csrf_token %}<input type="hidden" name="action" value="avatar_delete">
-        <button class="btn btn-quiet btn-block" type="submit">{% translate "Удалить фото" %}</button>
-      </form>
-      {% endif %}
-    </section>
-
-    <section class="sheet" id="language">
-      <div class="sheet-title"><h2>{% translate "Язык интерфейса" %}</h2></div>
-      <form method="post" class="lang-options">
-        {% csrf_token %}<input type="hidden" name="action" value="interface">
-        {% for radio in interface_form.interface_language %}
-        <label class="lang-option">{{ radio.tag }}<span>{{ radio.choice_label }}</span></label>
-        {% endfor %}
-        <button class="btn btn-block" type="submit">{% translate "Сохранить" %}</button>
-      </form>
-    </section>
-
-    <section class="sheet">
-      <div class="sheet-title"><h2>{% translate "Аккаунт" %}</h2></div>
-      <dl class="account-facts">
-        <dt>{% translate "В Адал с" %}</dt><dd>{{ user.date_joined|date:"d.m.Y" }}</dd>
-        {% if user.last_login %}<dt>{% translate "Последний вход" %}</dt><dd>{{ user.last_login|date:"d.m.Y H:i" }}</dd>{% endif %}
-        {% if user.birth_date %}<dt>{% translate "Дата рождения" %}</dt><dd>{{ user.birth_date|date:"d.m.Y" }}</dd>{% endif %}
-      </dl>
-    </section>
+<div class="cols">
+  <section class="sheet">
+    <div class="sheet-title"><h2>{% translate "Результаты по тестам" %}</h2><span class="small muted">{% translate "средний результат по каждому тесту" %}</span></div>
+    {% if o.timeline %}{% include "accounts/_bars.html" with items=o.timeline avg=o.avg %}
+    {% else %}<p class="empty-line">{% translate "Когда студенты сдадут ваш первый тест, здесь появится график." %}</p>{% endif %}
+  </section>
+  <aside class="sheet">
+    <div class="sheet-title"><h2>{% translate "Банк по дисциплинам" %}</h2></div>
+    {% for s in o.by_subject %}
+    <div class="meter-row">
+      <div class="meter-head"><span>{{ s.name }}</span><b class="num">{{ s.count }}</b></div>
+      <div class="meter"><i style="width:{{ s.share }}%"></i></div>
+    </div>
+    {% empty %}
+    <p class="empty-line">{% translate "В банке пока нет ваших вопросов." %}</p>
+    <a class="btn btn-block" href="{% url 'exams:question_new' %}">{% translate "Добавить вопрос вручную" %}</a>
+    {% endfor %}
   </aside>
 </div>
-{% endblock %}
-{% block scripts %}
-<script>
-(function () {
-  var input = document.getElementById("avatar-input");
-  if (!input) return;
-  input.addEventListener("change", function () {
-    var file = input.files && input.files[0];
-    if (!file) return;
-    var box = document.getElementById("avatar-preview");
-    var img = document.createElement("img");
-    img.alt = "";
-    img.src = URL.createObjectURL(file);
-    box.innerHTML = "";
-    box.appendChild(img);
-    document.getElementById("avatar-save").hidden = false;
-  });
-  var open = "{{ open_section|default:'' }}";
-  var target = {profile: "data", password: "password", avatar: "photo", interface: "language"}[open];
-  if (target) document.getElementById(target).scrollIntoView({block: "start"});
-})();
-</script>
+
+<section class="sheet">
+  <div class="sheet-title"><h2>{% translate "Последние тесты" %}</h2><a href="{% url 'exams:exam_list' %}">{% translate "Все тесты" %}</a></div>
+  {% if o.recent %}
+  <div class="table-wrap"><table>
+    <thead><tr><th>{% translate "Тест" %}</th><th>{% translate "Дата" %}</th><th class="right">{% translate "Работ" %}</th><th class="right">{% translate "Средний результат" %}</th></tr></thead>
+    <tbody>
+    {% for e in o.recent %}
+    <tr>
+      <td><a href="{{ e.url }}">{{ e.title }}</a><div class="small muted">{{ e.subject }}</div></td>
+      <td class="num">{{ e.date|date:"d.m.Y" }}</td>
+      <td class="right num">{{ e.works }}</td>
+      <td class="right">{% if e.avg is not None %}<span class="tag {% if e.avg >= 70 %}ok{% elif e.avg >= 50 %}warn{% else %}bad{% endif %} num">{{ e.avg }}%</span>{% else %}<span class="muted">—</span>{% endif %}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  {% else %}<p class="empty-line">{% translate "Вы ещё не создали ни одного теста." %} <a href="{% url 'exams:exam_new' %}">{% translate "Создать тест" %}</a></p>{% endif %}
+</section>
+
+{% else %}
+{# ===================== Студент ===================== #}
+{% if o.active %}
+<div class="note warning profile-active">
+  {% blocktranslate trimmed with title=o.active.exam.title %}Тест «{{ title }}» ещё не завершён.{% endblocktranslate %}
+  <a href="{% url 'exams:attempt_take' o.active.pk %}">{% translate "Вернуться к тесту" %}</a>
+</div>
+{% endif %}
+
+{% if o.count %}
+<div class="kpis">
+  <div class="kpi kpi-main"><span>{% translate "Средний результат" %}</span><b class="num">{{ o.avg }}%</b><small>{% translate "за все тесты" %}</small></div>
+  <div class="kpi"><span>{% translate "Последний тест" %}</span><b class="num">{{ o.last }}%</b>
+    <small>{% if o.delta is None %}{% translate "первый результат" %}{% elif o.delta > 0 %}<span class="delta up">▲ {{ o.delta }} {% translate "п.п. к прошлому" %}</span>{% elif o.delta < 0 %}<span class="delta down">▼ {{ o.delta_abs }} {% translate "п.п. к прошлому" %}</span>{% else %}{% translate "как в прошлый раз" %}{% endif %}</small></div>
+  <div class="kpi"><span>{% translate "Лучший результат" %}</span><b class="num">{{ o.best }}%</b><small>&nbsp;</small></div>
+  <div class="kpi"><span>{% translate "Тестов сдано" %}</span><b class="num">{{ o.count }}</b><small><a href="{% url 'dashboard' %}">{% translate "Мои тесты" %}</a></small></div>
+</div>
+
+<div class="cols">
+  <section class="sheet">
+    <div class="sheet-title"><h2>{% translate "Динамика" %}</h2><span class="small muted">{% translate "результат каждого теста, в процентах" %}</span></div>
+    {% include "accounts/_bars.html" with items=o.timeline avg=o.avg %}
+  </section>
+  <aside class="sheet">
+    <div class="sheet-title"><h2>{% translate "По дисциплинам" %}</h2></div>
+    {% for s in o.by_subject %}
+    <div class="meter-row">
+      <div class="meter-head"><span>{{ s.name }}</span><b class="num">{{ s.avg }}%</b></div>
+      <div class="meter"><i class="{% if s.avg < 50 %}low{% elif s.avg < 70 %}mid{% endif %}" style="width:{{ s.avg }}%"></i></div>
+      <div class="small muted">{% translate "тестов:" %} <span class="num">{{ s.count }}</span></div>
+    </div>
+    {% endfor %}
+  </aside>
+</div>
+
+<section class="sheet">
+  <div class="sheet-title"><h2>{% translate "Последние тесты" %}</h2></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>{% translate "Тест" %}</th><th>{% translate "Дата" %}</th><th class="right">{% translate "Баллы" %}</th><th class="right">{% translate "Результат" %}</th></tr></thead>
+    <tbody>
+    {% for a in o.recent %}
+    <tr>
+      <td><a href="{{ a.url }}">{{ a.title }}</a><div class="small muted">{{ a.subject }}</div></td>
+      <td class="num">{{ a.date|date:"d.m.Y" }}</td>
+      <td class="right num">{{ a.score }} / {{ a.max_score }}</td>
+      <td class="right"><span class="tag {% if a.percent >= 70 %}ok{% elif a.percent >= 50 %}warn{% else %}bad{% endif %} num">{{ a.percent }}%</span></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+</section>
+{% else %}
+<section class="sheet profile-empty">
+  <div class="omr profile-omr" aria-hidden="true">
+    <div class="omr-row"><b>1</b><i></i><i></i><i></i><i></i></div>
+    <div class="omr-row"><b>2</b><i></i><i></i><i></i><i></i></div>
+    <div class="omr-row"><b>3</b><i></i><i></i><i></i><i></i></div>
+  </div>
+  <h2>{% translate "Здесь появится ваш прогресс" %}</h2>
+  <p class="muted">{% translate "После первого теста вы увидите средний результат, динамику и успехи по каждой дисциплине." %}</p>
+  <a class="btn btn-primary" href="{% url 'dashboard' %}">{% translate "К моим тестам" %}</a>
+</section>
+{% endif %}
+{% endif %}
 {% endblock %}

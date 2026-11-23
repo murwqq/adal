@@ -100,9 +100,6 @@ msgstr "Administration"
 msgid "Академическая степень"
 msgstr "Academic degree"
 
-msgid "Аккаунт"
-msgstr "Account"
-
 msgid "Анализ"
 msgstr "Analysis"
 
@@ -121,17 +118,20 @@ msgstr "Score"
 msgid "Банк вопросов"
 msgstr "Question bank"
 
+msgid "Банк по дисциплинам"
+msgstr "Bank by subject"
+
 msgid "Без ответа осталось вопросов:"
 msgstr "Questions left unanswered:"
 
 msgid "Без согласия с правилами регистрация невозможна"
 msgstr "You must accept the terms to sign up"
 
+msgid "Безопасность"
+msgstr "Security"
+
 msgid "Больше нарушений"
 msgstr "Most violations"
-
-msgid "В Адал с"
-msgstr "On Adal since"
 
 msgid "В банке"
 msgstr "In bank"
@@ -148,6 +148,9 @@ msgid ""
 msgstr ""
 "The bank has %(pool)s suitable questions but a variant needs "
 "%(question_count)s. Add questions or students won't be able to start."
+
+msgid "В банке пока нет ваших вопросов."
+msgstr "You don't have any questions in the bank yet."
 
 msgid ""
 "В банке только %(pool)s подходящих вопросов, а в варианте %(count)s. "
@@ -242,6 +245,9 @@ msgstr ""
 msgid "Вопросов"
 msgstr "Questions"
 
+msgid "Вопросов в банке"
+msgstr "Questions in the bank"
+
 msgid "Вопросов в варианте"
 msgstr "Questions per variant"
 
@@ -292,6 +298,9 @@ msgstr ""
 msgid "Вы ещё не проходили тесты."
 msgstr "You haven't taken any tests yet."
 
+msgid "Вы ещё не создали ни одного теста."
+msgstr "You haven't created any tests yet."
+
 msgid "Вы ответили на все вопросы."
 msgstr "You've answered every question."
 
@@ -300,9 +309,6 @@ msgstr "You left the test"
 
 msgid "Выберите дисциплину"
 msgstr "Choose a subject"
-
-msgid "Выбрать фото"
-msgstr "Choose a photo"
 
 msgid "Выйти"
 msgstr "Sign out"
@@ -349,6 +355,9 @@ msgstr "Date of birth"
 
 msgid "Дата рождения:"
 msgstr "Date of birth:"
+
+msgid "Динамика"
+msgstr "Progress"
 
 msgid "Дисциплина"
 msgstr "Subject"
@@ -446,6 +455,9 @@ msgstr "Import questions from Word"
 msgid "Загрузить из Word"
 msgstr "Import from Word"
 
+msgid "Загрузить фото"
+msgstr "Upload photo"
+
 msgid "Загрузка вопросов"
 msgstr "Import questions"
 
@@ -461,11 +473,17 @@ msgstr "Closes"
 msgid "Закрыт"
 msgstr "Closed"
 
+msgid "Заменить фото"
+msgstr "Replace photo"
+
 msgid "Защита от списывания"
 msgstr "Anti-cheating"
 
 msgid "Заявление"
 msgstr "Application"
+
+msgid "Здесь появится ваш прогресс"
+msgstr "Your progress will appear here"
 
 msgid "Здравствуйте, %(first_name)s"
 msgstr "Hello, %(first_name)s"
@@ -490,6 +508,9 @@ msgstr "Edit"
 
 msgid "Изменить вопрос"
 msgstr "Edit question"
+
+msgid "Изменить фото"
+msgstr "Change photo"
 
 msgid "Имя"
 msgstr "First name"
@@ -560,6 +581,9 @@ msgstr "When"
 msgid "Когда и кто"
 msgstr "When and who"
 
+msgid "Когда студенты сдадут ваш первый тест, здесь появится график."
+msgstr "Once students take your first test, a chart will appear here."
+
 msgid "Код"
 msgstr "Code"
 
@@ -590,8 +614,11 @@ msgstr "Kyrgyzstan"
 msgid "Личные данные"
 msgstr "Personal details"
 
-msgid "Личный кабинет"
-msgstr "My account"
+msgid "Логин для входа. Изменить его нельзя."
+msgstr "Your sign-in login. It can't be changed."
+
+msgid "Лучший результат"
+msgstr "Best score"
 
 msgid "Любая"
 msgstr "Any"
@@ -899,6 +926,9 @@ msgstr ""
 msgid "Плохо отделяет знающих от незнающих"
 msgstr "Poorly separates those who know from those who don't"
 
+msgid "По дисциплинам"
+msgstr "By subject"
+
 msgid "По фамилии"
 msgstr "By last name"
 
@@ -967,11 +997,21 @@ msgstr "Sort"
 msgid "После завершения изменить ответы нельзя."
 msgstr "You can't change answers after finishing."
 
+msgid ""
+"После первого теста вы увидите средний результат, динамику и успехи по "
+"каждой дисциплине."
+msgstr ""
+"After your first test you'll see your average score, progress over time and "
+"results by subject."
+
 msgid "Последние начавшие"
 msgstr "Most recent"
 
-msgid "Последний вход"
-msgstr "Last sign-in"
+msgid "Последние тесты"
+msgstr "Recent tests"
+
+msgid "Последний тест"
+msgstr "Last test"
 
 msgid "Поступаете к нам?"
 msgstr "Applying to us?"
@@ -1032,6 +1072,9 @@ msgstr "Completed"
 msgid "Пропадала связь со страницей теста"
 msgstr "Lost connection to the test page"
 
+msgid "Профиль"
+msgstr "Profile"
+
 msgid "Прошли"
 msgstr "Taken"
 
@@ -1047,6 +1090,12 @@ msgstr "Tried to paste text"
 msgid "Пытался скопировать текст"
 msgstr "Tried to copy text"
 
+msgid "Работ"
+msgstr "Submissions"
+
+msgid "Работ студентов"
+msgstr "Student submissions"
+
 msgid "Разбор ответов"
 msgstr "Answer review"
 
@@ -1055,6 +1104,9 @@ msgstr "Your teacher will review the answers in class."
 
 msgid "Разделы"
 msgstr "Sections"
+
+msgid "Разделы настроек"
+msgstr "Settings sections"
 
 msgid "Разделы теста"
 msgstr "Test sections"
@@ -1095,6 +1147,9 @@ msgstr "Import result"
 
 msgid "Результаты"
 msgstr "Results"
+
+msgid "Результаты по тестам"
+msgstr "Results by test"
 
 msgid "Решают верно"
 msgstr "Solved correctly"
@@ -1233,17 +1288,23 @@ msgstr "Save question"
 msgid "Сохранить и добавить ещё"
 msgstr "Save and add another"
 
+msgid "Сохранить пароль"
+msgstr "Save password"
+
 msgid "Сохранить тест"
 msgstr "Save test"
-
-msgid "Сохранить фото"
-msgstr "Save photo"
 
 msgid "Сохраняем…"
 msgstr "Saving…"
 
 msgid "Средний"
 msgstr "Medium"
+
+msgid "Средний результат"
+msgstr "Average score"
+
+msgid "Средний результат студентов"
+msgstr "Students' average score"
 
 msgid "Статус"
 msgstr "Status"
@@ -1310,6 +1371,9 @@ msgstr "Topic"
 msgid "Тест"
 msgstr "Test"
 
+msgid "Тест «%(title)s» ещё не завершён."
+msgstr "The test “%(title)s” isn't finished yet."
+
 msgid "Тест должен закрываться позже, чем открывается"
 msgstr "The test must close after it opens"
 
@@ -1363,6 +1427,12 @@ msgid ""
 msgstr ""
 "No tests yet. Add questions to the bank first, then build a test from them."
 
+msgid "Тестов сдано"
+msgstr "Tests taken"
+
+msgid "Тестов создано"
+msgstr "Tests created"
+
 msgid "Тесты"
 msgstr "Tests"
 
@@ -1399,9 +1469,6 @@ msgstr "Delete"
 
 msgid "Удалить вопрос из банка?"
 msgstr "Delete this question from the bank?"
-
-msgid "Удалить фото"
-msgstr "Remove photo"
 
 msgid "Удостоверение личности РК"
 msgstr "Kazakhstan ID card"
@@ -1509,9 +1576,6 @@ msgstr "I accept the platform's terms and conditions"
 msgid "Язык интерфейса"
 msgstr "Interface language"
 
-msgid "Язык интерфейса сохранён"
-msgstr "Interface language saved"
-
 msgid "Язык обучения"
 msgstr "Language of study"
 
@@ -1530,14 +1594,11 @@ msgstr "correct"
 msgid "вопрос"
 msgstr "question"
 
-msgid "вопросов в банке"
-msgstr "questions in the bank"
-
 msgid "вопросы"
 msgstr "questions"
 
-msgid "дисциплин"
-msgstr "subjects"
+msgid "дисциплин:"
+msgstr "subjects:"
 
 msgid "дисциплина"
 msgstr "subject"
@@ -1554,6 +1615,9 @@ msgid ""
 msgstr ""
 "bold, italic and colour are removed; formulas from Word's equation editor "
 "become sharp; “A)”, “1.” numbering before options is removed."
+
+msgid "за все тесты"
+msgstr "across all tests"
 
 msgid "завершили тест"
 msgstr "finished the test"
@@ -1573,8 +1637,8 @@ msgstr "of %(total)s"
 msgid "или фильтр ничего не нашёл"
 msgstr "or the filter found nothing"
 
-msgid "лучший результат"
-msgstr "best score"
+msgid "как в прошлый раз"
+msgstr "same as last time"
 
 msgid "медиана"
 msgstr "median"
@@ -1582,14 +1646,17 @@ msgstr "median"
 msgid "минут"
 msgstr "minutes"
 
-msgid "нарушений за всё время"
-msgstr "violations in total"
-
 msgid "необязательна."
 msgstr "line is optional."
 
 msgid "отвечен"
 msgstr "answered"
+
+msgid "п.п. к прошлому"
+msgstr "pp vs previous"
+
+msgid "первый результат"
+msgstr "first result"
 
 msgid ""
 "показывает, насколько чаще сильные студенты отвечают верно, чем слабые. "
@@ -1606,23 +1673,29 @@ msgstr "users"
 msgid "пользователь"
 msgstr "user"
 
-msgid "работ студентов"
-msgstr "student submissions"
+msgid "работ:"
+msgstr "submissions:"
 
 msgid "разброс, п.п."
 msgstr "spread, pp"
 
+msgid "результат каждого теста, в процентах"
+msgstr "each test's score, in percent"
+
+msgid "среднее"
+msgstr "average"
+
 msgid "средний результат"
 msgstr "average score"
+
+msgid "средний результат по каждому тесту"
+msgstr "average score for each test"
 
 msgid "тест"
 msgstr "test"
 
-msgid "тестов сдано"
-msgstr "tests taken"
-
-msgid "тестов создано"
-msgstr "tests created"
+msgid "тестов:"
+msgstr "tests:"
 
 msgid "тесты"
 msgstr "tests"

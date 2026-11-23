@@ -154,10 +154,3 @@ class AvatarForm(forms.Form):
         out = BytesIO()
         image.save(out, "JPEG", quality=86, optimize=True)
         return out.getvalue()
-
-
-class InterfaceForm(forms.ModelForm):
-    class Meta:
-        model = User
-        fields = ["interface_language"]
-        widgets = {"interface_language": forms.RadioSelect}

@@ -1,0 +1,13 @@
+{% load i18n %}<figure class="bars" style="--avg:{{ avg|default:0 }}">
+  <div class="bars-plot">
+    {% if avg is not None %}<div class="bars-avg" aria-hidden="true"><span>{% translate "среднее" %} {{ avg }}%</span></div>{% endif %}
+    {% for item in items %}
+    <a class="bars-col" href="{{ item.url }}" title="{{ item.label }}: {{ item.value }}%">
+      <span class="bars-val num">{{ item.value }}%</span>
+      <span class="bars-bar{% if item.value >= 70 %} good{% elif item.value < 50 %} low{% endif %}" style="height:{{ item.value }}%"></span>
+    </a>
+    {% endfor %}
+  </div>
+  <div class="bars-x" aria-hidden="true">{% for item in items %}<span>{{ item.date|date:"d.m" }}</span>{% endfor %}</div>
+  <figcaption class="visually-hidden">{% for item in items %}{{ item.label }}: {{ item.value }}%. {% endfor %}</figcaption>
+</figure>
