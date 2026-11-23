@@ -1,0 +1,190 @@
+/* Адал — слой Liquid Glass поверх основной системы (app.css).
+   Стекло работает, только когда за ним есть цвет: поэтому у страницы мягкий
+   фон из пятен фирменного зелёного, бирюзового и тёплого песочного. Панели —
+   полупрозрачные, с размытием того, что под ними, бликом по верхней кромке,
+   светлой тонкой обводкой и мягкой тенью. Кнопки и меню — капсулы. */
+
+:root {
+  --glass: rgba(255, 255, 255, .56);
+  --glass-strong: rgba(255, 255, 255, .74);
+  --glass-soft: rgba(255, 255, 255, .38);
+  --glass-line: rgba(255, 255, 255, .78);
+  --glass-edge: rgba(10, 79, 65, .08);
+  --glass-blur: blur(22px) saturate(175%);
+  --glass-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .9),
+    inset 0 -1px 0 rgba(10, 79, 65, .04),
+    0 1px 2px rgba(16, 38, 48, .05),
+    0 12px 32px -14px rgba(16, 38, 48, .22);
+  --glass-shadow-lift:
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    0 2px 4px rgba(16, 38, 48, .06),
+    0 22px 48px -18px rgba(16, 38, 48, .30);
+  --r-glass: 22px;
+}
+
+/* ---------- Фон, который видно сквозь стекло ---------- */
+body { background: #eaf0ee; }
+body::before {
+  content: ""; position: fixed; inset: -10%; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(38% 42% at 12% 8%, rgba(63, 181, 149, .50), transparent 70%),
+    radial-gradient(34% 40% at 92% 14%, rgba(120, 196, 214, .46), transparent 70%),
+    radial-gradient(40% 46% at 78% 88%, rgba(15, 107, 88, .30), transparent 72%),
+    radial-gradient(36% 38% at 18% 92%, rgba(244, 214, 168, .55), transparent 70%),
+    radial-gradient(30% 30% at 50% 50%, rgba(255, 255, 255, .55), transparent 75%),
+    linear-gradient(160deg, #eef4f1, #e6eef0 55%, #eef1ea);
+  animation: glass-drift 40s ease-in-out infinite alternate;
+}
+@keyframes glass-drift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(-2.5%, 1.5%, 0) scale(1.05); }
+}
+@media (prefers-reduced-motion: reduce) { body::before { animation: none; } }
+
+/* Общий рецепт стекла */
+.sheet, .q-sheet, .palette-box, .stats, .kpis, .note, .publish-bar, .guard-box,
+.auth-box, .exam-bar, .topbar-in, .lang-switch, .profile-head .chips .tag {
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+.sheet, .q-sheet, .palette-box, .stats, .kpis, .guard-box {
+  background: var(--glass);
+  border: 1px solid var(--glass-line);
+  border-radius: var(--r-glass);
+  box-shadow: var(--glass-shadow);
+}
+.sheet { position: relative; }
+/* Блик: светлая полоса по верхней кромке, как у стекла на свету */
+.sheet::before, .q-sheet::after, .palette-box::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0) 38%);
+  mix-blend-mode: soft-light;
+}
+.q-sheet::after { z-index: 0; }
+
+/* ---------- Шапка: плавающая капсула ---------- */
+.topbar { position: sticky; top: 0; z-index: 30; background: transparent; border: 0;
+  padding: 12px var(--gutter) 0; }
+.topbar-in { max-width: 1200px; margin: 0 auto; padding: 8px 10px 8px 20px; border-radius: 24px;
+  background: var(--glass-strong); border: 1px solid var(--glass-line); box-shadow: var(--glass-shadow-lift); }
+.nav a { border-radius: 999px; padding: 8px 16px; }
+.nav a:hover { background: rgba(255, 255, 255, .6); }
+.nav a[aria-current="page"] { background: rgba(255, 255, 255, .92); color: var(--form-deep);
+  box-shadow: inset 0 1px 0 #fff, 0 2px 8px -2px rgba(16, 38, 48, .18); }
+.who-link { border-radius: 999px; }
+.who-link:hover { background: rgba(255, 255, 255, .6); }
+.page { padding-top: 28px; }
+
+/* Переключатель языка: сегментированная капсула */
+.lang-switch { border: 1px solid var(--glass-line); border-radius: 999px; background: var(--glass-soft);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8); padding: 3px; gap: 2px; }
+.lang-switch button { border-radius: 999px; padding: 5px 11px; }
+.lang-switch button + button { border-left: 0; }
+.lang-switch button:hover { background: rgba(255, 255, 255, .6); }
+.lang-switch button[aria-pressed="true"] { background: var(--graphite); color: #fff;
+  box-shadow: 0 2px 8px -2px rgba(16, 38, 48, .45); }
+
+/* ---------- Кнопки: капсулы из стекла ---------- */
+.btn { border-radius: 999px; border: 1px solid var(--glass-line); background: rgba(255, 255, 255, .62);
+  -webkit-backdrop-filter: blur(12px) saturate(160%); backdrop-filter: blur(12px) saturate(160%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 1px 2px rgba(16, 38, 48, .06), 0 6px 16px -10px rgba(16, 38, 48, .3);
+  transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease; }
+.btn:hover { background: rgba(255, 255, 255, .85); border-color: #fff; transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn-primary { border: 1px solid rgba(255, 255, 255, .28); color: #fff;
+  background: linear-gradient(180deg, #1c8d73 0%, #0f6b58 55%, #0c5e4d 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .38), inset 0 -1px 0 rgba(0, 0, 0, .12), 0 8px 20px -8px rgba(15, 107, 88, .65); }
+.btn-primary:hover { background: linear-gradient(180deg, #22977c 0%, #117460 55%, #0d6352 100%);
+  border-color: rgba(255, 255, 255, .35); color: #fff; }
+.btn-danger { color: var(--danger); background: rgba(255, 255, 255, .62); border-color: rgba(176, 38, 58, .25); }
+.btn-quiet, .btn-quiet:hover { border-color: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.btn-quiet { background: transparent; }
+.btn-quiet:hover { background: rgba(255, 255, 255, .55); transform: none; }
+.icon-btn { border-radius: 999px; }
+@media (prefers-reduced-motion: reduce) { .btn, .btn:hover { transition: none; transform: none; } }
+
+/* ---------- Поля ввода: светлое стекло ---------- */
+input[type=text], input[type=password], input[type=email], input[type=number],
+input[type=search], input[type=datetime-local], input:not([type]), select, textarea {
+  background: rgba(255, 255, 255, .72); border-color: rgba(10, 79, 65, .14); border-radius: 14px;
+  box-shadow: inset 0 1px 2px rgba(16, 38, 48, .05);
+}
+input:focus, select:focus, textarea:focus { background: rgba(255, 255, 255, .92); }
+input:disabled, select:disabled, textarea:disabled { background: rgba(255, 255, 255, .35); }
+
+/* ---------- Метки, заметки, таблицы ---------- */
+.tag { border: 1px solid rgba(255, 255, 255, .7); }
+.note { background: var(--glass); border: 1px solid var(--glass-line); border-left: 4px solid var(--form);
+  border-radius: 16px; box-shadow: var(--glass-shadow); }
+.note.warning { background: rgba(251, 240, 223, .72); border-left-color: var(--amber); }
+.note.error { background: rgba(251, 233, 236, .75); border-left-color: var(--danger); }
+.publish-bar { background: rgba(251, 240, 223, .7); border: 1px solid rgba(255, 255, 255, .8);
+  border-radius: var(--r-glass); box-shadow: var(--glass-shadow); }
+.publish-bar.published { background: var(--glass); }
+th { border-bottom-color: rgba(10, 79, 65, .14); }
+td { border-bottom-color: rgba(10, 79, 65, .08); }
+tr.flag-row td { background: rgba(255, 238, 226, .6); }
+.empty { border-color: rgba(10, 79, 65, .18); border-radius: 18px; background: rgba(255, 255, 255, .3); }
+.exam-row { border-bottom-color: rgba(10, 79, 65, .08); }
+
+/* Ключевые цифры: главная — тёмное зелёное стекло */
+.stats div, .kpi { border-right-color: rgba(10, 79, 65, .08); }
+.kpi-main { background: linear-gradient(160deg, rgba(20, 120, 98, .92), rgba(10, 79, 65, .94));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25); }
+.meter, .bar-mini { background: rgba(10, 79, 65, .08); }
+
+/* ---------- Вход и регистрация ---------- */
+.auth-side { background:
+    radial-gradient(60% 50% at 20% 15%, rgba(63, 181, 149, .55), transparent 70%),
+    radial-gradient(50% 45% at 90% 85%, rgba(120, 196, 214, .35), transparent 70%),
+    linear-gradient(160deg, #0f6b58, #0a4f41 60%, #08392f); }
+.omr { background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .22); border-radius: 22px;
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 20px 40px -20px rgba(0, 0, 0, .45); }
+.auth-main { align-items: center; }
+.auth-box { background: var(--glass); border: 1px solid var(--glass-line); border-radius: 28px;
+  box-shadow: var(--glass-shadow-lift); padding: clamp(24px, 4vw, 40px); }
+.auth-lang { margin-bottom: 28px; }
+
+/* ---------- Экран теста ---------- */
+.exam-body { background: transparent; }
+.exam-bar { background: rgba(255, 255, 255, .66); border-bottom: 1px solid var(--glass-line);
+  box-shadow: 0 10px 30px -20px rgba(16, 38, 48, .35); }
+.timer { border-radius: 999px; border-color: var(--glass-line); background: rgba(255, 255, 255, .7);
+  box-shadow: inset 0 1px 0 #fff; }
+.answer { background: rgba(255, 255, 255, .62); border-color: rgba(10, 79, 65, .12); border-radius: 18px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9); transition: background-color .15s ease, border-color .15s ease; }
+.answer:hover { background: rgba(255, 255, 255, .85); }
+.answer:has(input:checked) { background: rgba(255, 255, 255, .95);
+  box-shadow: inset 0 1px 0 #fff, 0 6px 18px -10px rgba(16, 38, 48, .45); }
+.palette button { background: rgba(255, 255, 255, .6); }
+.guard { background: rgba(232, 240, 238, .55); -webkit-backdrop-filter: blur(26px) saturate(160%);
+  backdrop-filter: blur(26px) saturate(160%); }
+.guard-box { background: var(--glass-strong); }
+
+/* ---------- Телефоны ---------- */
+@media (max-width: 860px) {
+  .topbar { padding: 8px 10px 0; }
+  .topbar-in { padding: 8px 12px 0; border-radius: 20px; }
+  .topbar .nav { margin: 0 -12px; padding: 4px 8px 8px; border-top-color: rgba(10, 79, 65, .08); }
+}
+@media (max-width: 720px) {
+  .sheet, .q-sheet, .palette-box, .stats, .kpis { border-radius: 18px; }
+  .auth-box { border-radius: 22px; }
+}
+
+/* Где нет backdrop-filter, стекло делаем плотнее, чтобы текст читался */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .sheet, .q-sheet, .palette-box, .stats, .kpis, .auth-box, .topbar-in { background: rgba(255, 255, 255, .93); }
+}
+@media (max-width: 420px) {
+  .topbar-in { padding-left: 12px; padding-right: 8px; }
+  .topbar .wordmark { gap: 6px; font-size: 1.05rem; }
+  .topbar .mark { gap: 3px; }
+  .topbar .mark i { width: 9px; height: 9px; }
+  .who { gap: 4px; }
+  .lang-switch { padding: 2px; }
+  .lang-switch button { padding: 4px 6px; font-size: .74rem; }
+  .who .logout { width: 34px; min-height: 34px; }
+}

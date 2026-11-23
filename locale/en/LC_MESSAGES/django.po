@@ -583,9 +583,6 @@ msgstr "Your progress will appear here"
 msgid "Здравствуйте, %(first_name)s"
 msgstr "Hello, %(first_name)s"
 
-msgid "Знания видно. Списывание тоже."
-msgstr "Knowledge shows. So does cheating."
-
 msgid "ИИН"
 msgstr "IIN"
 
@@ -1805,6 +1802,9 @@ msgstr "Step 3"
 
 msgid "Шаги регистрации"
 msgstr "Sign-up steps"
+
+msgid "Экзамены, которым можно верить."
+msgstr "Exams you can trust."
 
 msgid "Эл. почта"
 msgstr "Email"
