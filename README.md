@@ -5,6 +5,8 @@
 <p align="center">
   <a href="https://adal-murex.vercel.app"><b>Открыть демо</b></a>
   &nbsp;·&nbsp;
+  <a href="https://youtu.be/JhA1drR9xKM">Ролик за 90 секунд</a>
+  &nbsp;·&nbsp;
   <a href="#попробовать">Логины для входа</a>
   &nbsp;·&nbsp;
   <a href="#куда-растёт-адал">План развития</a>
