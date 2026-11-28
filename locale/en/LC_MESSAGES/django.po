@@ -697,9 +697,6 @@ msgstr ""
 msgid "ИИ разбирает вопрос…"
 msgstr "AI is reviewing the question…"
 
-msgid "ИИ сейчас недоступен. Попробуйте через минуту."
-msgstr "AI is unavailable right now. Try again in a minute."
-
 msgid ""
 "ИИ смотрит на текст вопроса и статистику ответов и предлагает правку. Имена "
 "студентов в запрос не попадают. Решение всегда за вами."
@@ -1171,6 +1168,9 @@ msgstr ""
 
 msgid "Остановлена за нарушения"
 msgstr "Stopped for violations"
+
+msgid "Ответ модели"
+msgstr "Model"
 
 msgid "Ответ не сохранился, выберите его ещё раз"
 msgstr "Answer not saved. Pick it again"

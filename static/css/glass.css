@@ -233,3 +233,11 @@ html[lang="en"] .tutor-options li.picked::after { content: "  ← your answer"; 
 .gen-opt input[type=radio] { width: 20px; height: 20px; flex: none; accent-color: var(--form, #0f6b58); }
 .gen-opt input:not([type=radio]) { flex: 1; }
 .gen-item:has(.gen-keep input:not(:checked)) { opacity: .55; }
+.ai-out { white-space: normal; }
+.ai-out p, .bubble.assistant p { margin: 0 0 8px; }
+.ai-out p:last-child, .bubble.assistant p:last-child { margin-bottom: 0; }
+.ai-out ul, .bubble.assistant ul { margin: 0 0 8px 20px; }
+.ai-out li, .bubble.assistant li { margin: 6px 0; }
+.ai-out code, .bubble.assistant code { font-family: "JetBrains Mono", Consolas, monospace; font-size: .92em; padding: 1px 5px; border-radius: 6px; background: rgba(28,35,46,.08); }
+.ai-out .ai-model { margin-top: 10px; }
+.bubble.assistant { white-space: normal; }

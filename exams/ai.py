@@ -93,6 +93,10 @@ def chat(messages: list[dict], request=None, max_tokens: int = 450,
                    "temperature": temperature}
         if json_mode:
             payload["response_format"] = {"type": "json_object"}
+        if name == "gemini":
+            # Модели Gemini 3 «размышляют» перед ответом: для наших задач хватает короткого
+            # размышления, а ответ приходит в разы быстрее.
+            payload["reasoning_effort"] = "low"
         body = json.dumps(payload).encode()
         for attempt in range(2):  # перегрузку (429/503) переживаем одним повтором
             req = urllib.request.Request(url, data=body, method="POST", headers={

@@ -17,10 +17,32 @@
     });
   }
   function math(el) { if (window.renderMath) window.renderMath(el); }
+  // Модели отвечают в Markdown. Показываем жирный текст, код и списки, остальное как текст.
+  function esc(t) { return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function inline(t) {
+    return esc(t).replace(/`([^`]+)`/g, "<code>$1</code>")
+      .replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+  }
+  function rich(el, text) {
+    var out = [], list = null;
+    text.split(/\n/).forEach(function (line) {
+      var m = line.match(/^\s*(?:[*\-•]|\d+[.)])\s+(.*)$/);
+      if (m) {
+        if (!list) { list = []; }
+        list.push("<li>" + inline(m[1]) + "</li>");
+        return;
+      }
+      if (list) { out.push("<ul>" + list.join("") + "</ul>"); list = null; }
+      if (line.trim()) out.push("<p>" + inline(line.trim()) + "</p>");
+    });
+    if (list) out.push("<ul>" + list.join("") + "</ul>");
+    el.innerHTML = out.join("");
+    math(el);
+  }
   function bubble(box, role, text) {
     var d = document.createElement("div");
     d.className = "bubble " + role;
-    d.textContent = text;
+    if (role === "assistant") rich(d, text); else d.textContent = text;
     box.appendChild(d);
     return d;
   }
@@ -79,8 +101,13 @@
       out.classList.add("thinking");
       out.textContent = btn.dataset.think;
       post(btn.dataset.url, {}).then(function (j) {
-        out.textContent = j.text;
-        math(out);
+        rich(out, j.text);
+        if (j.model) {
+          var note = document.createElement("p");
+          note.className = "small muted ai-model";
+          note.textContent = btn.dataset.modelLabel + ": " + j.model;
+          out.appendChild(note);
+        }
       }).catch(function (e) { out.textContent = e.message; })
         .then(function () { btn.disabled = false; out.classList.remove("thinking"); });
     });
