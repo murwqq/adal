@@ -36,6 +36,10 @@ if os.environ.get("VERCEL") and USE_POSTGRES:
             from accounts.models import User
             if not User.objects.exists():
                 call_command("seed_demo", verbosity=0)
+            else:
+                # Демо-тест для проверки Адал Guard всегда должен быть открыт.
+                from exams.management.commands.seed_demo import ensure_guard_exam
+                ensure_guard_exam()
         finally:
             cursor.execute("SELECT pg_advisory_unlock(20261120)")
     connection.close()

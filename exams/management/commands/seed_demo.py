@@ -83,12 +83,40 @@ def demo_iin(prefix: str, serial: int) -> str:
             serial += 1
 
 
+GUARD_EXAM_CODE = "GUARD"
+GUARD_EXAM_DAYS = 180
+
+
+def ensure_guard_exam(now=None):
+    """Постоянно открытый демо-тест для проверки расширения Адал Guard (в том числе
+    проверяющими магазинов расширений). Открыт для всех групп, требует расширение.
+    Если тест уже есть, только продлевает его, чтобы он не закрылся посреди проверки."""
+    now = now or timezone.now()
+    teacher = User.objects.filter(iin=demo_iin("6203154", 7)).first()
+    subject = Subject.objects.filter(name="Программирование на Python").first()
+    if teacher is None or subject is None:
+        return None
+    exam = Exam.objects.filter(access_code=GUARD_EXAM_CODE, author=teacher).first()
+    if exam is None:
+        exam = Exam.objects.create(
+            title="Демо: экзамен с Адал Guard", subject=subject, author=teacher,
+            question_count=5, duration_minutes=15, opens_at=now - timedelta(hours=1),
+            closes_at=now + timedelta(days=GUARD_EXAM_DAYS), access_code=GUARD_EXAM_CODE,
+            max_violations=3, require_guard=True, show_review=True)
+        exam.questions.set(subject.questions.all())
+    elif exam.closes_at < now + timedelta(days=30):
+        Exam.objects.filter(pk=exam.pk).update(
+            closes_at=now + timedelta(days=GUARD_EXAM_DAYS), is_published=True)
+    return exam
+
+
 class Command(BaseCommand):
     help = "Заполняет базу демонстрационными данными"
 
     @transaction.atomic
     def handle(self, *args, **options):
         if User.objects.filter(iin=demo_iin("8001013", 1)).exists():
+            ensure_guard_exam()
             self.stdout.write("Демо-данные уже есть.")
             return
         admin = User.objects.create_superuser(
@@ -140,6 +168,7 @@ class Command(BaseCommand):
         for exam in (open_exam, past_exam, physics_exam):
             exam.questions.set(exam.subject.questions.all())
 
+        ensure_guard_exam(now)
         self._simulate(past_exam, students, now - timedelta(days=3) + timedelta(minutes=5))
         self._simulate(open_exam, students[4:], now - timedelta(minutes=50))
 

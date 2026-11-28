@@ -146,3 +146,18 @@ def test_guard_page_and_required_flag(client, exam, student):
     login(client, student)
     start = client.get(reverse("exams:exam_start", args=[exam.pk])).content.decode()
     assert "Адал Guard" in start
+
+
+def test_guard_demo_exam_is_created_and_extended(db):
+    from datetime import timedelta
+    from django.core.management import call_command
+    from django.utils import timezone
+    from exams.management.commands.seed_demo import ensure_guard_exam
+    call_command("seed_demo", verbosity=0)
+    exam = ensure_guard_exam()
+    assert exam.require_guard and exam.group_list == [] and exam.is_open()
+    exam.closes_at = timezone.now() + timedelta(days=1)
+    exam.save()
+    ensure_guard_exam()
+    exam.refresh_from_db()
+    assert exam.closes_at > timezone.now() + timedelta(days=100)
