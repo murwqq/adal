@@ -50,8 +50,10 @@ def _token(request=None) -> str | None:
 
 
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
-# Основная модель, затем псевдонимы Google на актуальные Flash и Flash-Lite.
-GEMINI_MODELS = ("gemini-3.8-flash", "gemini-flash-latest", "gemini-flash-lite-latest")
+# Flash-Lite отвечает за секунды и на проверке дала хорошие вопросы; остальные — запасные.
+GEMINI_MODELS = ("gemini-flash-lite-latest", "gemini-flash-latest", "gemini-3.8-flash")
+# Функция на Vercel живёт до 60 секунд: после 45 секунд новые попытки не начинаем.
+TIME_BUDGET = 45
 GEMINI_DEFAULT_MODEL = GEMINI_MODELS[0]
 
 
@@ -86,9 +88,15 @@ def chat(messages: list[dict], request=None, max_tokens: int = 450,
         raise AIUnavailable("no credentials")
     errors: list[str] = []
     refused: set[str] = set()
+    started = time.monotonic()
     for name, url, token, model in providers:
         if name in refused:
             continue
+        left = TIME_BUDGET - (time.monotonic() - started)
+        if left < 5:
+            errors.append(f"{model}: skipped, time budget spent")
+            break
+        call_timeout = min(timeout, left)
         payload = {"model": model, "messages": messages, "max_tokens": max_tokens,
                    "temperature": temperature}
         if json_mode:
@@ -103,7 +111,7 @@ def chat(messages: list[dict], request=None, max_tokens: int = 450,
                 "Authorization": f"Bearer {token}", "Content-Type": "application/json"})
             retry = False
             try:
-                with urllib.request.urlopen(req, timeout=timeout) as resp:
+                with urllib.request.urlopen(req, timeout=call_timeout) as resp:
                     data = json.load(resp)
                 text = (data["choices"][0]["message"]["content"] or "").strip()
                 if text:
@@ -125,7 +133,7 @@ def chat(messages: list[dict], request=None, max_tokens: int = 450,
             except (urllib.error.URLError, TimeoutError, KeyError, IndexError, ValueError) as exc:
                 error = f"{model}: {exc.__class__.__name__}"
             logger.warning("AI %s: %s", name, error)
-            if not retry:
+            if not retry or TIME_BUDGET - (time.monotonic() - started) < 10:
                 break
             time.sleep(1.5)
         errors.append(error)
@@ -316,7 +324,7 @@ def generate_questions(*, syllabus: str, count: int, focus: str = "", lang: str 
     messages = [{"role": "system", "content": GENERATE_RULES.format(lang=lang_name)},
                 {"role": "user", "content": task + "\n\nSYLLABUS:\n" + syllabus}]
     text, model = chat(messages, request=request, max_tokens=min(9000, 650 * count),
-                       temperature=0.5, timeout=55, json_mode=True)
+                       temperature=0.5, timeout=40, json_mode=True)
     try:
         questions = clean_generated(_parse_json(text), count)
     except ValueError as exc:
