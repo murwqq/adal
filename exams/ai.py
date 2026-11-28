@@ -15,12 +15,15 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import urllib.error
 import urllib.request
 
 from django.utils.translation import get_language
+
+logger = logging.getLogger(__name__)
 
 GATEWAY_URL = "https://ai-gateway.vercel.sh/v1/chat/completions"
 # Основная модель и запасная: если первая недоступна, пробуем вторую.
@@ -59,6 +62,7 @@ def chat(messages: list[dict], request=None, max_tokens: int = 450,
     """Возвращает (текст ответа, модель, которая ответила)."""
     token = _token(request)
     if not token:
+        logger.warning("AI Gateway: no credentials (no OIDC header, AI_GATEWAY_API_KEY or VERCEL_OIDC_TOKEN)")
         raise AIUnavailable("no credentials")
     last_error: Exception | None = None
     for model in _models():
@@ -75,8 +79,18 @@ def chat(messages: list[dict], request=None, max_tokens: int = 450,
             text = (data["choices"][0]["message"]["content"] or "").strip()
             if text:
                 return text, data.get("model") or model
+            last_error = AIUnavailable(f"{model}: empty reply")
+        except urllib.error.HTTPError as exc:
+            # Текст ошибки шлюза (без ключа) помогает понять причину: нет кредитов, нет доступа к модели.
+            try:
+                detail = json.loads(exc.read().decode("utf-8", "replace")).get("error", {})
+                detail = detail.get("message", "") if isinstance(detail, dict) else str(detail)
+            except (ValueError, OSError, AttributeError):
+                detail = ""
+            last_error = AIUnavailable(f"{model}: HTTP {exc.code} {detail}".strip())
         except (urllib.error.URLError, TimeoutError, KeyError, IndexError, ValueError) as exc:
-            last_error = exc
+            last_error = AIUnavailable(f"{model}: {exc.__class__.__name__}")
+        logger.warning("AI Gateway: %s", last_error)
     raise AIUnavailable(str(last_error))
 
 

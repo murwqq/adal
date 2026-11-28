@@ -439,8 +439,9 @@ def exam_question_ai(request, pk, qid):
         text, model = ai.review_question(
             text=stat.text, choices=[(c.text, c.is_correct, c.share) for c in stat.choices],
             p=stat.p, d=stat.d, answered=stat.answered, flags=stat.flags, request=request)
-    except ai.AIUnavailable:
-        return JsonResponse({"error": str(_("ИИ сейчас недоступен. Попробуйте через минуту."))}, status=503)
+    except ai.AIUnavailable as exc:
+        # Преподавателю показываем техническую причину: без неё не понять, что чинить.
+        return JsonResponse({"error": f"{_('ИИ сейчас недоступен. Попробуйте через минуту.')} ({exc})"}, status=503)
     return JsonResponse({"text": text, "model": model})
 
 
