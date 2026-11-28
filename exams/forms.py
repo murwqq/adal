@@ -87,6 +87,29 @@ class ImportForm(forms.Form):
         return f
 
 
+class SyllabusForm(forms.Form):
+    LANGS = [("ru", "Русский"), ("kk", "Қазақша"), ("en", "English")]
+
+    subject = forms.ModelChoiceField(Subject.objects.all(), label=_("Дисциплина"),
+                                     empty_label=_("Выберите дисциплину"))
+    file = forms.FileField(label=_("Силлабус: .docx, .pdf или .txt"))
+    count = forms.IntegerField(label=_("Сколько вопросов предложить"), min_value=3, max_value=20,
+                               initial=10)
+    language = forms.ChoiceField(label=_("Язык вопросов"), choices=LANGS)
+    focus = forms.CharField(label=_("На каких темах сделать упор"), required=False, max_length=300,
+                            help_text=_("Необязательно. Например: циклы, функции, работа с файлами"))
+
+    def __init__(self, *args, exam=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        lock_subject(self, exam)
+
+    def clean_file(self):
+        f = self.cleaned_data["file"]
+        if f.size > MAX_UPLOAD_MB * 1024 * 1024:
+            raise forms.ValidationError(_("Файл больше %(mb)s МБ") % {"mb": MAX_UPLOAD_MB})
+        return f
+
+
 class SubjectForm(forms.ModelForm):
     class Meta:
         model = Subject
@@ -106,7 +129,7 @@ class ExamForm(forms.ModelForm):
         model = Exam
         fields = ["title", "subject", "question_count", "duration_minutes",
                   "opens_at", "closes_at", "groups", "access_code", "allowed_ip_prefix",
-                  "max_violations", "show_review", "ai_tutor", "is_published"]
+                  "max_violations", "require_guard", "show_review", "ai_tutor", "is_published"]
         widgets = {
             "opens_at": forms.DateTimeInput(attrs={"type": "datetime-local"},
                                             format="%Y-%m-%dT%H:%M"),

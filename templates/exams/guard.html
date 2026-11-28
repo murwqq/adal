@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load i18n static %}
+{% block title %}{% translate "Расширение Адал Guard" %}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{% translate "Расширение Адал Guard" %}</h1>
+    <p class="muted">{% translate "Превращает обычный Chrome или Edge в браузер для экзамена. Включается само, когда начинается тест на Адал, и выключается после него." %}</p>
+  </div>
+  <a class="btn btn-primary btn-lg" href="{% static 'guard/adal-guard.zip' %}" download>{% blocktranslate trimmed %}Скачать, версия {{ version }}{% endblocktranslate %}</a>
+</div>
+
+<div class="cols">
+  <section class="sheet">
+    <h2>{% translate "Что делает во время теста" %}</h2>
+    <ul class="dots-list">
+      <li>{% translate "Браузер открывает только сайт Адал. Любые другие страницы показывают заглушку «Идёт тест»." %}</li>
+      <li>{% translate "ChatGPT, Gemini, Claude, DeepSeek, Copilot, Perplexity и сайты с готовыми ответами заблокированы. Попытка открыть их считается нарушением и видна преподавателю." %}</li>
+      <li>{% translate "Новые вкладки и окна закрываются сразу, вкладки, открытые до теста, закрываются при его начале." %}</li>
+      <li>{% translate "Если в браузере включены ИИ-расширения (помощники в боковой панели), преподаватель видит их названия." %}</li>
+      <li>{% translate "Если расширение отключить во время теста, это тоже фиксируется." %}</li>
+    </ul>
+    <h2 style="margin-top:24px">{% translate "Чего не делает" %}</h2>
+    <ul class="dots-list">
+      <li>{% translate "Не работает вне экзамена: в обычное время браузер ведёт себя как всегда." %}</li>
+      <li>{% translate "Не видит экран, камеру и микрофон, не читает историю, пароли и содержимое других сайтов." %}</li>
+      <li>{% translate "Никуда не отправляет данные: события передаются только странице теста на Адал." %}</li>
+    </ul>
+    <p class="small muted" style="margin-top:16px">{% translate "Исходный код расширения открыт и лежит в репозитории проекта, в папке extension." %}</p>
+  </section>
+  <aside class="sheet">
+    <h3>{% translate "Как установить" %}</h3>
+    <ol class="rules">
+      <li>{% translate "Скачайте архив и распакуйте его в любую папку." %}</li>
+      <li>{% translate "Откройте в браузере страницу chrome://extensions (в Edge: edge://extensions)." %}</li>
+      <li>{% translate "Включите «Режим разработчика» в правом верхнем углу." %}</li>
+      <li>{% translate "Нажмите «Загрузить распакованное расширение» и выберите папку adal-guard." %}</li>
+    </ol>
+    <h3 style="margin-top:20px">{% translate "Для компьютерных классов" %}</h3>
+    <p class="small">{% translate "Администратор может установить расширение на все компьютеры аудитории через групповые политики Chrome (ExtensionInstallForcelist) и запретить режим инкогнито (IncognitoModeAvailability = 1). Тогда студент не сможет отключить его перед тестом." %}</p>
+    <h3 style="margin-top:20px">{% translate "Для преподавателя" %}</h3>
+    <p class="small">{% translate "В настройках теста включите «Только с расширением Адал Guard». Без расширения тест не откроется, а в «Наблюдении» видно, у кого оно работает." %}</p>
+  </aside>
+</div>
+{% endblock %}

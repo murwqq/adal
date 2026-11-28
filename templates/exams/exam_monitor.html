@@ -21,6 +21,7 @@
   var url = "{% url 'exams:exam_monitor_data' exam.pk %}";
   var detail = "{% url 'exams:attempt_detail' 0 %}";
   var tbody = document.getElementById("rows");
+  var guardRequired = {{ exam.require_guard|yesno:"true,false" }};
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
   function mmss(s) { var m = Math.floor(s / 60), r = s % 60; return m + ":" + (r < 10 ? "0" : "") + r; }
   function render(data) {
@@ -35,8 +36,10 @@
       fill.style.width = (r.total ? Math.round(100 * r.answered / r.total) : 0) + "%"; bar.appendChild(fill);
       prog.appendChild(bar); prog.appendChild(document.createTextNode(r.answered + "{% translate ' из ' %}" + r.total)); tr.appendChild(prog);
       tr.appendChild(el("td", "num", r.status === "active" ? mmss(r.left) : "—"));
-      var v = el("td"); if (r.violations) { v.appendChild(el("span", "tag bad", r.violations)); v.appendChild(el("div", "small muted", r.last_violation)); } else { v.textContent = "0"; } tr.appendChild(v);
+      var v = el("td"); if (r.violations || r.notes) { v.appendChild(el("span", r.violations ? "tag bad" : "tag", r.violations)); v.appendChild(el("div", "small muted", r.last_violation)); } else { v.textContent = "0"; } tr.appendChild(v);
       var st = el("td");
+      if (guardRequired || r.guard) st.appendChild(el("span", r.guard ? "tag ok" : "tag bad", r.guard ? "Guard " + r.guard : "{% translate 'Без Guard' %}"));
+      st.appendChild(document.createTextNode(" "));
       if (r.status === "active") st.appendChild(el("span", r.stale ? "tag bad" : "tag ok", r.stale ? "{% translate 'Нет связи' %}" : "{% translate 'Пишет' %}"));
       else st.appendChild(el("span", r.status === "terminated" ? "tag bad" : "tag", r.status_label + (r.status !== "active" ? ", " + r.percent + "%" : "")));
       tr.appendChild(st);

@@ -56,8 +56,40 @@
   function unlock() { body.classList.remove("locked"); $("guard-start").classList.remove("show"); $("guard-back").classList.remove("show"); }
 
   $("btn-enter").addEventListener("click", function () {
+    if (E.requireGuard && !guard.version) { showGuardNeed(); return; }
     enterFullscreen().then(function () { started = true; unlock(); });
   });
+
+  // ---------- Расширение Адал Guard ----------
+  // Расширение блокирует ИИ-сервисы и новые вкладки и сообщает о попытках сюда.
+  var guard = {version: document.documentElement.getAttribute("data-adal-guard"), last: Date.now(), lost: false};
+  function toGuard(msg) { msg.source = "adal-page"; window.postMessage(msg, window.location.origin); }
+  function showGuardNeed() { body.classList.add("locked"); $("guard-need").classList.add("show"); }
+  window.addEventListener("message", function (e) {
+    if (e.source !== window || !e.data || e.data.source !== "adal-guard") return;
+    var d = e.data;
+    if (d.type === "hello" || d.type === "pong") {
+      guard.version = d.version; guard.last = Date.now();
+      if ($("guard-need").classList.contains("show")) { $("guard-need").classList.remove("show"); toGuard({type: "exam-start", attempt: E.attempt, seconds: Math.round((deadline - Date.now()) / 1000)}); }
+    } else if (d.type === "violation") {
+      report(d.kind, d.kind === "ai_site", d.detail);
+    }
+  });
+  function guardStart() { toGuard({type: "exam-start", attempt: E.attempt, seconds: Math.round((deadline - Date.now()) / 1000)}); }
+  guardStart();
+  setTimeout(function () {
+    if (guard.version) return;
+    if (E.requireGuard) { showGuardNeed(); report("guard_missing", false); }
+  }, 2000);
+  setInterval(function () {
+    if (finishing || !guard.version) return;
+    toGuard({type: "ping"});
+    if (!guard.lost && Date.now() - guard.last > 25000) {
+      guard.lost = true;
+      report("guard_lost", true);
+      if (E.requireGuard) showGuardNeed();
+    }
+  }, 5000);
   $("btn-return").addEventListener("click", function () {
     enterFullscreen().then(unlock);
   });
@@ -67,16 +99,21 @@
     var dots = $("strikes").querySelectorAll("i");
     for (var i = 0; i < dots.length; i++) dots[i].classList.toggle("on", i < n);
   }
-  function report(kind, showGuard) {
-    if (!started || finishing) return;
+  function report(kind, showGuard, detail) {
+    if (finishing) return;
+    // События расширения приходят и до нажатия «Начать»: браузер уже заблокирован.
+    if (!started && kind.indexOf("guard") < 0 && kind !== "ai_extension" && kind !== "new_tab" && kind !== "ai_site") return;
     if (showGuard) {
       body.classList.add("locked");
       $("guard-back").classList.add("show");
     }
     var now = Date.now();
-    if (now - lastReport < DEBOUNCE_MS) return;
-    lastReport = now;
-    post(E.urls.event, {kind: kind}).then(function (r) {
+    var noted = kind === "new_tab" || kind === "ai_extension" || kind === "guard_missing";
+    if (!noted) {
+      if (now - lastReport < DEBOUNCE_MS) return;
+      lastReport = now;
+    }
+    post(E.urls.event, {kind: kind, detail: detail || ""}).then(function (r) {
       if (r.terminated) { goResult(); return; }
       if (typeof r.violations === "number") {
         updateStrikes(r.violations);
@@ -182,6 +219,7 @@
 
   function finish() {
     finishing = true;
+    toGuard({type: "exam-end"});
     post(E.urls.finish, {}).then(function (r) {
       if (document.exitFullscreen && isFullscreen()) document.exitFullscreen().catch(function () {});
       window.location.href = r.redirect || E.urls.result;
@@ -191,7 +229,7 @@
   // ---------- Связь с сервером ----------
   setInterval(function () {
     if (finishing) return;
-    post(E.urls.ping).then(function (r) {
+    post(E.urls.ping, {guard: guard.version || ""}).then(function (r) {
       if (r.status === "other_session") { finishing = true; window.location.reload(); return; }
       if (r.status !== "active") { goResult(); return; }
       deadline = Date.now() + r.seconds_left * 1000;

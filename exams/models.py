@@ -86,6 +86,9 @@ class Exam(models.Model):
         _("Нарушений до завершения"), default=3,
         help_text=_("Уход со страницы, выход из полноэкранного режима и т. п."))
     show_review = models.BooleanField(_("Показать студенту разбор после теста"), default=False)
+    require_guard = models.BooleanField(
+        _("Только с расширением Адал Guard"), default=False,
+        help_text=_("Пока идёт тест, браузер открывает только Адал, а ИИ-сервисы и новые вкладки заблокированы"))
     ai_tutor = models.BooleanField(
         _("ИИ-наставник после закрытия теста"), default=True,
         help_text=_("Наставник разбирает со студентом его ошибки наводящими вопросами и не называет правильный ответ"))
@@ -139,6 +142,7 @@ class Attempt(models.Model):
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     last_seen_at = models.DateTimeField(null=True, blank=True)
     violation_count = models.PositiveSmallIntegerField(default=0)
+    guard_version = models.CharField(max_length=20, blank=True)
     # Попытка, которую заменила пересдача. Остаётся в истории, но не в результатах.
     archived = models.BooleanField(default=False)
 
@@ -194,9 +198,16 @@ class Violation(models.Model):
         PRINT_SCREEN = "print_screen", _("Нажимал Print Screen")
         OTHER_SESSION = "other_session", _("Открыл тест на другом компьютере или в другом браузере")
         OFFLINE = "offline", _("Пропадала связь со страницей теста")
+        AI_SITE = "ai_site", _("Пытался открыть ИИ-сервис или сайт с ответами")
+        NEW_TAB = "new_tab", _("Пытался открыть новую вкладку или окно")
+        AI_EXTENSION = "ai_extension", _("В браузере включены ИИ-расширения")
+        GUARD_MISSING = "guard_missing", _("Начал тест без расширения Адал Guard")
+        GUARD_LOST = "guard_lost", _("Отключил расширение Адал Guard во время теста")
 
     attempt = models.ForeignKey(Attempt, on_delete=models.CASCADE, related_name="violations")
     kind = models.CharField(max_length=20, choices=Kind.choices)
+    detail = models.CharField(max_length=200, blank=True)
+    counted = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:

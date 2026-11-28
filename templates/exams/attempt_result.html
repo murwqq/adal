@@ -65,7 +65,7 @@
   <aside class="sheet">
     <h3>{% translate "Нарушения" %}</h3>
     {% for v in violations %}
-      <div class="small" style="padding:6px 0;border-bottom:1px solid var(--rule)"><span class="num muted">{{ v.created_at|date:"H:i:s" }}</span> {{ v.get_kind_display }}</div>
+      <div class="small" style="padding:6px 0;border-bottom:1px solid var(--rule)"><span class="num muted">{{ v.created_at|date:"H:i:s" }}</span> {{ v.get_kind_display }}{% if v.detail %}: <span class="muted">{{ v.detail }}</span>{% endif %}{% if not v.counted %} <span class="tag">{% translate "заметка" %}</span>{% endif %}</div>
     {% empty %}<p class="muted small">{% translate "Нарушений нет. Спасибо за честную работу." %}</p>{% endfor %}
   </aside>
 </div>

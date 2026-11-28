@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load i18n static %}
+{% block title %}{% translate "Вопросы из силлабуса" %}{% endblock %}
+{% block math %}{% include "_math.html" %}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    {% if exam %}<a class="back-link" href="{% url 'exams:exam_questions' exam.pk %}">← {{ exam.title }}</a>{% endif %}
+    <h1>{% translate "Вопросы из силлабуса" %}</h1>
+    <p class="muted">{% translate "ИИ читает силлабус и предлагает черновики вопросов. Вы проверяете каждый, правите и сами решаете, что сохранить." %}</p>
+  </div>
+  {% if exam %}<a class="btn btn-quiet" href="{% url 'exams:exam_questions' exam.pk %}">{% translate "К вопросам теста" %}</a>
+  {% else %}<a class="btn btn-quiet" href="{% url 'exams:question_list' %}">{% translate "Вернуться в банк" %}</a>{% endif %}
+</div>
+
+{% if not drafts %}
+<div class="cols">
+  <form class="sheet gen-form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}{% if exam %}<input type="hidden" name="exam" value="{{ exam.pk }}">{% endif %}
+    {% for e in form.non_field_errors %}<div class="note error">{{ e }}</div>{% endfor %}
+    {% include "_field.html" with field=form.file %}
+    <div class="grid-2">
+      {% include "_field.html" with field=form.subject %}
+      {% include "_field.html" with field=form.count %}
+    </div>
+    <div class="grid-2">
+      {% include "_field.html" with field=form.language %}
+      {% include "_field.html" with field=form.focus %}
+    </div>
+    <button class="btn btn-primary btn-lg" type="submit">{% translate "Предложить вопросы" %}</button>
+    <p class="small muted gen-wait" hidden>{% translate "ИИ читает силлабус и составляет вопросы. Это занимает до минуты…" %}</p>
+  </form>
+  <aside class="sheet">
+    <h3>{% translate "Как это работает" %}</h3>
+    <ul class="dots-list small">
+      <li>{% translate "ИИ составляет вопросы на понимание и применение, а не на запоминание дат и формулировок." %}</li>
+      <li>{% translate "У каждого вопроса есть цитата из силлабуса, на которой он основан, и пояснение, какое заблуждение ловят неверные варианты." %}</li>
+      <li>{% translate "Адал сам проверяет черновики: одинаковые варианты, подсказку в длине ответа и повторы вопросов из банка." %}</li>
+      <li>{% translate "Ничего не сохраняется без вас. В модель уходит только текст силлабуса." %}</li>
+    </ul>
+  </aside>
+</div>
+{% else %}
+<form method="post" class="gen-review">
+  {% csrf_token %}{% if exam %}<input type="hidden" name="exam" value="{{ exam.pk }}">{% endif %}
+  <input type="hidden" name="action" value="save">
+  <input type="hidden" name="subject" value="{{ form.cleaned_data.subject.pk }}">
+  <input type="hidden" name="total" value="{{ drafts|length }}">
+  <div class="note" style="margin-bottom:18px">{% blocktranslate trimmed with n=drafts|length subject=form.cleaned_data.subject %}ИИ предложил вопросов: {{ n }}. Дисциплина «{{ subject }}». Проверьте каждый: исправьте текст, при необходимости отметьте другой верный ответ и снимите галочку с лишних.{% endblocktranslate %} <span class="muted small">{% translate "Модель" %}: {{ model }}</span></div>
+  {% for d in drafts %}{% with i=forloop.counter0 %}
+  <section class="sheet gen-item">
+    <div class="sheet-title">
+      <label class="gen-keep"><input type="checkbox" name="q{{ i }}-keep" value="1" {% if not d.duplicate %}checked{% endif %}> {% blocktranslate trimmed with n=forloop.counter %}Сохранить вопрос {{ n }}{% endblocktranslate %}</label>
+      <span class="tag ok">{% if d.level == "remember" %}{% translate "Запоминание" %}{% elif d.level == "understand" %}{% translate "Понимание" %}{% elif d.level == "apply" %}{% translate "Применение" %}{% else %}{% translate "Анализ" %}{% endif %}</span>
+    </div>
+    {% if d.duplicate %}<div class="note warning small">{% translate "Такой вопрос уже есть в банке этой дисциплины." %}</div>{% endif %}
+    {% for w in d.warnings %}<div class="note warning small">{{ w }}</div>{% endfor %}
+    <div class="grid-2">
+      <label class="field"><span>{% translate "Тема" %}</span><input name="q{{ i }}-topic" value="{{ d.topic }}" maxlength="150"></label>
+      <label class="field"><span>{% translate "Сложность" %}</span><select name="q{{ i }}-difficulty">{% for v, label in difficulties %}<option value="{{ v }}" {% if v == d.difficulty %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+    </div>
+    <label class="field"><span>{% translate "Текст вопроса" %}</span><textarea name="q{{ i }}-text" rows="2">{{ d.text }}</textarea></label>
+    <div class="gen-options">
+      {% for letter, opt in d.letters %}
+      <label class="gen-opt"><input type="radio" name="q{{ i }}-correct" value="{{ forloop.counter0 }}" {% if forloop.counter0 == d.correct %}checked{% endif %} title="{% translate 'Верный ответ' %}"><b>{{ letter }}</b><input name="q{{ i }}-o{{ forloop.counter0 }}" value="{{ opt }}"></label>
+      {% endfor %}
+    </div>
+    <p class="small muted" style="margin-top:6px">{% translate "Кружок слева отмечает верный ответ." %}</p>
+    {% if d.source or d.why %}
+    <details class="ai-how"><summary>{% translate "Откуда вопрос" %}</summary>
+      {% if d.source %}<p class="small"><b>{% translate "Из силлабуса" %}:</b> «{{ d.source }}»</p>{% endif %}
+      {% if d.why %}<p class="small"><b>{% translate "Что ловят неверные варианты" %}:</b> {{ d.why }}</p>{% endif %}
+    </details>
+    {% endif %}
+  </section>
+  {% endwith %}{% endfor %}
+  <div class="publish-bar">
+    <span class="muted">{% translate "Сохранятся только отмеченные вопросы." %}</span>
+    <button class="btn btn-primary btn-lg" type="submit">{% if exam %}{% translate "Сохранить в тест" %}{% else %}{% translate "Сохранить в банк" %}{% endif %}</button>
+  </div>
+</form>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+<script>
+  (function () {
+    var f = document.querySelector(".gen-form");
+    if (f) f.addEventListener("submit", function () {
+      f.querySelector(".gen-wait").hidden = false;
+      f.querySelector("button[type=submit]").disabled = true;
+    });
+  })();
+</script>
+{% endblock %}

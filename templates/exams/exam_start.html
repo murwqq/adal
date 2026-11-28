@@ -13,6 +13,15 @@
     <li>{% translate "Таймер идёт на сервере: закрыть страницу, чтобы «остановить время», не получится. Ответ сохраняется сразу, как только вы его выбрали." %}</li>
     <li>{% translate "Начать тест можно только один раз." %}</li>
   </ol>
+  {% if exam.require_guard %}
+  <div class="note warning guard-check" data-ok="{% translate 'Расширение Адал Guard установлено, можно начинать.' %}">{% translate "Этот тест проходит только с расширением Адал Guard." %} <a href="{% url 'exams:guard' %}" target="_blank" rel="noopener">{% translate "Как установить" %}</a></div>
+  <script>
+    setTimeout(function () {
+      var v = document.documentElement.getAttribute("data-adal-guard"), n = document.querySelector(".guard-check");
+      if (v && n) { n.className = "note guard-check"; n.textContent = n.dataset.ok + " (" + v + ")"; }
+    }, 600);
+  </script>
+  {% endif %}
   {% for e in form.non_field_errors %}<div class="note error" role="alert">{{ e }}</div><br>{% endfor %}
   <form method="post">
     {% csrf_token %}

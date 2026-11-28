@@ -65,8 +65,21 @@ msgstr ""
 msgid "<variant> стоит раньше первого <question>, этот вариант пропущен"
 msgstr "A <variant> comes before the first <question> and was skipped"
 
+msgid ""
+"ChatGPT, Gemini, Claude, DeepSeek, Copilot, Perplexity и сайты с готовыми "
+"ответами заблокированы. Попытка открыть их считается нарушением и видна "
+"преподавателю."
+msgstr ""
+"ChatGPT, Gemini, Claude, DeepSeek, Copilot, Perplexity and answer sites are "
+"blocked. Trying to open them counts as a violation and is visible to the "
+"teacher."
+
 msgid "JPG, PNG или WebP до 5 МБ. Фото обрежется до квадрата."
 msgstr "JPG, PNG or WebP up to 5 MB. The photo is cropped to a square."
+
+msgid "PDF защищён паролем. Сохраните его без пароля и загрузите снова"
+msgstr ""
+"The PDF is password-protected. Save it without a password and upload again"
 
 msgid "© 2026 Адал. Кызылординский университет имени Коркыт Ата"
 msgstr "© 2026 Adal. Korkyt Ata Kyzylorda University"
@@ -82,6 +95,13 @@ msgstr "Author: %(author)s"
 
 msgid "Адал"
 msgstr "Adal"
+
+msgid ""
+"Адал сам проверяет черновики: одинаковые варианты, подсказку в длине ответа "
+"и повторы вопросов из банка."
+msgstr ""
+"Adal checks the drafts itself: duplicate options, a hint in answer length "
+"and repeats of questions already in the bank."
 
 msgid "Адал, главная страница"
 msgstr "Adal home page"
@@ -100,6 +120,17 @@ msgstr "Adal: online exams for Korkyt Ata University students"
 
 msgid "Администратор"
 msgstr "Administrator"
+
+msgid ""
+"Администратор может установить расширение на все компьютеры аудитории через "
+"групповые политики Chrome (ExtensionInstallForcelist) и запретить режим "
+"инкогнито (IncognitoModeAvailability = 1). Тогда студент не сможет отключить"
+" его перед тестом."
+msgstr ""
+"An administrator can install the extension on every lab computer via Chrome "
+"group policies (ExtensionInstallForcelist) and disable incognito "
+"(IncognitoModeAvailability = 1). Then students cannot turn it off before the"
+" test."
 
 msgid ""
 "Администратор разрешил вам пройти этот тест заново. Засчитается новый "
@@ -135,6 +166,9 @@ msgstr "Question bank"
 msgid "Банк по дисциплинам"
 msgstr "Bank by subject"
 
+msgid "Без Guard"
+msgstr "No Guard"
+
 msgid "Без ответа осталось вопросов:"
 msgstr "Questions left unanswered:"
 
@@ -147,11 +181,21 @@ msgstr "Security"
 msgid "Больше нарушений"
 msgstr "Most violations"
 
+msgid ""
+"Браузер открывает только сайт Адал. Любые другие страницы показывают "
+"заглушку «Идёт тест»."
+msgstr ""
+"The browser opens only the Adal site. Any other page shows a Test in "
+"progress screen."
+
 msgid "В банке"
 msgstr "In bank"
 
 msgid "В банке пока нет ваших вопросов."
 msgstr "You don't have any questions in the bank yet."
+
+msgid "В браузере включены ИИ-расширения"
+msgstr "AI extensions are enabled in the browser"
 
 msgid "В варианте должен быть хотя бы один вопрос"
 msgstr "A variant must have at least one question"
@@ -171,6 +215,13 @@ msgstr ""
 "Your name, IIN and group are not shared."
 
 msgid ""
+"В настройках теста включите «Только с расширением Адал Guard». Без "
+"расширения тест не откроется, а в «Наблюдении» видно, у кого оно работает."
+msgstr ""
+"Turn on Only with the Adal Guard extension in the test settings. Without it "
+"the test will not open, and the Monitor shows who has it running."
+
+msgid ""
 "В тесте пока нет вопросов. Напишите их здесь же или загрузите готовый файл "
 "Word в формате Platonus."
 msgstr ""
@@ -186,6 +237,10 @@ msgid ""
 msgstr ""
 "The correct answer was highlighted in the file (bold, colour or italic). The"
 " highlighting is removed, so students see all options the same way"
+
+msgid "В файле слишком мало текста. Если это скан, загрузите версию с текстом"
+msgstr ""
+"The file has too little text. If it is a scan, upload a version with text"
 
 msgid "Вариант %(n)s"
 msgstr "Option %(n)s"
@@ -223,11 +278,17 @@ msgstr "Back to questions"
 msgid "Вернуться к тесту"
 msgstr "Back to the test"
 
+msgid "Верный ответ"
+msgstr "Correct answer"
+
 msgid "Взять из банка"
 msgstr "Take from the bank"
 
 msgid "Вид на жительство"
 msgstr "Residence permit"
+
+msgid "Включите «Режим разработчика» в правом верхнем углу."
+msgstr "Turn on Developer mode in the top right corner."
 
 msgid "Войти"
 msgstr "Sign in"
@@ -237,6 +298,9 @@ msgstr "Question"
 
 msgid "Вопрос %(counter)s"
 msgstr "Question %(counter)s"
+
+msgid "Вопрос %(n)s не сохранён: %(error)s"
+msgstr "Question %(n)s was not saved: %(error)s"
 
 msgid "Вопрос %(n)s: %(error)s"
 msgstr "Question %(n)s: %(error)s"
@@ -321,6 +385,9 @@ msgstr "Questions"
 
 msgid "Вопросы добавлены в тест."
 msgstr "Questions added to the test."
+
+msgid "Вопросы из силлабуса"
+msgstr "Questions from a syllabus"
 
 msgid "Вопросы из файла сразу попадут в этот тест."
 msgstr "Questions from the file go straight into this test."
@@ -464,6 +531,12 @@ msgstr "Subject “%(name)s” deleted"
 msgid "Дисциплины"
 msgstr "Subjects"
 
+msgid "Для компьютерных классов"
+msgstr "For computer labs"
+
+msgid "Для преподавателя"
+msgstr "For teachers"
+
 msgid "Для этого префикса ИИН не существует"
 msgstr "No IIN exists for this prefix"
 
@@ -510,6 +583,13 @@ msgid "Другие попытки"
 msgstr "Other attempts"
 
 msgid ""
+"Если в браузере включены ИИ-расширения (помощники в боковой панели), "
+"преподаватель видит их названия."
+msgstr ""
+"If AI extensions (sidebar assistants) are enabled in the browser, the "
+"teacher sees their names."
+
+msgid ""
 "Если компьютер студента завис, разрешите ему продолжить: он войдёт заново, "
 "ответы сохранятся."
 msgstr ""
@@ -523,6 +603,9 @@ msgid ""
 msgstr ""
 "If the computer where you started froze or turned off, raise your hand: the "
 "teacher will let you continue on this one. All answers you picked are saved."
+
+msgid "Если расширение отключить во время теста, это тоже фиксируется."
+msgstr "Turning the extension off during the test is recorded too."
 
 msgid "Есть одинаковые варианты ответа"
 msgstr "Some answer options are identical"
@@ -581,6 +664,9 @@ msgstr "Closed"
 msgid "Заменить фото"
 msgstr "Replace photo"
 
+msgid "Запоминание"
+msgstr "Remember"
+
 msgid "Защита от списывания"
 msgstr "Anti-cheating"
 
@@ -592,6 +678,21 @@ msgstr "Your progress will appear here"
 
 msgid "Здравствуйте, %(first_name)s"
 msgstr "Hello, %(first_name)s"
+
+msgid ""
+"ИИ не смог подготовить вопросы. Попробуйте ещё раз или уменьшите число "
+"вопросов"
+msgstr ""
+"AI could not prepare the questions. Try again or ask for fewer questions"
+
+msgid ""
+"ИИ предложил вопросов: %(n)s. Дисциплина «%(subject)s». Проверьте каждый: "
+"исправьте текст, при необходимости отметьте другой верный ответ и снимите "
+"галочку с лишних."
+msgstr ""
+"AI suggested %(n)s questions. Subject: %(subject)s. Check each one: fix the "
+"text, mark a different correct answer if needed and untick the ones you do "
+"not want."
 
 msgid "ИИ разбирает вопрос…"
 msgstr "AI is reviewing the question…"
@@ -605,6 +706,24 @@ msgid ""
 msgstr ""
 "AI looks at the question text and answer statistics and suggests a fix. "
 "Student names are not included in the request. The decision is always yours."
+
+msgid ""
+"ИИ составляет вопросы на понимание и применение, а не на запоминание дат и "
+"формулировок."
+msgstr ""
+"AI writes questions on understanding and application, not on memorising "
+"dates and definitions."
+
+msgid ""
+"ИИ читает силлабус и предлагает черновики вопросов. Вы проверяете каждый, "
+"правите и сами решаете, что сохранить."
+msgstr ""
+"AI reads the syllabus and suggests draft questions. You check each one, edit"
+" it and decide what to keep."
+
+msgid "ИИ читает силлабус и составляет вопросы. Это занимает до минуты…"
+msgstr ""
+"AI is reading the syllabus and writing questions. This takes up to a minute…"
 
 msgid "ИИ-наставник"
 msgstr "AI mentor"
@@ -624,6 +743,12 @@ msgstr "In progress"
 msgid "Из"
 msgstr "Out of"
 
+msgid "Из силлабуса"
+msgstr "From the syllabus"
+
+msgid "Из силлабуса с ИИ"
+msgstr "From a syllabus with AI"
+
 msgid "Изменить"
 msgstr "Edit"
 
@@ -641,6 +766,13 @@ msgstr "Subscript"
 
 msgid "Интеграл"
 msgstr "Integral"
+
+msgid ""
+"Исходный код расширения открыт и лежит в репозитории проекта, в папке "
+"extension."
+msgstr ""
+"The source code of the extension is open and lives in the project "
+"repository, in the extension folder."
 
 msgid "К вопросам теста"
 msgstr "Back to test questions"
@@ -678,8 +810,14 @@ msgstr "How to write formulas"
 msgid "Как работает наставник"
 msgstr "How the mentor works"
 
+msgid "Как установить"
+msgstr "How to install"
+
 msgid "Как читать."
 msgstr "How to read this."
+
+msgid "Как это работает"
+msgstr "How it works"
 
 msgid ""
 "Картинка слишком мелкая (%(w)s×%(h)s px) и может быть нечитаемой. Если это "
@@ -735,6 +873,9 @@ msgstr "The check digit doesn't match. Check your IIN"
 msgid "Корень"
 msgstr "Root"
 
+msgid "Кружок слева отмечает верный ответ."
+msgstr "The circle on the left marks the correct answer."
+
 msgid "Куда поступаете"
 msgstr "What you're applying for"
 
@@ -768,6 +909,9 @@ msgstr "Too few answers to draw conclusions"
 msgid "Минут"
 msgstr "Minutes"
 
+msgid "Модель"
+msgstr "Model"
+
 msgid "Мои тесты"
 msgstr "My tests"
 
@@ -776,6 +920,9 @@ msgstr "Mongolia"
 
 msgid "На главную"
 msgstr "Go home"
+
+msgid "На каких темах сделать упор"
+msgstr "Topics to focus on"
 
 msgid "На этот вопрос вы ответили верно."
 msgstr "You answered this question correctly."
@@ -791,6 +938,10 @@ msgstr "Pressed Print Screen"
 
 msgid "Нажимал клавиши инструментов разработчика"
 msgstr "Pressed developer tools keys"
+
+msgid ""
+"Нажмите «Загрузить распакованное расширение» и выберите папку adal-guard."
+msgstr "Click Load unpacked and choose the adal-guard folder."
 
 msgid "Назад"
 msgstr "Back"
@@ -871,6 +1022,9 @@ msgstr "Started"
 msgid "Начал в"
 msgstr "Started at"
 
+msgid "Начал тест без расширения Адал Guard"
+msgstr "Started the test without the Adal Guard extension"
+
 msgid ""
 "Начало IP-адресов компьютерного класса, например 10.12.5. Если оставить "
 "пустым, тест откроется из любой сети"
@@ -890,11 +1044,30 @@ msgstr "You can start the test only once."
 msgid "Начните вводить текст вопроса"
 msgstr "Start typing the question"
 
+msgid ""
+"Не видит экран, камеру и микрофон, не читает историю, пароли и содержимое "
+"других сайтов."
+msgstr ""
+"It does not see the screen, camera or microphone and does not read history, "
+"passwords or the content of other sites."
+
 msgid "Не короче 8 символов, не только цифры."
 msgstr "At least 8 characters, not digits only."
 
+msgid ""
+"Не работает вне экзамена: в обычное время браузер ведёт себя как всегда."
+msgstr ""
+"It does nothing outside exams: the rest of the time the browser works as "
+"usual."
+
 msgid "Не удалось определить кодировку текстового файла"
 msgstr "Couldn't detect the text file's encoding"
+
+msgid "Не удалось прочитать PDF"
+msgstr "Could not read the PDF"
+
+msgid "Не удалось прочитать файл Word"
+msgstr "Could not read the Word file"
 
 msgid "Неверный ИИН или пароль"
 msgstr "Wrong IIN or password"
@@ -904,6 +1077,9 @@ msgstr "Wrong access code. The teacher announces it in the classroom"
 
 msgid "Неизвестный тип нарушения"
 msgstr "Unknown violation type"
+
+msgid "Необязательно. Например: циклы, функции, работа с файлами"
+msgstr "Optional. For example: loops, functions, working with files"
 
 msgid "Неработающих неверных вариантов: %(n)s (их почти не выбирают)"
 msgstr "Non-working distractors: %(n)s (almost nobody picks them)"
@@ -917,11 +1093,27 @@ msgstr "No connection to the server. Pick your answer again"
 msgid "Никто ещё не начал тест"
 msgstr "Nobody has started yet"
 
+msgid ""
+"Никуда не отправляет данные: события передаются только странице теста на "
+"Адал."
+msgstr "It sends data nowhere: events go only to the test page on Adal."
+
+msgid "Ничего не сохраняется без вас. В модель уходит только текст силлабуса."
+msgstr ""
+"Nothing is saved without you. Only the syllabus text is sent to the model."
+
 msgid "Новая дисциплина"
 msgstr "New subject"
 
 msgid "Новое фото"
 msgstr "New photo"
+
+msgid ""
+"Новые вкладки и окна закрываются сразу, вкладки, открытые до теста, "
+"закрываются при его начале."
+msgstr ""
+"New tabs and windows close immediately; tabs opened before the test close "
+"when it starts."
 
 msgid "Новый вопрос"
 msgstr "New question"
@@ -940,6 +1132,9 @@ msgstr "At least one question is needed"
 
 msgid "Нужно минимум два варианта ответа"
 msgstr "At least two answer options are needed"
+
+msgid "Нужно расширение Адал Guard"
+msgstr "The Adal Guard extension is required"
 
 msgid "Обновлено в"
 msgstr "Updated at"
@@ -998,8 +1193,16 @@ msgstr "Answers"
 msgid "Отвечено"
 msgstr "Answered"
 
+msgid "Отключил расширение Адал Guard во время теста"
+msgstr "Turned off the Adal Guard extension during the test"
+
 msgid "Откроется"
 msgstr "Opens"
+
+msgid ""
+"Откройте в браузере страницу chrome://extensions (в Edge: "
+"edge://extensions)."
+msgstr "Open chrome://extensions in the browser (in Edge: edge://extensions)."
 
 msgid "Открывается"
 msgstr "Opens"
@@ -1015,6 +1218,9 @@ msgstr "Open"
 
 msgid "Открыт до"
 msgstr "Open until"
+
+msgid "Откуда вопрос"
+msgstr "Where the question comes from"
 
 msgid "Отмена"
 msgstr "Cancel"
@@ -1138,11 +1344,21 @@ msgstr ".docx and .txt files are supported"
 msgid "Подробнее"
 msgstr "Details"
 
+msgid "Подходят файлы .docx, .pdf и .txt"
+msgstr ".docx, .pdf and .txt files are supported"
+
 msgid "Подходящих вопросов в банке нет."
 msgstr "No matching questions in the bank."
 
 msgid "Поиск по тексту вопроса и ответов"
 msgstr "Search question and answer text"
+
+msgid ""
+"Пока идёт тест, браузер открывает только Адал, а ИИ-сервисы и новые вкладки "
+"заблокированы"
+msgstr ""
+"While the test runs, the browser opens only Adal, and AI services and new "
+"tabs are blocked"
 
 msgid ""
 "Пока идёт тест, не выходите из полноэкранного режима и не переключайтесь на "
@@ -1181,6 +1397,9 @@ msgid ""
 "Пользовательское соглашение и политика обработки персональных данных "
 "платформы Адал."
 msgstr "Adal terms of use and personal data policy."
+
+msgid "Понимание"
+msgstr "Understand"
 
 msgid "Попытка %(name)s остановлена"
 msgstr "%(name)s's attempt stopped"
@@ -1236,8 +1455,18 @@ msgstr ""
 msgid "Правильным отмечен пустой вариант"
 msgstr "An empty option is marked as correct"
 
+msgid ""
+"Превращает обычный Chrome или Edge в браузер для экзамена. Включается само, "
+"когда начинается тест на Адал, и выключается после него."
+msgstr ""
+"Turns a regular Chrome or Edge into an exam browser. It switches on by "
+"itself when a test starts on Adal and off afterwards."
+
 msgid "Предел"
 msgstr "Limit"
+
+msgid "Предложить вопросы"
+msgstr "Suggest questions"
 
 msgid "Предыдущая страница"
 msgstr "Previous page"
@@ -1250,6 +1479,9 @@ msgstr "Teacher"
 
 msgid "Преподаватель говорит его вслух в аудитории"
 msgstr "The teacher says it aloud in the classroom"
+
+msgid "Применение"
+msgstr "Apply"
 
 msgid "Проверить ещё раз"
 msgstr "Check again"
@@ -1286,6 +1518,12 @@ msgstr "The question text is empty"
 
 msgid "Пытался вставить текст"
 msgstr "Tried to paste text"
+
+msgid "Пытался открыть ИИ-сервис или сайт с ответами"
+msgstr "Tried to open an AI service or an answer site"
+
+msgid "Пытался открыть новую вкладку или окно"
+msgstr "Tried to open a new tab or window"
 
 msgid "Пытался скопировать текст"
 msgstr "Tried to copy text"
@@ -1355,6 +1593,12 @@ msgstr "Allowed network"
 msgid "Распределение результатов"
 msgstr "Score distribution"
 
+msgid "Расширение Адал Guard"
+msgstr "The Adal Guard extension"
+
+msgid "Расширение Адал Guard установлено, можно начинать."
+msgstr "Adal Guard is installed, you can start."
+
 msgid "Регистрация"
 msgstr "Sign up"
 
@@ -1423,6 +1667,9 @@ msgstr ""
 "The server checks every model reply: if it contains the correct option, the "
 "reply is replaced with a guiding question."
 
+msgid "Силлабус: .docx, .pdf или .txt"
+msgstr "Syllabus: .docx, .pdf or .txt"
+
 msgid "Сильные студенты ошибаются чаще слабых. Скорее всего, в ключе ошибка"
 msgstr ""
 "Strong students get it wrong more often than weak ones. The key is probably "
@@ -1434,8 +1681,14 @@ msgstr "The characters didn't match. Enter the code from the new image"
 msgid "Символы с картинки"
 msgstr "Characters from the image"
 
+msgid "Скачайте архив и распакуйте его в любую папку."
+msgstr "Download the archive and unpack it into any folder."
+
 msgid "Скачать CSV"
 msgstr "Download CSV"
+
+msgid "Скачать, версия %(version)s"
+msgstr "Download, version %(version)s"
 
 msgid ""
 "Сколько вопросов получит каждый студент. Если в тесте их больше, каждому "
@@ -1443,6 +1696,9 @@ msgid ""
 msgstr ""
 "How many questions each student gets. If the test has more, everyone gets "
 "their own random set"
+
+msgid "Сколько вопросов предложить"
+msgstr "How many questions to suggest"
 
 msgid "Сколько студентов набрало каждый процент"
 msgstr "How many students scored each percentage"
@@ -1531,11 +1787,23 @@ msgstr "Shortened program (after college)"
 msgid "Состояние"
 msgstr "State"
 
+msgid "Сохранено вопросов: %(n)s"
+msgstr "Questions saved: %(n)s"
+
 msgid "Сохранить"
 msgstr "Save"
 
+msgid "Сохранить в банк"
+msgstr "Save to the bank"
+
+msgid "Сохранить в тест"
+msgstr "Save to the test"
+
 msgid "Сохранить вопрос"
 msgstr "Save question"
+
+msgid "Сохранить вопрос %(n)s"
+msgstr "Keep question %(n)s"
 
 msgid "Сохранить и добавить ещё"
 msgstr "Save and add another"
@@ -1548,6 +1816,9 @@ msgstr "Save test"
 
 msgid "Сохраняем…"
 msgstr "Saving…"
+
+msgid "Сохранятся только отмеченные вопросы."
+msgstr "Only ticked questions will be saved."
 
 msgid ""
 "Способы можно совмещать: после создания теста добавляйте вопросы любым из "
@@ -1648,6 +1919,9 @@ msgstr "This question has no such answer option"
 
 msgid "Такого вопроса нет в вашем варианте"
 msgstr "There is no such question in your variant"
+
+msgid "Такой вопрос уже есть в банке этой дисциплины."
+msgstr "This question is already in the bank of this subject."
 
 msgid "Такой страницы нет. Проверьте адрес или вернитесь на главную."
 msgstr "This page doesn't exist. Check the address or go back home."
@@ -1762,6 +2036,9 @@ msgstr "Check only, save nothing"
 msgid "Только с нарушениями"
 msgstr "Only with violations"
 
+msgid "Только с расширением Адал Guard"
+msgstr "Only with the Adal Guard extension"
+
 msgid "Только тема"
 msgstr "Topic only"
 
@@ -1780,6 +2057,13 @@ msgid ""
 msgstr ""
 "Your role doesn't have access to this page. If you think this is a mistake, "
 "contact the administrator."
+
+msgid ""
+"У каждого вопроса есть цитата из силлабуса, на которой он основан, и "
+"пояснение, какое заблуждение ловят неверные варианты."
+msgstr ""
+"Each question comes with the syllabus quote it is based on and a note on "
+"which misconception the wrong options catch."
 
 msgid "Убрать"
 msgstr "Remove"
@@ -1880,6 +2164,9 @@ msgstr "Least often solved"
 msgid "Чаще всего в тестах"
 msgstr "Most used in tests"
 
+msgid "Чего не делает"
+msgstr "What it does not do"
+
 msgid ""
 "Через запятую, например: ИС-21, ИС-22. Если оставить пустым, тест увидят все"
 " группы"
@@ -1895,8 +2182,14 @@ msgstr "Use this account to take entrance tests and see your results."
 msgid "Черновик"
 msgstr "Draft"
 
+msgid "Что делает во время теста"
+msgstr "What it does during a test"
+
 msgid "Что исправится само:"
 msgstr "Fixed automatically:"
+
+msgid "Что ловят неверные варианты"
+msgstr "What the wrong options catch"
 
 msgid "Шаг 1"
 msgstr "Step 1"
@@ -1926,8 +2219,23 @@ msgstr ""
 msgid "Этот тест назначен другой группе"
 msgstr "This test is assigned to another group"
 
+msgid ""
+"Этот тест проходит только в браузере с расширением Адал Guard: пока идёт "
+"тест, оно блокирует ИИ-сервисы и новые вкладки. Установите или включите "
+"расширение, и тест продолжится сам."
+msgstr ""
+"This test runs only in a browser with Adal Guard: during the test it blocks "
+"AI services and new tabs. Install or enable the extension and the test will "
+"continue by itself."
+
+msgid "Этот тест проходит только с расширением Адал Guard."
+msgstr "This test requires the Adal Guard extension."
+
 msgid "Я принимаю правила и условия платформы"
 msgstr "I accept the platform's terms and conditions"
+
+msgid "Язык вопросов"
+msgstr "Question language"
 
 msgid "Язык интерфейса"
 msgstr "Interface language"
@@ -1989,6 +2297,9 @@ msgstr "finished at"
 
 msgid "заменена пересдачей"
 msgstr "replaced by a retake"
+
+msgid "заметка"
+msgstr "note"
 
 msgid "из %(max_score)s, %(percent)s%%. %(get_status_display)s"
 msgstr "of %(max_score)s, %(percent)s%%. %(get_status_display)s"

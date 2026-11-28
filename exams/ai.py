@@ -55,19 +55,22 @@ def _models() -> tuple[str, ...]:
 
 
 def chat(messages: list[dict], request=None, max_tokens: int = 450,
-         temperature: float = 0.4) -> tuple[str, str]:
+         temperature: float = 0.4, timeout: int = TIMEOUT, json_mode: bool = False) -> tuple[str, str]:
     """Возвращает (текст ответа, модель, которая ответила)."""
     token = _token(request)
     if not token:
         raise AIUnavailable("no credentials")
     last_error: Exception | None = None
     for model in _models():
-        body = json.dumps({"model": model, "messages": messages, "max_tokens": max_tokens,
-                           "temperature": temperature}).encode()
+        payload = {"model": model, "messages": messages, "max_tokens": max_tokens,
+                   "temperature": temperature}
+        if json_mode:
+            payload["response_format"] = {"type": "json_object"}
+        body = json.dumps(payload).encode()
         req = urllib.request.Request(GATEWAY_URL, data=body, method="POST", headers={
             "Authorization": f"Bearer {token}", "Content-Type": "application/json"})
         try:
-            with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
                 data = json.load(resp)
             text = (data["choices"][0]["message"]["content"] or "").strip()
             if text:
@@ -185,3 +188,87 @@ def review_question(*, text: str, choices: list[tuple[str, bool, float]], p: flo
     messages = [{"role": "system", "content": REVIEW_RULES.format(lang=_lang())},
                 {"role": "user", "content": "\n".join(lines)}]
     return chat(messages, request=request, max_tokens=600, temperature=0.3)
+
+
+# ---------- Вопросы из силлабуса ----------
+
+GENERATE_RULES = """You help a university teacher draft multiple-choice exam questions from their course syllabus.
+The teacher will review and edit every draft before it reaches students, so be useful, not exhaustive.
+
+Requirements for each question:
+- Test understanding and application of the syllabus topics, not trivia (no dates, page numbers or the syllabus itself).
+- Exactly 4 options, exactly one correct. Wrong options must be plausible and reflect real student misconceptions.
+- Options of similar length and grammar; no "all of the above", "none of the above", no hints in wording.
+- Mix cognitive levels (Bloom): remember, understand, apply, analyze. Most questions should be understand/apply.
+- Cover different topics of the syllabus, roughly in proportion to their weight.
+- "source": a short quote (max 25 words) from the syllabus that the question is based on.
+- "why": one sentence explaining which misconception the wrong options catch.
+- Formulas in LaTeX between single dollar signs, like $x^2$. Code in plain text.
+- Write questions, options, topic, source and why in {lang}.
+
+Return JSON only, no prose:
+{{"questions": [{{"topic": str, "level": "remember|understand|apply|analyze", "text": str,
+  "options": [str, str, str, str], "correct": 0-3, "source": str, "why": str}}]}}"""
+
+LEVEL_DIFFICULTY = {"remember": 1, "understand": 2, "apply": 3, "analyze": 3}
+
+
+def _parse_json(text: str):
+    text = text.strip()
+    if text.startswith("```"):
+        text = re.sub(r"^```(?:json)?|```$", "", text, flags=re.M).strip()
+    start, end = text.find("{"), text.rfind("}")
+    if start < 0 or end < start:
+        raise ValueError("no json")
+    return json.loads(text[start:end + 1])
+
+
+def clean_generated(raw: dict, limit: int) -> list[dict]:
+    """Оставляет только вопросы правильной формы. Модель могла ошибиться — проверяем сами."""
+    result, seen = [], set()
+    for q in (raw.get("questions") or []) if isinstance(raw, dict) else []:
+        if not isinstance(q, dict):
+            continue
+        text = str(q.get("text", "")).strip()
+        options = [str(o).strip() for o in (q.get("options") or []) if str(o).strip()]
+        try:
+            correct = int(q.get("correct", -1))
+        except (TypeError, ValueError):
+            continue
+        if not text or len(options) != 4 or not 0 <= correct < 4:
+            continue
+        if len({_norm(o) for o in options}) != 4 or _norm(text) in seen:
+            continue
+        seen.add(_norm(text))
+        level = str(q.get("level", "understand")).strip().lower()
+        if level not in LEVEL_DIFFICULTY:
+            level = "understand"
+        result.append({
+            "topic": str(q.get("topic", "")).strip()[:150], "level": level,
+            "difficulty": LEVEL_DIFFICULTY[level], "text": text, "options": options,
+            "correct": correct, "source": str(q.get("source", "")).strip()[:400],
+            "why": str(q.get("why", "")).strip()[:400],
+        })
+        if len(result) >= limit:
+            break
+    return result
+
+
+def generate_questions(*, syllabus: str, count: int, focus: str = "", lang: str | None = None,
+                       request=None) -> tuple[list[dict], str]:
+    """Черновики вопросов по тексту силлабуса. Возвращает (вопросы, модель)."""
+    lang_name = LANG_NAMES.get((lang or get_language() or "ru")[:2], "Russian")
+    task = f"Draft {count} questions."
+    if focus:
+        task += f" Focus on these topics: {focus[:300]}."
+    messages = [{"role": "system", "content": GENERATE_RULES.format(lang=lang_name)},
+                {"role": "user", "content": task + "\n\nSYLLABUS:\n" + syllabus}]
+    text, model = chat(messages, request=request, max_tokens=min(9000, 650 * count),
+                       temperature=0.5, timeout=55, json_mode=True)
+    try:
+        questions = clean_generated(_parse_json(text), count)
+    except ValueError as exc:
+        raise AIUnavailable("bad json") from exc
+    if not questions:
+        raise AIUnavailable("no usable questions")
+    return questions, model

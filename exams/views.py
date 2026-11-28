@@ -19,10 +19,11 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 
 from . import ai, services
-from .forms import ExamForm, ImportForm, QuestionForm, StartExamForm, SubjectForm
+from .forms import ExamForm, ImportForm, QuestionForm, StartExamForm, SubjectForm, SyllabusForm
 from .importer import ImportError_, import_file, normalize_image
 from .models import Attempt, AttemptItem, Exam, Question, Retake, Subject, TutorSession, Violation
 from .services import ExamError
+from .syllabus import SyllabusError, extract_text
 
 PAGE_SIZE = 20
 
@@ -216,6 +217,82 @@ def question_import(request):
                   {"form": form, "report": report, "exam": exam})
 
 
+@teacher_required
+def question_generate(request):
+    """ИИ предлагает черновики вопросов по силлабусу. В банк попадает только то,
+    что преподаватель проверил и отметил."""
+    exam = _exam_from_request(request)
+    if request.method == "POST" and request.POST.get("action") == "save":
+        return _save_generated(request, exam)
+    form = SyllabusForm(request.POST or None, request.FILES or None, exam=exam,
+                        initial={"language": (request.LANGUAGE_CODE or "ru")[:2]})
+    drafts, model = None, ""
+    if request.method == "POST" and form.is_valid():
+        upload = form.cleaned_data["file"]
+        try:
+            text = extract_text(upload.name, upload.read())
+            drafts, model = ai.generate_questions(
+                syllabus=text, count=form.cleaned_data["count"], focus=form.cleaned_data["focus"],
+                lang=form.cleaned_data["language"], request=request)
+        except SyllabusError as exc:
+            form.add_error("file", str(exc))
+        except ai.AIUnavailable:
+            form.add_error(None, _("ИИ не смог подготовить вопросы. Попробуйте ещё раз или уменьшите число вопросов"))
+        else:
+            existing = {" ".join(t.lower().split()) for t in
+                        Question.objects.filter(subject=form.cleaned_data["subject"]).values_list("text", flat=True)}
+            for d in drafts:
+                d["letters"] = list(zip("АБВГ", d["options"]))
+                d["warnings"] = [str(w) for w in services.lint_question(
+                    d["text"], [(o, i == d["correct"]) for i, o in enumerate(d["options"])])]
+                d["duplicate"] = " ".join(d["text"].lower().split()) in existing
+    return render(request, "exams/question_generate.html", {
+        "form": form, "exam": exam, "drafts": drafts, "model": model,
+        "difficulties": Question.Difficulty.choices})
+
+
+def _save_generated(request, exam):
+    subject = get_object_or_404(Subject, pk=request.POST.get("subject"))
+    if exam is not None and exam.subject_id != subject.pk:
+        raise PermissionDenied
+    saved, problems = 0, []
+    total = min(int(request.POST.get("total", 0) or 0), 20)
+    for i in range(total):
+        if not request.POST.get(f"q{i}-keep"):
+            continue
+        text = request.POST.get(f"q{i}-text", "")
+        options = [request.POST.get(f"q{i}-o{j}", "") for j in range(4)]
+        correct = request.POST.get(f"q{i}-correct", "")
+        difficulty = request.POST.get(f"q{i}-difficulty", "2")
+        try:
+            services.save_question(
+                subject=subject, author=request.user, text=text,
+                choices=[(o, str(j) == correct) for j, o in enumerate(options)],
+                topic=request.POST.get(f"q{i}-topic", "")[:150],
+                difficulty=int(difficulty) if difficulty in ("1", "2", "3") else 2, exam=exam)
+            saved += 1
+        except ExamError as exc:
+            problems.append(_("Вопрос %(n)s не сохранён: %(error)s") % {"n": i + 1, "error": exc})
+    for p in problems:
+        messages.warning(request, p)
+    if saved:
+        messages.success(request, _("Сохранено вопросов: %(n)s") % {"n": saved})
+    if exam is not None:
+        return redirect("exams:exam_questions", pk=exam.pk)
+    return redirect("exams:question_list")
+
+
+def guard(request):
+    """Страница расширения Адал Guard: что делает, что не делает, как установить."""
+    from django.conf import settings
+    try:
+        manifest = settings.BASE_DIR / "extension" / "adal-guard" / "manifest.json"
+        version = json.loads(manifest.read_text(encoding="utf-8"))["version"]
+    except (OSError, ValueError, KeyError):
+        version = "1.0.0"
+    return render(request, "exams/guard.html", {"version": version})
+
+
 # ---------- Тесты (преподаватель) ----------
 
 @teacher_required
@@ -390,7 +467,10 @@ def exam_monitor_data(request, pk):
             "id": a.id, "name": a.student.full_name, "group": a.student.group,
             "status": a.status, "status_label": a.get_status_display(),
             "answered": a.answered, "total": a.max_score, "violations": a.violation_count,
-            "last_violation": last.get_kind_display() if last else "",
+            "last_violation": (f"{last.get_kind_display()}: {last.detail}" if last and last.detail
+                               else last.get_kind_display() if last else ""),
+            "notes": a.violations.filter(counted=False).count(),
+            "guard": a.guard_version,
             "stale": services.is_stale(a, now), "left": services.seconds_left(a, now),
             "percent": a.percent, "ip": a.ip_address or "",
         })
@@ -564,9 +644,10 @@ def attempt_answer(request, pk):
 @require_POST
 def attempt_event(request, pk):
     attempt = _student_attempt(request, pk)
-    kind = _json_body(request).get("kind", "")
+    body = _json_body(request)
+    kind = body.get("kind", "")
     try:
-        terminated = services.register_violation(attempt, kind)
+        terminated = services.register_violation(attempt, kind, detail=body.get("detail", ""))
     except ExamError as exc:
         return JsonResponse({"ok": False, "error": str(exc)}, status=400)
     return JsonResponse({"ok": True, "terminated": terminated,
@@ -585,6 +666,9 @@ def attempt_ping(request, pk):
     if attempt.session_key != session_key(request):
         return JsonResponse({"status": "other_session", "seconds_left": 0}, status=409)
     services.heartbeat(attempt)
+    guard = str(_json_body(request).get("guard") or "")[:20]
+    if guard != attempt.guard_version:
+        Attempt.objects.filter(pk=attempt.pk).update(guard_version=guard)
     return JsonResponse({"status": attempt.status, "seconds_left": services.seconds_left(attempt),
                          "violations": attempt.violation_count})
 

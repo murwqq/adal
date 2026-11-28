@@ -42,6 +42,13 @@
     <button class="btn btn-primary btn-lg" type="button" id="btn-enter">{% translate "Начать" %}</button>
   </div>
 </div>
+<div class="guard" id="guard-need" role="alertdialog" aria-modal="true" aria-labelledby="gn-title">
+  <div class="guard-box alarm">
+    <h2 id="gn-title">{% translate "Нужно расширение Адал Guard" %}</h2>
+    <p>{% translate "Этот тест проходит только в браузере с расширением Адал Guard: пока идёт тест, оно блокирует ИИ-сервисы и новые вкладки. Установите или включите расширение, и тест продолжится сам." %}</p>
+    <a class="btn btn-primary btn-lg" href="{% url 'exams:guard' %}" target="_blank" rel="noopener">{% translate "Как установить" %}</a>
+  </div>
+</div>
 <div class="guard" id="guard-back" role="alertdialog" aria-modal="true" aria-labelledby="gb-title">
   <div class="guard-box alarm">
     <h2 id="gb-title">{% translate "Вы покинули тест" %}</h2>
@@ -67,6 +74,8 @@
     total: {{ total }},
     maxViolations: {{ attempt.exam.max_violations }},
     violations: {{ attempt.violation_count }},
+    attempt: {{ attempt.pk }},
+    requireGuard: {{ attempt.exam.require_guard|yesno:"true,false" }},
     urls: {
       question: "{% url 'exams:attempt_question' attempt.pk 0 %}",
       answer: "{% url 'exams:attempt_answer' attempt.pk %}",
@@ -89,5 +98,5 @@
     }
   };
 </script>
-<script src="{% static 'js/exam.js' %}?v=4"></script>
+<script src="{% static 'js/exam.js' %}?v=5"></script>
 {% endblock %}

@@ -24,7 +24,14 @@ VIOLATION_DEBOUNCE_SECONDS = 3
 COUNTED_VIOLATIONS = {
     Violation.Kind.TAB_HIDDEN, Violation.Kind.WINDOW_BLUR, Violation.Kind.FULLSCREEN_EXIT,
     Violation.Kind.OTHER_SESSION, Violation.Kind.OFFLINE,
+    Violation.Kind.AI_SITE, Violation.Kind.GUARD_LOST,
 }
+# Записываются и видны преподавателю, но не приближают завершение теста:
+# расширение уже заблокировало действие, а само событие ещё не доказывает списывание.
+NOTED_EVENTS = {
+    Violation.Kind.NEW_TAB, Violation.Kind.AI_EXTENSION, Violation.Kind.GUARD_MISSING,
+}
+NOTE_DEBOUNCE_SECONDS = 10
 HEARTBEAT_STALE_SECONDS = 45
 MIN_CHOICES = 2
 
@@ -357,7 +364,7 @@ def heartbeat(attempt: Attempt, now=None) -> None:
     Attempt.objects.filter(pk=attempt.pk).update(last_seen_at=now or timezone.now())
 
 
-def register_violation(attempt: Attempt, kind: str, now=None) -> bool:
+def register_violation(attempt: Attempt, kind: str, now=None, detail: str = "") -> bool:
     """Записывает нарушение. Возвращает True, если попытка остановлена.
     Повторы в течение пары секунд (blur + visibilitychange) считаются одним."""
     now = now or timezone.now()
@@ -365,12 +372,21 @@ def register_violation(attempt: Attempt, kind: str, now=None) -> bool:
         raise ExamError(_("Неизвестный тип нарушения"))
     if attempt.status != Attempt.Status.ACTIVE:
         return attempt.status == Attempt.Status.TERMINATED
+    detail = " ".join(str(detail or "").split())[:200]
+    if kind in NOTED_EVENTS:
+        repeated = attempt.violations.filter(
+            kind=kind, detail=detail,
+            created_at__gte=now - timedelta(seconds=NOTE_DEBOUNCE_SECONDS)).exists()
+        if not repeated:
+            Violation.objects.create(attempt=attempt, kind=kind, detail=detail, counted=False,
+                                     created_at=now)
+        return False
     if kind not in COUNTED_VIOLATIONS:
         return False
     recent = attempt.violations.filter(
-        created_at__gte=now - timedelta(seconds=VIOLATION_DEBOUNCE_SECONDS)).exists()
+        counted=True, created_at__gte=now - timedelta(seconds=VIOLATION_DEBOUNCE_SECONDS)).exists()
     if not recent:
-        Violation.objects.create(attempt=attempt, kind=kind, created_at=now)
+        Violation.objects.create(attempt=attempt, kind=kind, detail=detail, created_at=now)
         Attempt.objects.filter(pk=attempt.pk).update(violation_count=F("violation_count") + 1)
         attempt.refresh_from_db(fields=["violation_count"])
     limit = attempt.exam.max_violations

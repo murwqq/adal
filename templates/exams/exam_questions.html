@@ -10,6 +10,7 @@
   <div class="q-toolbar-actions">
     <a class="btn btn-primary" href="{% url 'exams:question_new' %}?exam={{ exam.pk }}">{% translate "Написать вопрос" %}</a>
     <a class="btn" href="{% url 'exams:question_import' %}?exam={{ exam.pk }}">{% translate "Загрузить из Word" %}</a>
+    <a class="btn" href="{% url 'exams:question_generate' %}?exam={{ exam.pk }}">{% translate "Из силлабуса с ИИ" %}</a>
     <a class="btn" href="?bank=1#bank">{% translate "Взять из банка" %}</a>
   </div>
 </div>
@@ -65,6 +66,7 @@
     <div class="q-toolbar-actions" style="justify-content:center">
       <a class="btn btn-primary" href="{% url 'exams:question_new' %}?exam={{ exam.pk }}">{% translate "Написать вопрос" %}</a>
       <a class="btn" href="{% url 'exams:question_import' %}?exam={{ exam.pk }}">{% translate "Загрузить из Word" %}</a>
+    <a class="btn" href="{% url 'exams:question_generate' %}?exam={{ exam.pk }}">{% translate "Из силлабуса с ИИ" %}</a>
     </div>
   </div>
   {% endfor %}
