@@ -18,6 +18,7 @@ import json
 import logging
 import os
 import re
+import time
 import urllib.error
 import urllib.request
 
@@ -49,8 +50,8 @@ def _token(request=None) -> str | None:
 
 
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
-# Первая — основная, вторая — псевдоним Google на актуальную Flash-модель.
-GEMINI_MODELS = ("gemini-3.8-flash", "gemini-flash-latest")
+# Основная модель, затем псевдонимы Google на актуальные Flash и Flash-Lite.
+GEMINI_MODELS = ("gemini-3.8-flash", "gemini-flash-latest", "gemini-flash-lite-latest")
 GEMINI_DEFAULT_MODEL = GEMINI_MODELS[0]
 
 
@@ -83,7 +84,7 @@ def chat(messages: list[dict], request=None, max_tokens: int = 450,
     if not providers:
         logger.warning("AI: no credentials (no OIDC header, AI_GATEWAY_API_KEY, VERCEL_OIDC_TOKEN or GEMINI_API_KEY)")
         raise AIUnavailable("no credentials")
-    last_error: Exception | None = None
+    errors: list[str] = []
     refused: set[str] = set()
     for name, url, token, model in providers:
         if name in refused:
@@ -93,31 +94,38 @@ def chat(messages: list[dict], request=None, max_tokens: int = 450,
         if json_mode:
             payload["response_format"] = {"type": "json_object"}
         body = json.dumps(payload).encode()
-        req = urllib.request.Request(url, data=body, method="POST", headers={
-            "Authorization": f"Bearer {token}", "Content-Type": "application/json"})
-        try:
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
-                data = json.load(resp)
-            text = (data["choices"][0]["message"]["content"] or "").strip()
-            if text:
-                return text, data.get("model") or model
-            last_error = AIUnavailable(f"{model}: empty reply")
-        except urllib.error.HTTPError as exc:
-            # Текст ошибки шлюза (без ключа) помогает понять причину: нет кредитов, нет доступа к модели.
+        for attempt in range(2):  # перегрузку (429/503) переживаем одним повтором
+            req = urllib.request.Request(url, data=body, method="POST", headers={
+                "Authorization": f"Bearer {token}", "Content-Type": "application/json"})
+            retry = False
             try:
-                detail = json.loads(exc.read().decode("utf-8", "replace"))
-                detail = detail[0] if isinstance(detail, list) and detail else detail
-                detail = detail.get("error", {}) if isinstance(detail, dict) else {}
-                detail = detail.get("message", "") if isinstance(detail, dict) else str(detail)
-            except (ValueError, OSError, AttributeError):
-                detail = ""
-            last_error = AIUnavailable(f"{model}: HTTP {exc.code} {detail}".strip())
-            if exc.code in (401, 402, 403):
-                refused.add(name)  # другие модели этого провайдера ответят так же
-        except (urllib.error.URLError, TimeoutError, KeyError, IndexError, ValueError) as exc:
-            last_error = AIUnavailable(f"{model}: {exc.__class__.__name__}")
-        logger.warning("AI %s: %s", name, last_error)
-    raise AIUnavailable(str(last_error))
+                with urllib.request.urlopen(req, timeout=timeout) as resp:
+                    data = json.load(resp)
+                text = (data["choices"][0]["message"]["content"] or "").strip()
+                if text:
+                    return text, data.get("model") or model
+                error = f"{model}: empty reply"
+            except urllib.error.HTTPError as exc:
+                # Текст ошибки провайдера (без ключа) объясняет причину: нет кредитов, модель недоступна.
+                try:
+                    detail = json.loads(exc.read().decode("utf-8", "replace"))
+                    detail = detail[0] if isinstance(detail, list) and detail else detail
+                    detail = detail.get("error", {}) if isinstance(detail, dict) else {}
+                    detail = detail.get("message", "") if isinstance(detail, dict) else str(detail)
+                except (ValueError, OSError, AttributeError):
+                    detail = ""
+                error = f"{model}: HTTP {exc.code} {detail[:160]}".strip()
+                if exc.code in (401, 402, 403):
+                    refused.add(name)  # другие модели этого провайдера ответят так же
+                retry = exc.code in (429, 500, 503) and attempt == 0
+            except (urllib.error.URLError, TimeoutError, KeyError, IndexError, ValueError) as exc:
+                error = f"{model}: {exc.__class__.__name__}"
+            logger.warning("AI %s: %s", name, error)
+            if not retry:
+                break
+            time.sleep(1.5)
+        errors.append(error)
+    raise AIUnavailable("; ".join(errors))
 
 
 def _lang() -> str:
