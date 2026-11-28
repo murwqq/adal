@@ -141,3 +141,31 @@ def test_teacher_question_review(client, finished_attempt, teacher, student, fak
     assert resp.status_code == 200 and "Ключ" in resp.json()["text"]
     sent = json.dumps(calls, ensure_ascii=False)
     assert "[KEY]" in sent and student.last_name not in sent
+
+
+def test_gateway_refusal_falls_back_to_gemini(monkeypatch):
+    """Шлюз без карты отвечает 403: остальные модели шлюза не трогаем, идём в Gemini."""
+    import io
+    import urllib.error
+    monkeypatch.setenv("AI_GATEWAY_API_KEY", "gw")
+    monkeypatch.setenv("GEMINI_API_KEY", "gm")
+    seen = []
+
+    class Resp(io.BytesIO):
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    def fake_urlopen(req, timeout):
+        seen.append((req.full_url, json.loads(req.data)["model"]))
+        if "vercel" in req.full_url:
+            body = io.BytesIO(b'{"error": {"message": "requires a valid credit card"}}')
+            raise urllib.error.HTTPError(req.full_url, 403, "Forbidden", {}, body)
+        return Resp(json.dumps({"choices": [{"message": {"content": "ok"}}]}).encode())
+
+    monkeypatch.setattr(ai.urllib.request, "urlopen", fake_urlopen)
+    text, model = ai.chat([{"role": "user", "content": "hi"}])
+    assert text == "ok" and model == ai.GEMINI_DEFAULT_MODEL
+    assert [m for _, m in seen] == [ai.DEFAULT_MODELS[0], ai.GEMINI_DEFAULT_MODEL]

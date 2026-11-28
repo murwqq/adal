@@ -48,30 +48,49 @@ def _token(request=None) -> str | None:
     return os.environ.get("AI_GATEWAY_API_KEY") or os.environ.get("VERCEL_OIDC_TOKEN")
 
 
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+GEMINI_DEFAULT_MODEL = "gemini-2.5-flash"
+
+
+def _providers(request=None) -> list[tuple[str, str, str, str]]:
+    """Куда идти за ответом, по порядку: (имя, адрес, ключ, модель).
+    Сначала Vercel AI Gateway, затем Google Gemini напрямую, если задан GEMINI_API_KEY
+    (бесплатный ключ из Google AI Studio, без карты)."""
+    providers = []
+    token = _token(request)
+    if token:
+        configured = os.environ.get("AI_GATEWAY_MODEL", "").strip()
+        for model in ((configured,) if configured else DEFAULT_MODELS):
+            providers.append(("gateway", GATEWAY_URL, token, model))
+    gemini_key = os.environ.get("GEMINI_API_KEY", "").strip()
+    if gemini_key:
+        model = os.environ.get("GEMINI_MODEL", "").strip() or GEMINI_DEFAULT_MODEL
+        providers.append(("gemini", GEMINI_URL, gemini_key, model))
+    return providers
+
+
 def is_enabled(request=None) -> bool:
-    return bool(_token(request))
-
-
-def _models() -> tuple[str, ...]:
-    configured = os.environ.get("AI_GATEWAY_MODEL", "").strip()
-    return (configured,) if configured else DEFAULT_MODELS
+    return bool(_providers(request))
 
 
 def chat(messages: list[dict], request=None, max_tokens: int = 450,
          temperature: float = 0.4, timeout: int = TIMEOUT, json_mode: bool = False) -> tuple[str, str]:
     """Возвращает (текст ответа, модель, которая ответила)."""
-    token = _token(request)
-    if not token:
-        logger.warning("AI Gateway: no credentials (no OIDC header, AI_GATEWAY_API_KEY or VERCEL_OIDC_TOKEN)")
+    providers = _providers(request)
+    if not providers:
+        logger.warning("AI: no credentials (no OIDC header, AI_GATEWAY_API_KEY, VERCEL_OIDC_TOKEN or GEMINI_API_KEY)")
         raise AIUnavailable("no credentials")
     last_error: Exception | None = None
-    for model in _models():
+    refused: set[str] = set()
+    for name, url, token, model in providers:
+        if name in refused:
+            continue
         payload = {"model": model, "messages": messages, "max_tokens": max_tokens,
                    "temperature": temperature}
         if json_mode:
             payload["response_format"] = {"type": "json_object"}
         body = json.dumps(payload).encode()
-        req = urllib.request.Request(GATEWAY_URL, data=body, method="POST", headers={
+        req = urllib.request.Request(url, data=body, method="POST", headers={
             "Authorization": f"Bearer {token}", "Content-Type": "application/json"})
         try:
             with urllib.request.urlopen(req, timeout=timeout) as resp:
@@ -83,14 +102,18 @@ def chat(messages: list[dict], request=None, max_tokens: int = 450,
         except urllib.error.HTTPError as exc:
             # Текст ошибки шлюза (без ключа) помогает понять причину: нет кредитов, нет доступа к модели.
             try:
-                detail = json.loads(exc.read().decode("utf-8", "replace")).get("error", {})
+                detail = json.loads(exc.read().decode("utf-8", "replace"))
+                detail = detail[0] if isinstance(detail, list) and detail else detail
+                detail = detail.get("error", {}) if isinstance(detail, dict) else {}
                 detail = detail.get("message", "") if isinstance(detail, dict) else str(detail)
             except (ValueError, OSError, AttributeError):
                 detail = ""
             last_error = AIUnavailable(f"{model}: HTTP {exc.code} {detail}".strip())
+            if exc.code in (401, 402, 403):
+                refused.add(name)  # другие модели этого провайдера ответят так же
         except (urllib.error.URLError, TimeoutError, KeyError, IndexError, ValueError) as exc:
             last_error = AIUnavailable(f"{model}: {exc.__class__.__name__}")
-        logger.warning("AI Gateway: %s", last_error)
+        logger.warning("AI %s: %s", name, last_error)
     raise AIUnavailable(str(last_error))
 
 
