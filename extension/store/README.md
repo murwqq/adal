@@ -8,6 +8,7 @@
 | Скриншоты 1280×800 | `screenshot-1.png`, `screenshot-2.png`, `screenshot-3.png` |
 | Малая промо-плитка 440×280 | `promo-tile-440x280.png` |
 | Значок 128×128 | `../adal-guard/icons/128.png` |
+| Логотип 300×300 (Edge) | `logo-300x300.png` |
 | Политика конфиденциальности | https://adal-murex.vercel.app/guard/privacy/ |
 | Сайт расширения | https://adal-murex.vercel.app/guard/ |
 | Поддержка | https://github.com/murwqq/adal/issues |
@@ -69,6 +70,11 @@ Lock the browser to the Adal exam site while a student takes an exam on the Adal
 - I do not use or transfer user data to determine creditworthiness or for lending purposes.
 
 **Политика конфиденциальности:** https://adal-murex.vercel.app/guard/privacy/
+
+## Статус
+
+- Microsoft Edge Add-ons: отправлено на проверку 28.11.2026, издатель Adal Team, видимость Public.
+  Для проверяющих на сайте всегда открыт тест «Демо: экзамен с Адал Guard», код `GUARD`.
 
 ## Как опубликовать
 
