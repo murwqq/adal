@@ -49,7 +49,9 @@ def _token(request=None) -> str | None:
 
 
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
-GEMINI_DEFAULT_MODEL = "gemini-2.5-flash"
+# Первая — основная, вторая — псевдоним Google на актуальную Flash-модель.
+GEMINI_MODELS = ("gemini-3.8-flash", "gemini-flash-latest")
+GEMINI_DEFAULT_MODEL = GEMINI_MODELS[0]
 
 
 def _providers(request=None) -> list[tuple[str, str, str, str]]:
@@ -64,8 +66,9 @@ def _providers(request=None) -> list[tuple[str, str, str, str]]:
             providers.append(("gateway", GATEWAY_URL, token, model))
     gemini_key = os.environ.get("GEMINI_API_KEY", "").strip()
     if gemini_key:
-        model = os.environ.get("GEMINI_MODEL", "").strip() or GEMINI_DEFAULT_MODEL
-        providers.append(("gemini", GEMINI_URL, gemini_key, model))
+        configured = os.environ.get("GEMINI_MODEL", "").strip()
+        for model in ((configured,) if configured else GEMINI_MODELS):
+            providers.append(("gemini", GEMINI_URL, gemini_key, model))
     return providers
 
 
