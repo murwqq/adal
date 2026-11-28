@@ -55,6 +55,7 @@
       {% include "_field.html" with field=form.max_violations %}
       {% include "_field.html" with field=form.allowed_ip_prefix %}
       {% include "_field.html" with field=form.show_review %}
+      {% include "_field.html" with field=form.ai_tutor %}
       {% include "_field.html" with field=form.is_published %}
       <button class="btn btn-primary btn-block btn-lg" type="submit">{% if exam %}{% translate "Сохранить тест" %}{% else %}{% translate "Создать и добавить вопросы" %}{% endif %}</button>
     </section>

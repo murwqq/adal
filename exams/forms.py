@@ -106,7 +106,7 @@ class ExamForm(forms.ModelForm):
         model = Exam
         fields = ["title", "subject", "question_count", "duration_minutes",
                   "opens_at", "closes_at", "groups", "access_code", "allowed_ip_prefix",
-                  "max_violations", "show_review", "is_published"]
+                  "max_violations", "show_review", "ai_tutor", "is_published"]
         widgets = {
             "opens_at": forms.DateTimeInput(attrs={"type": "datetime-local"},
                                             format="%Y-%m-%dT%H:%M"),

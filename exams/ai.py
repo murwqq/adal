@@ -1,0 +1,187 @@
+"""ИИ-партнёр Адал: наставник для студента и разбор вопросов для преподавателя.
+
+Модели вызываются через Vercel AI Gateway (OpenAI-совместимый API). На Vercel
+авторизация идёт по OIDC-токену функции, локально — по AI_GATEWAY_API_KEY.
+
+Принципы, которые закреплены в коде, а не только в подсказке модели:
+- в ИИ не уходят ФИО, ИИН и группа: только текст вопроса, варианты и выбор студента;
+- наставник не называет правильный ответ: ответ модели проверяется на сервере,
+  и если в нём есть текст верного варианта, который студент сам ещё не назвал,
+  ответ заменяется наводящим вопросом;
+- наставник открывается только после закрытия теста, чтобы разбор не помог тем,
+  кто ещё пишет;
+- для преподавателя ИИ только советует, вопрос он правит сам.
+"""
+from __future__ import annotations
+
+import json
+import os
+import re
+import urllib.error
+import urllib.request
+
+from django.utils.translation import get_language
+
+GATEWAY_URL = "https://ai-gateway.vercel.sh/v1/chat/completions"
+# Основная модель и запасная: если первая недоступна, пробуем вторую.
+DEFAULT_MODELS = ("anthropic/claude-haiku-5.5", "google/gemini-3-flash")
+TIMEOUT = 25
+LETTERS = "АБВГДЕЖЗ"
+SOLVED_MARK = "[[SOLVED]]"
+MAX_STUDENT_TURNS = 8
+
+LANG_NAMES = {"ru": "Russian", "kk": "Kazakh", "en": "English"}
+
+
+class AIUnavailable(Exception):
+    """Нет ключа, кончились кредиты или модель не ответила."""
+
+
+def _token(request=None) -> str | None:
+    if request is not None:
+        token = request.headers.get("x-vercel-oidc-token")
+        if token:
+            return token
+    return os.environ.get("AI_GATEWAY_API_KEY") or os.environ.get("VERCEL_OIDC_TOKEN")
+
+
+def is_enabled(request=None) -> bool:
+    return bool(_token(request))
+
+
+def _models() -> tuple[str, ...]:
+    configured = os.environ.get("AI_GATEWAY_MODEL", "").strip()
+    return (configured,) if configured else DEFAULT_MODELS
+
+
+def chat(messages: list[dict], request=None, max_tokens: int = 450,
+         temperature: float = 0.4) -> tuple[str, str]:
+    """Возвращает (текст ответа, модель, которая ответила)."""
+    token = _token(request)
+    if not token:
+        raise AIUnavailable("no credentials")
+    last_error: Exception | None = None
+    for model in _models():
+        body = json.dumps({"model": model, "messages": messages, "max_tokens": max_tokens,
+                           "temperature": temperature}).encode()
+        req = urllib.request.Request(GATEWAY_URL, data=body, method="POST", headers={
+            "Authorization": f"Bearer {token}", "Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+                data = json.load(resp)
+            text = (data["choices"][0]["message"]["content"] or "").strip()
+            if text:
+                return text, data.get("model") or model
+        except (urllib.error.URLError, TimeoutError, KeyError, IndexError, ValueError) as exc:
+            last_error = exc
+    raise AIUnavailable(str(last_error))
+
+
+def _lang() -> str:
+    return LANG_NAMES.get((get_language() or "ru")[:2], "Russian")
+
+
+def _norm(text: str) -> str:
+    return re.sub(r"\s+", " ", text or "").strip().lower()
+
+
+# ---------- Наставник для студента ----------
+
+TUTOR_RULES = """You are "Adal mentor", a Socratic tutor inside an exam platform for university students.
+The student has already finished the exam. Help them understand the topic behind ONE question they got wrong,
+so that they find the right reasoning themselves.
+
+Hard rules:
+- Never reveal which option is correct: do not quote it, do not give its letter, do not say "the answer is".
+- If the student asks for the answer directly, kindly refuse and give a smaller next step instead.
+- Ask exactly one short guiding question per message, building on what the student wrote.
+- Point at the concept, a counter-example or a quick self-check, not at the option.
+- When the student names the correct option AND explains why, confirm it, sum up the idea in two sentences
+  and end your message with the marker [[SOLVED]].
+- At most 90 words. Plain text, formulas in LaTeX between single dollar signs, like $x^2$. Reply in {lang}.
+- You know nothing about the student personally and must not ask for personal data."""
+
+
+def question_context(question_text: str, options: list[str], picked: int | None,
+                     correct: int) -> str:
+    lines = [f"Question: {question_text}", "Options:"]
+    lines += [f"{LETTERS[i]}) {text}" for i, text in enumerate(options)]
+    lines.append("Student picked: " + (f"{LETTERS[picked]}) {options[picked]}" if picked is not None
+                                       else "nothing (no answer)"))
+    lines.append(f"Correct option (secret, never reveal): {LETTERS[correct]})")
+    return "\n".join(lines)
+
+
+def leaks_answer(reply: str, correct_text: str, question_text: str, student_text: str) -> bool:
+    """В ответе есть текст верного варианта, а студент сам его ещё не назвал."""
+    key = _norm(correct_text)
+    if len(key) < 2 or key in _norm(question_text):
+        return False
+    if key in _norm(student_text):
+        return False
+    return re.search(r"(?<!\w)" + re.escape(key) + r"(?!\w)", _norm(reply)) is not None
+
+
+SAFE_FALLBACK = {
+    "Russian": "Давайте не спешить с ответом. Какое правило или определение здесь проверяется? Сформулируйте его своими словами.",
+    "Kazakh": "Жауапқа асықпайық. Бұл сұрақ қандай ережені немесе анықтаманы тексереді? Оны өз сөзіңізбен айтып көріңіз.",
+    "English": "Let's not rush to the answer. Which rule or definition is this question checking? Put it in your own words.",
+}
+
+
+def tutor_reply(*, question_text: str, options: list[str], picked: int | None, correct: int,
+                history: list[dict], request=None) -> tuple[str, bool, str]:
+    """history — реплики [{"role": "user"|"assistant", "content": str}].
+    Возвращает (ответ наставника, разобрался ли студент, модель)."""
+    lang = _lang()
+    messages = [
+        {"role": "system", "content": TUTOR_RULES.format(lang=lang)},
+        {"role": "system", "content": question_context(question_text, options, picked, correct)},
+    ]
+    if not history:
+        messages.append({"role": "user", "content": "(The student opened the review. Start with one "
+                         "question about their reasoning for the option they picked.)"})
+    messages += history
+    student_text = " ".join(m["content"] for m in history if m["role"] == "user")
+    correct_text = options[correct]
+
+    reply, model = chat(messages, request=request)
+    solved = SOLVED_MARK in reply
+    reply = reply.replace(SOLVED_MARK, "").strip()
+    if leaks_answer(reply, correct_text, question_text, student_text):
+        messages.append({"role": "assistant", "content": reply})
+        messages.append({"role": "system", "content": "Your last message revealed the correct option. "
+                         "Rewrite it without naming or quoting any option."})
+        reply, model = chat(messages, request=request)
+        solved = SOLVED_MARK in reply
+        reply = reply.replace(SOLVED_MARK, "").strip()
+        if leaks_answer(reply, correct_text, question_text, student_text):
+            reply, solved = SAFE_FALLBACK[lang], False
+    return reply, solved, model
+
+
+# ---------- Разбор вопроса для преподавателя ----------
+
+REVIEW_RULES = """You are an assessment-quality expert helping a university teacher improve a multiple-choice question.
+You get the question, its options with the answer key and item statistics from classical test theory:
+p (difficulty, share of correct answers), D (discrimination, upper 27% minus lower 27%) and how often each option was picked.
+
+Write 3-5 short bullet points in {lang}:
+1. The most likely problem (wrong key, ambiguous wording, a cue that gives away the answer, non-working distractors, too easy or too hard).
+2. What in the numbers supports it.
+3. A concrete fix: a rewritten stem or better distractors.
+Be honest about uncertainty: the teacher makes the decision. No greetings, no conclusion paragraph.
+Formulas in LaTeX between single dollar signs, like $x^2$."""
+
+
+def review_question(*, text: str, choices: list[tuple[str, bool, float]], p: float, d: float | None,
+                    answered: int, flags: list[str], request=None) -> tuple[str, str]:
+    lines = [f"Question: {text}", "Options (key marked, share of students who picked it):"]
+    for i, (option, is_correct, share) in enumerate(choices):
+        lines.append(f"{LETTERS[i]}) {option}{'  [KEY]' if is_correct else ''}  — {round(share * 100)}%")
+    lines.append(f"Answered: {answered}; p = {p}; D = {'n/a' if d is None else d}")
+    if flags:
+        lines.append("Automatic flags: " + "; ".join(str(f) for f in flags))
+    messages = [{"role": "system", "content": REVIEW_RULES.format(lang=_lang())},
+                {"role": "user", "content": "\n".join(lines)}]
+    return chat(messages, request=request, max_tokens=600, temperature=0.3)

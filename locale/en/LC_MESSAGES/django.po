@@ -164,6 +164,13 @@ msgstr ""
 "administrator can delete it"
 
 msgid ""
+"В модель уходят только текст вопроса, варианты и ваш выбор. Ваши ФИО, ИИН и "
+"группа не передаются."
+msgstr ""
+"Only the question text, the options and your choice are sent to the model. "
+"Your name, IIN and group are not shared."
+
+msgid ""
 "В тесте пока нет вопросов. Напишите их здесь же или загрузите готовый файл "
 "Word в формате Platonus."
 msgstr ""
@@ -191,6 +198,9 @@ msgstr "Answer option"
 
 msgid "Варианты ответа"
 msgstr "Answer options"
+
+msgid "Ваше рассуждение…"
+msgstr "Your reasoning…"
 
 msgid "Ваших вопросов в банке: %(bank_size)s."
 msgstr "Your questions in the bank: %(bank_size)s."
@@ -583,6 +593,25 @@ msgstr "Your progress will appear here"
 msgid "Здравствуйте, %(first_name)s"
 msgstr "Hello, %(first_name)s"
 
+msgid "ИИ разбирает вопрос…"
+msgstr "AI is reviewing the question…"
+
+msgid "ИИ сейчас недоступен. Попробуйте через минуту."
+msgstr "AI is unavailable right now. Try again in a minute."
+
+msgid ""
+"ИИ смотрит на текст вопроса и статистику ответов и предлагает правку. Имена "
+"студентов в запрос не попадают. Решение всегда за вами."
+msgstr ""
+"AI looks at the question text and answer statistics and suggests a fix. "
+"Student names are not included in the request. The decision is always yours."
+
+msgid "ИИ-наставник"
+msgstr "AI mentor"
+
+msgid "ИИ-наставник после закрытия теста"
+msgstr "AI mentor after the test closes"
+
 msgid "ИИН"
 msgstr "IIN"
 
@@ -645,6 +674,9 @@ msgstr "How to format the file"
 
 msgid "Как писать формулы"
 msgstr "How to write formulas"
+
+msgid "Как работает наставник"
+msgstr "How the mentor works"
 
 msgid "Как читать."
 msgstr "How to read this."
@@ -745,6 +777,9 @@ msgstr "Mongolia"
 msgid "На главную"
 msgstr "Go home"
 
+msgid "На этот вопрос вы ответили верно."
+msgstr "You answered this question correctly."
+
 msgid "Наблюдать"
 msgstr "Monitor"
 
@@ -799,6 +834,30 @@ msgstr "No violations. Thanks for working honestly."
 
 msgid "Нарушения"
 msgstr "Violations"
+
+msgid "Наставник думает…"
+msgstr "The mentor is thinking…"
+
+msgid ""
+"Наставник не скажет правильный ответ. Он задаёт вопросы, чтобы вы сами "
+"нашли, где ошиблись в рассуждении. Оценка от разбора не меняется."
+msgstr ""
+"The mentor won't tell you the correct answer. It asks questions so that you "
+"find the flaw in your reasoning yourself. The review doesn't change your "
+"grade."
+
+msgid "Наставник откроется после закрытия теста."
+msgstr "The mentor opens after the test closes."
+
+msgid ""
+"Наставник разбирает со студентом его ошибки наводящими вопросами и не "
+"называет правильный ответ"
+msgstr ""
+"The mentor goes through the student's mistakes with guiding questions and "
+"never names the correct answer"
+
+msgid "Наставник сейчас недоступен. Попробуйте через минуту."
+msgstr "The mentor is unavailable right now. Try again in a minute."
 
 msgid "Настройки"
 msgstr "Settings"
@@ -903,6 +962,9 @@ msgstr "Leave empty to use questions from the whole subject"
 msgid "Осталось"
 msgstr "Left"
 
+msgid "Осталось реплик: %s"
+msgstr "Replies left: %s"
+
 msgid "Остановить попытку"
 msgstr "Stop attempt"
 
@@ -926,6 +988,9 @@ msgstr "Answered"
 
 msgid "Ответили"
 msgstr "Answered"
+
+msgid "Ответить"
+msgstr "Reply"
 
 msgid "Ответы"
 msgstr "Answers"
@@ -1063,6 +1128,9 @@ msgstr "By last name"
 
 msgid "По этим условиям вопросов нет. Измените поиск или добавьте вопросы."
 msgstr "No questions match. Change the search or add questions."
+
+msgid "По этому вопросу ещё нет ответов."
+msgstr "There are no answers to this question yet."
 
 msgid "Поддерживаются файлы .docx и .txt"
 msgstr ".docx and .txt files are supported"
@@ -1228,11 +1296,23 @@ msgstr "Submissions"
 msgid "Работ студентов"
 msgstr "Student submissions"
 
+msgid ""
+"Разбор виден вашему преподавателю, чтобы он понимал, какие темы даются "
+"труднее."
+msgstr ""
+"Your teacher can see the review to understand which topics are harder."
+
 msgid "Разбор ответов"
 msgstr "Answer review"
 
 msgid "Разбор ответов преподаватель покажет на занятии."
 msgstr "Your teacher will review the answers in class."
+
+msgid "Разбор с ИИ-наставником"
+msgstr "Review with the AI mentor"
+
+msgid "Разбор этого вопроса окончен. Обсудите его с преподавателем."
+msgstr "The review of this question is over. Discuss it with your teacher."
 
 msgid "Разделы"
 msgstr "Sections"
@@ -1245,6 +1325,23 @@ msgstr "Test sections"
 
 msgid "Различение"
 msgstr "Discrimination"
+
+msgid "Разобрались. Отличная работа!"
+msgstr "Figured it out. Great work!"
+
+msgid "Разобрать ошибки с ИИ-наставником"
+msgstr "Go through mistakes with the AI mentor"
+
+msgid ""
+"Разобрать ошибки с наставником можно будет после закрытия теста, %(closes)s."
+" До этого разбор закрыт, чтобы он не помог тем, кто ещё пишет."
+msgstr ""
+"You can go through your mistakes with the mentor after the test closes, "
+"%(closes)s. Until then the review stays closed so it can't help anyone still"
+" writing."
+
+msgid "Разобрать с наставником"
+msgstr "Review with the mentor"
 
 msgid "Разрешить пересдачу"
 msgstr "Allow a retake"
@@ -1318,6 +1415,13 @@ msgstr "In the room now"
 
 msgid "Сейчас пишут: %(n_active)s"
 msgstr "Writing now: %(n_active)s"
+
+msgid ""
+"Сервер проверяет каждый ответ модели: если в нём есть правильный вариант, "
+"ответ заменяется наводящим вопросом."
+msgstr ""
+"The server checks every model reply: if it contains the correct option, the "
+"reply is replaced with a guiding question."
 
 msgid "Сильные студенты ошибаются чаще слабых. Скорее всего, в ключе ошибка"
 msgstr ""
@@ -1451,6 +1555,9 @@ msgid ""
 msgstr ""
 "You can mix both: after creating the test, add questions either way or take "
 "them from the bank."
+
+msgid "Спросить ИИ, что не так с вопросом"
+msgstr "Ask AI what's wrong with the question"
 
 msgid "Средний"
 msgstr "Medium"
@@ -1809,6 +1916,13 @@ msgstr "Exams you can trust."
 msgid "Эл. почта"
 msgstr "Email"
 
+msgid ""
+"Это языковая модель, а не человек. Она может ошибаться, поэтому проверяйте "
+"выводы по конспекту."
+msgstr ""
+"This is a language model, not a person. It can be wrong, so check its "
+"conclusions against your notes."
+
 msgid "Этот тест назначен другой группе"
 msgstr "This test is assigned to another group"
 
@@ -1828,7 +1942,10 @@ msgid "без группы"
 msgstr "no group"
 
 msgid "без ответа"
-msgstr "unanswered"
+msgstr "no answer"
+
+msgid "ваш ответ"
+msgstr "your answer"
 
 msgid "верный"
 msgstr "correct"
@@ -1894,6 +2011,9 @@ msgstr "median"
 msgid "минут"
 msgstr "minutes"
 
+msgid "не завершён"
+msgstr "not finished"
+
 msgid "необязательна."
 msgstr "line is optional."
 
@@ -1938,6 +2058,9 @@ msgstr "average score"
 
 msgid "средний результат по каждому тесту"
 msgstr "average score for each test"
+
+msgid "студент разобрался"
+msgstr "the student figured it out"
 
 msgid "текущая"
 msgstr "current"

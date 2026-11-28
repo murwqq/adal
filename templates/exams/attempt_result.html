@@ -27,6 +27,39 @@
     {% else %}
     <p class="muted" style="margin-top:24px">{% translate "Разбор ответов преподаватель покажет на занятии." %}</p>
     {% endif %}
+    {% if tutor_state == "wait" %}
+    <div class="note ai-note" style="margin-top:24px"><b>{% translate "ИИ-наставник" %}.</b> {% blocktranslate trimmed with closes=attempt.exam.closes_at|date:"j E Y, H:i" %}Разобрать ошибки с наставником можно будет после закрытия теста, {{ closes }}. До этого разбор закрыт, чтобы он не помог тем, кто ещё пишет.{% endblocktranslate %}</div>
+    {% elif tutor_state == "ready" and mistakes %}
+    <section class="tutor" style="margin-top:32px">
+      <h2>{% translate "Разобрать ошибки с ИИ-наставником" %}</h2>
+      <p class="muted">{% translate "Наставник не скажет правильный ответ. Он задаёт вопросы, чтобы вы сами нашли, где ошиблись в рассуждении. Оценка от разбора не меняется." %}</p>
+      <details class="ai-how">
+        <summary>{% translate "Как работает наставник" %}</summary>
+        <ul>
+          <li>{% translate "Это языковая модель, а не человек. Она может ошибаться, поэтому проверяйте выводы по конспекту." %}</li>
+          <li>{% translate "В модель уходят только текст вопроса, варианты и ваш выбор. Ваши ФИО, ИИН и группа не передаются." %}</li>
+          <li>{% translate "Сервер проверяет каждый ответ модели: если в нём есть правильный вариант, ответ заменяется наводящим вопросом." %}</li>
+          <li>{% translate "Разбор виден вашему преподавателю, чтобы он понимал, какие темы даются труднее." %}</li>
+        </ul>
+      </details>
+      {% for m in mistakes %}
+      <div class="tutor-item{% if m.solved %} solved{% endif %}" data-url="{% url 'exams:attempt_tutor' attempt.pk m.item.pk %}"
+           data-think="{% translate 'Наставник думает…' %}" data-solved="{% translate 'Разобрались. Отличная работа!' %}"
+           data-left="{% translate 'Осталось реплик: %s' %}">
+        <div class="small muted">{% blocktranslate trimmed with position=m.item.position %}Вопрос {{ position }}{% endblocktranslate %} · {% if m.item.selected %}{% translate "ваш ответ" %}: {{ m.item.selected.text }}{% else %}{% translate "без ответа" %}{% endif %}</div>
+        <div class="q-text">{{ m.item.question.text }}</div>
+        <ol class="tutor-options" type="A">{% for c in m.choices %}<li{% if m.item.selected_id == c.id %} class="picked"{% endif %}>{{ c.text }}</li>{% endfor %}</ol>
+        <div class="tutor-chat">{% for msg in m.messages %}<div class="bubble {{ msg.role }}">{{ msg.content }}</div>{% endfor %}</div>
+        {% if not m.messages %}<button type="button" class="btn tutor-start">{% translate "Разобрать с наставником" %}</button>{% endif %}
+        <form class="tutor-form"{% if not m.messages or m.solved %} hidden{% endif %}>
+          <textarea rows="2" maxlength="800" placeholder="{% translate 'Ваше рассуждение…' %}"></textarea>
+          <button class="btn" type="submit">{% translate "Ответить" %}</button>
+        </form>
+        <div class="tutor-status small muted">{% if m.solved %}{% translate "Разобрались. Отличная работа!" %}{% endif %}</div>
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
     <a class="btn" href="{% url 'dashboard' %}" style="margin-top:20px">{% translate "К моим тестам" %}</a>
   </section>
   <aside class="sheet">
@@ -37,3 +70,4 @@
   </aside>
 </div>
 {% endblock %}
+{% block scripts %}{% load static %}<script src="{% static 'js/ai.js' %}?v=1" defer></script>{% endblock %}

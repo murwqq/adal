@@ -86,6 +86,9 @@ class Exam(models.Model):
         _("Нарушений до завершения"), default=3,
         help_text=_("Уход со страницы, выход из полноэкранного режима и т. п."))
     show_review = models.BooleanField(_("Показать студенту разбор после теста"), default=False)
+    ai_tutor = models.BooleanField(
+        _("ИИ-наставник после закрытия теста"), default=True,
+        help_text=_("Наставник разбирает со студентом его ошибки наводящими вопросами и не называет правильный ответ"))
     questions = models.ManyToManyField("Question", related_name="exams", blank=True,
                                        verbose_name=_("Вопросы теста"))
     is_published = models.BooleanField(_("Опубликован"), default=True)
@@ -217,3 +220,18 @@ class Retake(models.Model):
 
     def is_valid(self, now=None) -> bool:
         return self.used_at is None and (now or timezone.now()) <= self.expires_at
+
+
+class TutorSession(models.Model):
+    """Разговор студента с ИИ-наставником об одном вопросе своего варианта."""
+
+    item = models.OneToOneField(AttemptItem, on_delete=models.CASCADE, related_name="tutor")
+    messages = models.JSONField(default=list)
+    solved = models.BooleanField(default=False)
+    model = models.CharField(max_length=80, blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def student_turns(self) -> int:
+        return sum(1 for m in self.messages if m.get("role") == "user")

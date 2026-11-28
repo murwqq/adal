@@ -19,6 +19,7 @@ urlpatterns = [
     path("exams/<int:pk>/delete/", views.exam_delete, name="exam_delete"),
     path("exams/<int:pk>/results/", views.exam_results, name="exam_results"),
     path("exams/<int:pk>/analysis/", views.exam_analysis, name="exam_analysis"),
+    path("exams/<int:pk>/analysis/<int:qid>/ai/", views.exam_question_ai, name="exam_question_ai"),
     path("exams/<int:pk>/monitor/", views.exam_monitor, name="exam_monitor"),
     path("exams/<int:pk>/monitor/data/", views.exam_monitor_data, name="exam_monitor_data"),
     path("exams/<int:pk>/start/", views.exam_start, name="exam_start"),
@@ -31,4 +32,5 @@ urlpatterns = [
     path("attempt/<int:pk>/ping/", views.attempt_ping, name="attempt_ping"),
     path("attempt/<int:pk>/finish/", views.attempt_finish, name="attempt_finish"),
     path("attempt/<int:pk>/result/", views.attempt_result, name="attempt_result"),
+    path("attempt/<int:pk>/tutor/<int:item_pk>/", views.attempt_tutor, name="attempt_tutor"),
 ]

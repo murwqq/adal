@@ -20,6 +20,12 @@
       {% for c in r.choices %}
       <div class="review-choice {% if c.is_correct %}correct{% endif %} {% if r.item.selected_id == c.id %}picked{% if not c.is_correct %} wrong{% endif %}{% endif %}">{{ c.text }}</div>
       {% endfor %}
+      {% if r.tutor and r.tutor.messages %}
+      <details class="ai-how" style="margin-top:10px">
+        <summary>{% translate "Разбор с ИИ-наставником" %}: {% if r.tutor.solved %}{% translate "студент разобрался" %}{% else %}{% translate "не завершён" %}{% endif %}</summary>
+        <div class="tutor-chat">{% for msg in r.tutor.messages %}<div class="bubble {{ msg.role }}">{{ msg.content }}</div>{% endfor %}</div>
+      </details>
+      {% endif %}
     </div>
     {% endfor %}
   </section>

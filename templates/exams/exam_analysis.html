@@ -10,6 +10,7 @@
   <b>{% translate "Различение" %}</b> {% translate "показывает, насколько чаще сильные студенты отвечают верно, чем слабые. Хорошо, если 0,3 и выше, а отрицательное значение почти всегда означает ошибку в ключе. Вопросы с замечаниями стоят первыми." %}</p>
 </div>
 
+<p class="small muted">{% translate "ИИ смотрит на текст вопроса и статистику ответов и предлагает правку. Имена студентов в запрос не попадают. Решение всегда за вами." %}</p>
 {% for s in items %}
 <section class="sheet">
   <div class="sheet-title">
@@ -29,8 +30,13 @@
   </div>
   {% endfor %}
   {% for f in s.flags %}<div class="note warning small" style="margin-top:10px">{{ f }}</div>{% endfor %}
+  <div class="ai-review-box">
+    <button type="button" class="btn btn-quiet ai-review" data-url="{% url 'exams:exam_question_ai' exam.pk s.question_id %}" data-think="{% translate 'ИИ разбирает вопрос…' %}">{% translate "Спросить ИИ, что не так с вопросом" %}</button>
+    <div class="ai-out" hidden></div>
+  </div>
 </section>
 {% empty %}
 <div class="empty"><p>{% translate "Анализ появится, когда студенты завершат тест." %}</p></div>
 {% endfor %}
 {% endblock %}
+{% block scripts %}{% load static %}<script src="{% static 'js/ai.js' %}?v=1" defer></script>{% endblock %}

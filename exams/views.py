@@ -18,10 +18,10 @@ from django.utils.dateparse import parse_datetime
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 
-from . import services
+from . import ai, services
 from .forms import ExamForm, ImportForm, QuestionForm, StartExamForm, SubjectForm
 from .importer import ImportError_, import_file, normalize_image
-from .models import Attempt, Exam, Question, Retake, Subject, Violation
+from .models import Attempt, AttemptItem, Exam, Question, Retake, Subject, TutorSession, Violation
 from .services import ExamError
 
 PAGE_SIZE = 20
@@ -351,6 +351,23 @@ def exam_analysis(request, pk):
 
 
 @teacher_required
+@require_POST
+def exam_question_ai(request, pk, qid):
+    """ИИ объясняет преподавателю, что не так с вопросом, по тексту и статистике ответов."""
+    exam = _own_exam(request, pk)
+    stat = next((s for s in services.exam_report(exam)["items"] if s.question_id == qid), None)
+    if stat is None:
+        return JsonResponse({"error": str(_("По этому вопросу ещё нет ответов."))}, status=404)
+    try:
+        text, model = ai.review_question(
+            text=stat.text, choices=[(c.text, c.is_correct, c.share) for c in stat.choices],
+            p=stat.p, d=stat.d, answered=stat.answered, flags=stat.flags, request=request)
+    except ai.AIUnavailable:
+        return JsonResponse({"error": str(_("ИИ сейчас недоступен. Попробуйте через минуту."))}, status=503)
+    return JsonResponse({"text": text, "model": model})
+
+
+@teacher_required
 def exam_monitor(request, pk):
     exam = _own_exam(request, pk)
     return render(request, "exams/exam_monitor.html", {"exam": exam})
@@ -387,8 +404,12 @@ def attempt_detail(request, pk):
     history = (Attempt.all_objects.filter(exam=attempt.exam, student=attempt.student)
                .exclude(pk=attempt.pk).order_by("-started_at"))
     default_until = timezone.localtime() + timezone.timedelta(days=1)
+    sessions = {t.item_id: t for t in TutorSession.objects.filter(item__attempt=attempt)}
+    items = _review_items(attempt)
+    for row in items:
+        row["tutor"] = sessions.get(row["item"].id)
     return render(request, "exams/attempt_detail.html", {
-        "attempt": attempt, "items": _review_items(attempt),
+        "attempt": attempt, "items": items,
         "violations": attempt.violations.all(), "history": history,
         "retake": services.active_retake(attempt.exam, attempt.student),
         "retake_default": default_until.replace(second=0, microsecond=0).strftime("%Y-%m-%dT%H:%M"),
@@ -591,8 +612,87 @@ def attempt_result(request, pk):
     else:
         return redirect("exams:attempt_take", pk=attempt.pk)
     review = _review_items(attempt) if attempt.exam.show_review else None
+    state = tutor_state(attempt)
     return render(request, "exams/attempt_result.html", {
         "attempt": attempt, "review": review,
         "violations": attempt.violations.all(),
         "violation_kinds": dict(Violation.Kind.choices),
+        "tutor_state": state,
+        "mistakes": _mistakes(attempt) if state != "off" else [],
+        "tutor_max": ai.MAX_STUDENT_TURNS,
     })
+
+
+# ---------- ИИ-наставник ----------
+
+def tutor_state(attempt, now=None) -> str:
+    """off — наставник выключен; wait — откроется после закрытия теста; ready — можно разбирать."""
+    exam = attempt.exam
+    if not exam.ai_tutor or attempt.status == Attempt.Status.ACTIVE:
+        return "off"
+    if (now or timezone.now()) < exam.closes_at:
+        return "wait"
+    return "ready"
+
+
+def _mistakes(attempt):
+    """Вопросы, где студент ошибся или не ответил: то, что можно разобрать с наставником."""
+    items = (attempt.items.select_related("question", "selected", "tutor")
+             .prefetch_related("question__choices"))
+    result = []
+    for item in items:
+        if item.is_correct:
+            continue
+        choices = {c.id: c for c in item.question.choices.all()}
+        ordered = [choices[cid] for cid in item.choice_order if cid in choices]
+        session = getattr(item, "tutor", None)
+        result.append({"item": item, "choices": ordered,
+                       "messages": session.messages if session else [],
+                       "solved": bool(session and session.solved)})
+    return result
+
+
+@login_required
+@require_POST
+def attempt_tutor(request, pk, item_pk):
+    attempt = _student_attempt(request, pk)
+    if tutor_state(attempt) != "ready":
+        return JsonResponse({"error": str(_("Наставник откроется после закрытия теста."))}, status=403)
+    item = get_object_or_404(AttemptItem.objects.select_related("question", "selected"),
+                             pk=item_pk, attempt=attempt)
+    if item.is_correct:
+        return JsonResponse({"error": str(_("На этот вопрос вы ответили верно."))}, status=400)
+    try:
+        payload = json.loads(request.body or b"{}")
+    except ValueError:
+        payload = {}
+    text = str(payload.get("message", "")).strip()[:800]
+    session, _created = TutorSession.objects.get_or_create(item=item)
+    if session.solved:
+        return JsonResponse({"messages": session.messages, "solved": True, "left": 0})
+    if text:
+        if session.student_turns >= ai.MAX_STUDENT_TURNS:
+            return JsonResponse({"error": str(_("Разбор этого вопроса окончен. Обсудите его с преподавателем."))}, status=400)
+        session.messages.append({"role": "user", "content": text})
+    elif session.messages:
+        return JsonResponse({"messages": session.messages, "solved": session.solved,
+                             "left": ai.MAX_STUDENT_TURNS - session.student_turns})
+    choices = {c.id: c for c in item.question.choices.all()}
+    ordered = [choices[cid] for cid in item.choice_order if cid in choices]
+    options = [c.text for c in ordered]
+    correct = next(i for i, c in enumerate(ordered) if c.is_correct)
+    picked = next((i for i, c in enumerate(ordered) if c.id == item.selected_id), None)
+    try:
+        reply, solved, model = ai.tutor_reply(question_text=item.question.text, options=options,
+                                              picked=picked, correct=correct,
+                                              history=session.messages, request=request)
+    except ai.AIUnavailable:
+        if text:
+            session.messages.pop()
+        return JsonResponse({"error": str(_("Наставник сейчас недоступен. Попробуйте через минуту."))}, status=503)
+    session.messages.append({"role": "assistant", "content": reply})
+    session.solved = solved
+    session.model = model
+    session.save()
+    return JsonResponse({"messages": session.messages, "solved": solved,
+                         "left": ai.MAX_STUDENT_TURNS - session.student_turns})
