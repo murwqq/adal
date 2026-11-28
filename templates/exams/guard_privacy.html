@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}Адал Guard: политика конфиденциальности{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Адал Guard: политика конфиденциальности</h1>
+    <p class="muted">Privacy policy of the Adal Guard browser extension. Действует с 28 ноября 2026 года.</p>
+  </div>
+  <a class="btn btn-quiet" href="{% url 'exams:guard' %}">О расширении</a>
+</div>
+
+<section class="sheet" lang="ru">
+  <h2>Коротко</h2>
+  <p>Адал Guard не собирает, не хранит и не продаёт персональные данные. Расширение работает только во время экзамена на платформе Адал (adal-murex.vercel.app) и передаёт сведения о попытках нарушить правила экзамена только странице этого экзамена.</p>
+
+  <h2 style="margin-top:22px">Что делает расширение</h2>
+  <ul class="dots-list">
+    <li>Когда студент начинает тест на Адал, расширение включает режим экзамена: браузер открывает только сайт Адал, новые вкладки и окна закрываются, переходы на ИИ-сервисы и сайты с готовыми ответами блокируются.</li>
+    <li>Когда тест заканчивается (или наступает его срок), режим экзамена выключается и браузер работает как обычно.</li>
+  </ul>
+
+  <h2 style="margin-top:22px">Какие данные обрабатываются</h2>
+  <ul class="dots-list">
+    <li><b>Во время экзамена</b> расширение отмечает события: попытку открыть новую вкладку или окно, адрес сайта, если это ИИ-сервис или сайт с ответами (только имя домена, например chatgpt.com), названия включённых ИИ-расширений. Эти события передаются странице экзамена на Адал, и их видит преподаватель, который проводит тест.</li>
+    <li><b>Номер попытки и срок теста</b> хранятся в памяти браузера (chrome.storage.session) только до конца экзамена.</li>
+    <li>Расширение <b>не</b> читает содержимое страниц, историю браузера, пароли, файлы cookie, данные форм, не делает снимков экрана и не использует камеру или микрофон.</li>
+    <li>Расширение <b>не</b> отправляет данные на свои серверы или третьим лицам. Аналитики и рекламы нет.</li>
+  </ul>
+
+  <h2 style="margin-top:22px">Зачем нужны разрешения</h2>
+  <ul class="dots-list">
+    <li><b>declarativeNetRequest</b>: во время экзамена разрешить только сайт Адал и показывать заглушку вместо остальных страниц.</li>
+    <li><b>tabs</b>: закрывать новые вкладки во время экзамена и возвращать студента на вкладку теста.</li>
+    <li><b>webNavigation</b>: распознать попытку перейти на ИИ-сервис, чтобы сообщить о ней преподавателю.</li>
+    <li><b>management</b>: в начале экзамена проверить, включены ли ИИ-расширения (только их названия).</li>
+    <li><b>storage</b> и <b>alarms</b>: помнить, что идёт экзамен, и выключить режим экзамена по окончании срока.</li>
+  </ul>
+
+  <h2 style="margin-top:22px">Контакты</h2>
+  <p>Команда Адал, Кызылординский университет имени Коркыт Ата. Вопросы: <a href="https://github.com/murwqq/adal/issues">github.com/murwqq/adal/issues</a>. Исходный код расширения открыт в папке extension этого репозитория.</p>
+</section>
+
+<section class="sheet" lang="en" style="margin-top:20px">
+  <h2>In English</h2>
+  <p>Adal Guard does not collect, store or sell personal data. It is active only while a student takes an exam on the Adal platform (adal-murex.vercel.app). During an exam it allows only the Adal site, closes new tabs and windows, and blocks AI services and answer sites. It records exam-rule events (a new tab attempt, the domain of a blocked AI site, the names of enabled AI extensions) and passes them only to the Adal exam page, where the teacher running the exam can see them. The attempt number and exam deadline are kept in session storage until the exam ends. The extension does not read page content, browsing history, passwords, cookies or form data, takes no screenshots, does not use the camera or microphone, and sends no data to its own servers or to third parties. There is no analytics or advertising.</p>
+  <p>Permissions: declarativeNetRequest (allow only Adal during an exam), tabs (close new tabs, return to the exam tab), webNavigation (detect navigation to AI sites), management (check whether AI extensions are enabled, names only), storage and alarms (remember the exam state and switch it off at the deadline).</p>
+  <p>Contact: <a href="https://github.com/murwqq/adal/issues">github.com/murwqq/adal/issues</a>.</p>
+</section>
+{% endblock %}

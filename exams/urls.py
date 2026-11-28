@@ -12,6 +12,7 @@ urlpatterns = [
     path("bank/import/", views.question_import, name="question_import"),
     path("bank/generate/", views.question_generate, name="question_generate"),
     path("guard/", views.guard, name="guard"),
+    path("guard/privacy/", views.guard_privacy, name="guard_privacy"),
     path("bank/<int:pk>/", views.question_edit, name="question_edit"),
     path("bank/<int:pk>/delete/", views.question_delete, name="question_delete"),
     path("exams/", views.exam_list, name="exam_list"),

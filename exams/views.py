@@ -293,6 +293,11 @@ def guard(request):
     return render(request, "exams/guard.html", {"version": version})
 
 
+def guard_privacy(request):
+    """Политика конфиденциальности расширения: ссылка на неё нужна магазинам расширений."""
+    return render(request, "exams/guard_privacy.html")
+
+
 # ---------- Тесты (преподаватель) ----------
 
 @teacher_required

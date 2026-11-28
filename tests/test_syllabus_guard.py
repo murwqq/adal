@@ -139,6 +139,8 @@ def test_guard_version_in_ping_and_monitor(client, active_attempt, student, teac
 def test_guard_page_and_required_flag(client, exam, student):
     page = client.get(reverse("exams:guard"))
     assert page.status_code == 200 and "adal-guard.zip" in page.content.decode()
+    privacy = client.get(reverse("exams:guard_privacy"))
+    assert privacy.status_code == 200 and "Privacy policy" in privacy.content.decode()
     exam.require_guard = True
     exam.save()
     login(client, student)

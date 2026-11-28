@@ -1,0 +1,28 @@
+@font-face { font-family: "Golos Text"; src: url("GolosText.ttf"); font-weight: 400 900; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { width: 1280px; height: 800px; overflow: hidden; font-family: "Golos Text", sans-serif; color: #141c26;
+  background: radial-gradient(700px 520px at 10% 12%, rgba(140,201,184,.8), transparent 70%),
+              radial-gradient(640px 520px at 92% 88%, rgba(236,214,166,.7), transparent 70%),
+              radial-gradient(600px 500px at 80% 10%, rgba(98,180,186,.5), transparent 70%), #e4f1ec; }
+.wrap { position: absolute; inset: 0; padding: 72px 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+.logo { display: flex; align-items: center; gap: 10px; font-size: 26px; }
+.logo i { width: 20px; height: 20px; border-radius: 50%; border: 3px solid #0f6b58; display: block; }
+.logo i.on { background: #1c232e; border-color: #1c232e; }
+.logo b { font-weight: 900; letter-spacing: -.03em; margin-left: 6px; }
+.logo span { color: #0f6b58; font-weight: 700; }
+h1 { font-weight: 900; font-size: 52px; line-height: 1.05; letter-spacing: -.025em; margin: 26px 0 18px; }
+p.lead { font-size: 22px; line-height: 1.45; color: #424e5e; }
+ul { list-style: none; margin-top: 22px; }
+li { position: relative; padding-left: 30px; margin: 12px 0; font-size: 20px; line-height: 1.4; color: #424e5e; }
+li::before { content: ""; position: absolute; left: 0; top: 7px; width: 14px; height: 14px; border-radius: 50%; background: #0f6b58; }
+.glass { background: rgba(255,255,255,.62); border: 1.5px solid #fff; border-radius: 28px; padding: 30px; box-shadow: 0 30px 60px -30px rgba(16,38,48,.4); }
+.tag { white-space: nowrap; flex: none; display: inline-flex; align-items: center; height: 32px; padding: 0 14px; border-radius: 999px; font-weight: 600; font-size: 16px; }
+.ok { background: #e3f1ec; color: #0f6b58; }
+.bad { background: #fce4e9; color: #b8243a; }
+.muted { background: #eef1f0; color: #424e5e; }
+.row { display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 18px; padding: 14px 18px; }
+.row b { font-size: 18px; }
+.row small { display: block; font-size: 14px; color: #687482; margin-top: 2px; }
+.row .tags { display: flex; gap: 8px; }
+.popup { width: 400px; padding: 22px; background: #eef6f2; }
+.state { margin: 16px 0; padding: 14px 16px; border-radius: 14px; font-weight: 600; font-size: 16px; }
