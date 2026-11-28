@@ -737,6 +737,7 @@ def _mistakes(attempt):
         ordered = [choices[cid] for cid in item.choice_order if cid in choices]
         session = getattr(item, "tutor", None)
         result.append({"item": item, "choices": ordered,
+                       "lettered": list(zip(ai.letters(), ordered)),
                        "messages": session.messages if session else [],
                        "solved": bool(session and session.solved)})
     return result

@@ -241,3 +241,5 @@ html[lang="en"] .tutor-options li.picked::after { content: "  ← your answer"; 
 .ai-out code, .bubble.assistant code { font-family: "JetBrains Mono", Consolas, monospace; font-size: .92em; padding: 1px 5px; border-radius: 6px; background: rgba(28,35,46,.08); }
 .ai-out .ai-model { margin-top: 10px; }
 .bubble.assistant { white-space: normal; }
+.tutor-options { list-style: none; margin: 10px 0 12px; }
+.tutor-options .letter { display: inline-block; min-width: 1.6em; color: var(--form, #0f6b58); }

@@ -31,6 +31,7 @@ GATEWAY_URL = "https://ai-gateway.vercel.sh/v1/chat/completions"
 DEFAULT_MODELS = ("anthropic/claude-haiku-5.5", "google/gemini-3-flash")
 TIMEOUT = 25
 LETTERS = "АБВГДЕЖЗ"
+LATIN_LETTERS = "ABCDEFGH"
 SOLVED_MARK = "[[SOLVED]]"
 MAX_STUDENT_TURNS = 8
 
@@ -144,6 +145,11 @@ def _lang() -> str:
     return LANG_NAMES.get((get_language() or "ru")[:2], "Russian")
 
 
+def letters() -> str:
+    """Буквы вариантов, как их видит студент: А, Б, В, Г или A, B, C, D в английском интерфейсе."""
+    return LATIN_LETTERS if (get_language() or "ru")[:2] == "en" else LETTERS
+
+
 def _norm(text: str) -> str:
     return re.sub(r"\s+", " ", text or "").strip().lower()
 
@@ -167,11 +173,12 @@ Hard rules:
 
 def question_context(question_text: str, options: list[str], picked: int | None,
                      correct: int) -> str:
-    lines = [f"Question: {question_text}", "Options:"]
-    lines += [f"{LETTERS[i]}) {text}" for i, text in enumerate(options)]
-    lines.append("Student picked: " + (f"{LETTERS[picked]}) {options[picked]}" if picked is not None
+    abc = letters()
+    lines = [f"Question: {question_text}", "Options (refer to them with exactly these letters):"]
+    lines += [f"{abc[i]}) {text}" for i, text in enumerate(options)]
+    lines.append("Student picked: " + (f"{abc[picked]}) {options[picked]}" if picked is not None
                                        else "nothing (no answer)"))
-    lines.append(f"Correct option (secret, never reveal): {LETTERS[correct]})")
+    lines.append(f"Correct option (secret, never reveal): {abc[correct]})")
     return "\n".join(lines)
 
 
@@ -197,13 +204,14 @@ def tutor_reply(*, question_text: str, options: list[str], picked: int | None, c
     """history — реплики [{"role": "user"|"assistant", "content": str}].
     Возвращает (ответ наставника, разобрался ли студент, модель)."""
     lang = _lang()
+    # Одна системная инструкция и диалог, который всегда начинается с реплики студента:
+    # некоторые модели (Gemini) отклоняют диалог, где первой идёт реплика ассистента.
     messages = [
-        {"role": "system", "content": TUTOR_RULES.format(lang=lang)},
-        {"role": "system", "content": question_context(question_text, options, picked, correct)},
+        {"role": "system", "content": TUTOR_RULES.format(lang=lang) + "\n\n"
+         + question_context(question_text, options, picked, correct)},
+        {"role": "user", "content": "(The student opened the review. Start with one "
+         "question about their reasoning for the option they picked.)"},
     ]
-    if not history:
-        messages.append({"role": "user", "content": "(The student opened the review. Start with one "
-                         "question about their reasoning for the option they picked.)"})
     messages += history
     student_text = " ".join(m["content"] for m in history if m["role"] == "user")
     correct_text = options[correct]
@@ -213,8 +221,8 @@ def tutor_reply(*, question_text: str, options: list[str], picked: int | None, c
     reply = reply.replace(SOLVED_MARK, "").strip()
     if leaks_answer(reply, correct_text, question_text, student_text):
         messages.append({"role": "assistant", "content": reply})
-        messages.append({"role": "system", "content": "Your last message revealed the correct option. "
-                         "Rewrite it without naming or quoting any option."})
+        messages.append({"role": "user", "content": "(Note from the platform, not the student: your last "
+                         "message revealed the correct option. Rewrite it without naming or quoting any option.)"})
         reply, model = chat(messages, request=request)
         solved = SOLVED_MARK in reply
         reply = reply.replace(SOLVED_MARK, "").strip()
@@ -241,7 +249,7 @@ def review_question(*, text: str, choices: list[tuple[str, bool, float]], p: flo
                     answered: int, flags: list[str], request=None) -> tuple[str, str]:
     lines = [f"Question: {text}", "Options (key marked, share of students who picked it):"]
     for i, (option, is_correct, share) in enumerate(choices):
-        lines.append(f"{LETTERS[i]}) {option}{'  [KEY]' if is_correct else ''}  — {round(share * 100)}%")
+        lines.append(f"{letters()[i]}) {option}{'  [KEY]' if is_correct else ''}  — {round(share * 100)}%")
     lines.append(f"Answered: {answered}; p = {p}; D = {'n/a' if d is None else d}")
     if flags:
         lines.append("Automatic flags: " + "; ".join(str(f) for f in flags))
